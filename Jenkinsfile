@@ -1,30 +1,47 @@
 #!groovy
 
-def gitBranch
-def gitCommit
-def shortCommit
+pipeline {
+    agent any
 
-node {
-    def nodeJsHome = tool 'NodeJS6'
-    env.PATH = "${nodeJsHome}/bin:${env.PATH}"
+    stages {
+        stage('Bootstrap') {
+            agent {
+                label 'master'
+            }
 
-    stage('Checkout') {
-        checkout scm
-        gitBranch = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
-        gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-        shortCommit = gitCommit.take(6)
+            steps {
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node npm install'
+            }
+        }
+
+        stage('Test') {
+            agent {
+                label 'master'
+            }
+
+            steps {
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node npm run test'
+            }
+
+            steps {
+                junit "**/test-results/*.xml"
+            }
+        }
+
+        stage('Publish') {
+            agent {
+                label 'master'
+            }
+
+            steps {
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node npm publish'
+            }
+        }
     }
-    stage('Boostrap') {
-        sh "npm install"
-    }
-    stage('Test') {
-       try {
-           sh "npm run test"
-       } finally {
-           junit "**/test-results/*.xml"
-       }
-   }
-    stage('Publish') {
-        sh "npm publish"
+
+    post {
+        always {
+              deleteDir()
+        }
     }
 }
