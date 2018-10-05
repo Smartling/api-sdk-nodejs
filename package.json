@@ -4,7 +4,7 @@
   "description": "Package for Smartling API",
   "scripts": {
     "pretest": "eslint .",
-    "test": "MOCHA_FILE=./build/test-results/server.xml mocha --reporter mocha-junit-reporter --recursive test/*"
+    "test": "MOCHA_FILE=./build/test-results/server.xml nyc mocha --reporter mocha-junit-reporter --recursive test/*"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/Smartling/api-sdk-nodejs#readme",
   "publishConfig": {
-    "registry": "https://artifactory-vpc.smartling.net/artifactory/api/npm/local-npm-common"
+    "registry": "https://artifactory-vpc.smartling.net/artifactory/api/npm/local-nodejs-connectors"
   },
   "dependencies": {
     "default-user-agent": "~1",
@@ -39,6 +39,12 @@
     "commander": "^2.17.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
-    "sinon": "^6.1.2"
+    "sinon": "^6.1.2",
+    "nyc": "^12.0.2"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov"
+    ]
   }
 }
