@@ -1,0 +1,44 @@
+{
+  "name": "api-sdk-nodejs",
+  "version": "0.0.1",
+  "description": "Package for Smartling API",
+  "scripts": {
+    "pretest": "eslint .",
+    "test": "MOCHA_FILE=./build/test-results/server.xml mocha --reporter mocha-junit-reporter --recursive test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Smartling/api-sdk-nodejs.git"
+  },
+  "keywords": [
+    "smartling",
+    "api-sdk"
+  ],
+  "author": "Smartling, Inc.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Smartling/api-sdk-nodejs/issues"
+  },
+  "homepage": "https://github.com/Smartling/api-sdk-nodejs#readme",
+  "publishConfig": {
+    "registry": "https://artifactory-vpc.smartling.net/artifactory/api/npm/local-npm-common"
+  },
+  "dependencies": {
+    "default-user-agent": "~1",
+    "form-data": "~2",
+    "node-fetch": "~2",
+    "querystring": "^0.2.0"
+  },
+  "devDependencies": {
+    "winston": "^2.4.2",
+    "eslint": "^4.19.1",
+    "eslint-plugin-fp": "^2.3.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-security": "^1.4.0",
+    "@smartling/eslint-config-smartling": "^1.2.3",
+    "commander": "^2.17.1",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "sinon": "^6.1.2"
+  }
+}
