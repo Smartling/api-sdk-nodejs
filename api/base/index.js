@@ -7,7 +7,8 @@ const ua = require("default-user-agent");
  eslint class-methods-use-this: [
      "error", {
          "exceptMethods": [
-            "fetch"
+            "fetch",
+            "ua"
          ]
      }
  ]
@@ -44,6 +45,10 @@ class SmartlingBaseApi {
         return fetch(uri, options);
     }
 
+    ua(clientId, clientVersion) {
+        return ua(clientId, clientVersion);
+    }
+
     async getDefaultHeaders() {
         let headers = {};
 
@@ -58,7 +63,7 @@ class SmartlingBaseApi {
         }
 
         headers["Content-Type"] = "application/json";
-        headers["User-Agent"] = ua(this.clientLibId, this.clientLibVersion);
+        headers["User-Agent"] = this.ua(this.clientLibId, this.clientLibVersion);
 
         return headers;
     }

@@ -20,31 +20,44 @@ const responseMock = {
 };
 
 describe("Base class tests.", () => {
-    let base;
-
-    beforeEach(() => {
-        base = new Base(loggerMock);
-    });
-
     describe("Method getDefaultHeaders", () => {
+        let base;
+        let baseUaStub;
+
+        beforeEach(() => {
+            base = new Base(loggerMock);
+            baseUaStub = sinon.stub(base, "ua");
+            baseUaStub.returns("test_user_agent");
+        });
+
+        afterEach(() => {
+            baseUaStub.restore();
+        });
+
         it("Auth api object is set.", async () => {
             base.authApi = authMock;
 
             const defaultHeaders = await base.getDefaultHeaders();
 
+            sinon.assert.calledOnce(baseUaStub);
+            sinon.assert.calledWithExactly(baseUaStub, base.clientLibId, base.clientLibVersion);
+
             assert.deepEqual(defaultHeaders, {
                 Authorization: "test_token_type test_access_token",
                 "Content-Type": "application/json",
-                "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                "User-Agent": "test_user_agent"
             });
         });
 
         it("Auth api object is not set.", async () => {
             const defaultHeaders = await base.getDefaultHeaders();
 
+            sinon.assert.calledOnce(baseUaStub);
+            sinon.assert.calledWithExactly(baseUaStub, base.clientLibId, base.clientLibVersion);
+
             assert.deepEqual(defaultHeaders, {
                 "Content-Type": "application/json",
-                "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                "User-Agent": "test_user_agent"
             });
         });
 
@@ -53,16 +66,21 @@ describe("Base class tests.", () => {
 
             const defaultHeaders = await base.getDefaultHeaders();
 
+            sinon.assert.calledOnce(baseUaStub);
+            sinon.assert.calledWithExactly(baseUaStub, base.clientLibId, base.clientLibVersion);
+
             assert.deepEqual(defaultHeaders, {
                 "Content-Type": "application/json",
-                "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                "User-Agent": "test_user_agent"
             });
         });
     });
 
     describe("Method makeRequest", () => {
+        let base;
         let baseFetchStub;
         let baseGetDefaultHeaderSpy;
+        let baseUaStub;
         let authResetTokenStub;
         let responseMockTextStub;
         let responseMockJsonStub;
@@ -73,9 +91,12 @@ describe("Base class tests.", () => {
 
             baseFetchStub = sinon.stub(base, "fetch");
             baseGetDefaultHeaderSpy = sinon.spy(base, "getDefaultHeaders");
+            baseUaStub = sinon.stub(base, "ua");
             authResetTokenStub = sinon.stub(base.authApi, "resetToken");
             responseMockTextStub = sinon.stub(responseMock, "text");
             responseMockJsonStub = sinon.stub(responseMock, "json");
+
+            baseUaStub.returns("test_user_agent");
         });
 
         afterEach(() => {
@@ -84,8 +105,8 @@ describe("Base class tests.", () => {
             authResetTokenStub.restore();
             responseMockTextStub.restore();
             responseMockJsonStub.restore();
+            baseUaStub.restore();
         });
-
 
         it("Success (JSON response, bool result).", async () => {
             const requestVerb = "POST";
@@ -109,7 +130,7 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                    "User-Agent": "test_user_agent"
                 },
                 body: payload
             });
@@ -143,7 +164,7 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                    "User-Agent": "test_user_agent"
                 },
                 body: payload
             });
@@ -177,7 +198,7 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                    "User-Agent": "test_user_agent"
                 },
                 body: payload
             });
@@ -212,7 +233,7 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                    "User-Agent": "test_user_agent"
                 }
             });
 
@@ -223,7 +244,7 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                    "User-Agent": "test_user_agent"
                 }
             });
 
@@ -255,7 +276,7 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                    "User-Agent": "test_user_agent"
                 }
             });
 
@@ -285,7 +306,7 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                    "User-Agent": "test_user_agent"
                 }
             });
 
@@ -329,7 +350,7 @@ describe("Base class tests.", () => {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
-                        "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                        "User-Agent": "test_user_agent"
                     },
                     body: payload
                 });
@@ -369,7 +390,7 @@ describe("Base class tests.", () => {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
-                        "User-Agent": "smartling-api-sdk-node/0.0.1 Node.js/8.11.1 (Linux 4.4; x64)"
+                        "User-Agent": "test_user_agent"
                     },
                     body: payload
                 });

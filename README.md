@@ -1,7 +1,7 @@
 [Smartling Translation API](http://docs.smartling.com)
 =================
 
-This repository contains the PHP SDK for accessing the Smartling Translation API.
+This repository contains the Nodejs SDK for accessing the Smartling Translation API.
 
 The Smartling Translation API lets developers to internationalize their website or app by automating the translation and integration of their site content.
 Developers can upload resource files and download the translated files in a language of their choosing. There are options to allow for professional translation, community translation and machine translation.
