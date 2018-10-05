@@ -3,6 +3,17 @@ const fetch = require("node-fetch");
 const querystring = require("querystring");
 const ua = require("default-user-agent");
 
+/*
+ eslint class-methods-use-this: [
+     "error", {
+         "exceptMethods": [
+            "fetch"
+         ]
+     }
+ ]
+ */
+
+
 class SmartlingBaseApi {
     constructor(logger) {
         this.defaultClientLibId = "smartling-api-sdk-node";
@@ -27,6 +38,10 @@ class SmartlingBaseApi {
 
     static set clientLibVersion(value) {
         SmartlingBaseApi.clientLibVersion = value;
+    }
+
+    async fetch(uri, options) {
+        return fetch(uri, options);
     }
 
     async getDefaultHeaders() {
@@ -62,14 +77,14 @@ class SmartlingBaseApi {
             uri = `${uri}?${querystring.stringify(payload)}`;
         }
 
-        let response = await fetch(uri, opts);
+        let response = await this.fetch(uri, opts);
 
         if (response.status === 401) {
             this.logger.warn("Got unexpected 401 response code, trying to re-auth carefully...");
 
             this.authApi.resetToken();
 
-            response = await fetch(uri, {
+            response = await this.fetch(uri, {
                 method: verb,
                 headers: await this.getDefaultHeaders()
             });
