@@ -21,9 +21,6 @@ pipeline {
 
             steps {
                 sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node npm run test'
-            }
-
-            steps {
                 junit "**/test-results/*.xml"
             }
         }
