@@ -234,31 +234,35 @@ describe("Auth class tests.", () => {
     });
 
     describe("Method getTokenType.", () => {
-        let authTokenExistsStub;
+        let authTokenExistsSpy;
         let authAuthenticateStub;
 
         beforeEach(() => {
-            authTokenExistsStub = sinon.stub(auth, "tokenExists");
+            authTokenExistsSpy = sinon.spy(auth, "tokenExists");
             authAuthenticateStub = sinon.stub(auth, "authenticate");
         });
 
         afterEach(() => {
-            authTokenExistsStub.restore();
+            authTokenExistsSpy.restore();
             authAuthenticateStub.restore();
         });
 
         it("Token exists.", async () => {
-            auth.response = { tokenType: "test_token_type" };
-            authTokenExistsStub.returns(true);
+            auth.response = {
+                accessToken: "test_access_token",
+                tokenType: "test_token_type"
+            };
 
-            await auth.getTokenType();
+            const result = await auth.getTokenType();
 
-            sinon.assert.calledOnce(authTokenExistsStub);
-            sinon.assert.calledOnce(authAuthenticateStub);
+            sinon.assert.calledOnce(authTokenExistsSpy);
+            sinon.assert.notCalled(authAuthenticateStub);
+
+            assert.equal(result, "test_token_type");
         });
 
-        it("Token doesn't exist.", async () => {
-            authTokenExistsStub.returns(false);
+        it("Token doesn't exist: re-auth failed.", async () => {
+            authAuthenticateStub.throws(new SmartlingException("Failed to get token type"));
 
             try {
                 await auth.getTokenType();
@@ -266,13 +270,25 @@ describe("Auth class tests.", () => {
                 throw new Error("Exception is not thrown.");
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
-                assert.equal(e.message, "No tokenType found in response: {}");
-                assert.deepEqual(e.payload, null);
-                assert.equal(e.nestedException, null);
+                assert.equal(e.message, "Failed to get token type");
             } finally {
-                sinon.assert.calledOnce(authTokenExistsStub);
-                sinon.assert.notCalled(authAuthenticateStub);
+                sinon.assert.calledOnce(authTokenExistsSpy);
+                sinon.assert.calledOnce(authAuthenticateStub);
             }
+        });
+
+        it("Token doesn't exist: re-auth succeeded.", async () => {
+            authAuthenticateStub.returns({
+                accessToken: "test_access_token",
+                tokenType: "test_token_type"
+            });
+
+            const result = await auth.getTokenType();
+
+            sinon.assert.calledOnce(authTokenExistsSpy);
+            sinon.assert.calledOnce(authAuthenticateStub);
+
+            assert.equal(result, "test_token_type");
         });
     });
 
