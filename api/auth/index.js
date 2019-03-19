@@ -94,22 +94,19 @@ class SmartlingAuthApi extends SmartlingBaseApi {
     }
 
     async getTokenType() {
-        if (this.tokenExists()) {
-            this.logger.info("Requested tokenType but no successful authenticate response received yet. Authenticating...");
+        try {
+            if (!this.tokenExists()) {
+                this.logger.debug("Requested tokenType but no successful authenticate response received yet. Authenticating...");
 
-            await this.authenticate();
-        }
+                this.response = await this.authenticate();
+            }
 
-        /* eslint-disable-next-line no-prototype-builtins */
-        if (this.response && this.response.hasOwnProperty("tokenType")) {
             return this.response.tokenType;
+        } catch (e) {
+            this.logger.debug(`Request failed. Got: ${e.payload}`);
+
+            throw new SmartlingException("Failed to get token type", e.payload, e);
         }
-
-        const errorMsg = `No tokenType found in response: ${JSON.stringify(this.response)}`;
-
-        this.logger.warn(errorMsg);
-
-        throw new SmartlingException(errorMsg);
     }
 
     resetToken() {
