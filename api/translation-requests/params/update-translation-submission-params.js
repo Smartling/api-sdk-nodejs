@@ -2,7 +2,7 @@ const BaseTranslationSubmissionParameters = require("./base-translation-submissi
 
 class UpdateTranslationSubmissionParameters extends BaseTranslationSubmissionParameters {
     setTranslationSubmissionUid(translationSubmissionUid) {
-        this.set('translationSubmissionUid', translationSubmissionUid);
+        this.set("translationSubmissionUid", translationSubmissionUid);
 
         return this;
     }

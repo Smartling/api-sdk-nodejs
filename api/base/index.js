@@ -49,6 +49,10 @@ class SmartlingBaseApi {
         return ua(clientId, clientVersion);
     }
 
+    alterRequestData(uri, opts) {
+        return opts;
+    }
+
     async getDefaultHeaders() {
         let headers = {};
 
@@ -82,21 +86,23 @@ class SmartlingBaseApi {
             uri = `${uri}?${querystring.stringify(payload)}`;
         }
 
-        let response = await this.fetch(uri, opts);
+        let response = await this.fetch(uri, this.alterRequestData(uri, opts));
 
         if (response.status === 401) {
             this.logger.warn("Got unexpected 401 response code, trying to re-auth carefully...");
 
             this.authApi.resetToken();
 
-            response = await this.fetch(uri, {
+            response = await this.fetch(uri, this.alterRequestData(uri, {
                 method: verb,
                 headers: await this.getDefaultHeaders()
-            });
+            }));
         }
 
         if (response.status >= 400) {
-            throw new SmartlingException(`Request for ${uri} failed: ${response.status}`, JSON.stringify(response));
+            const jsonResponse = await response.json();
+
+            throw new SmartlingException(`Request for ${uri} failed: ${response.status}`, JSON.stringify(jsonResponse));
         }
 
         // Special case for file download - return raw response text.

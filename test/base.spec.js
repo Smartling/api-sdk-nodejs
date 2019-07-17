@@ -317,7 +317,10 @@ describe("Base class tests.", () => {
 
         it("Fail (non 200/401 response).", async () => {
             const response400Mock = {
-                status: 400
+                status: 400,
+                json: () => {
+                    return {response: {code: "VALIDATION_ERROR", errors: []}};
+                }
             };
             const requestVerb = "POST";
             const requestUri = "https://test.com";
@@ -339,7 +342,7 @@ describe("Base class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Request for https://test.com failed: 400");
-                assert.deepEqual(e.payload, "{\"status\":400}");
+                assert.deepEqual(e.payload, "{\"response\":{\"code\":\"VALIDATION_ERROR\",\"errors\":[]}}");
                 assert.equal(e.nestedException, null);
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
