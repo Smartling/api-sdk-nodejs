@@ -10,7 +10,7 @@ class SmartlingJobFacadeApi extends SmartlingBaseApi {
     }
 
     alterRequestData(uri, opts) {
-        if (uri.match(/jobs-batch-api\/v1\/projects\/.*\/batches\/.*\/file$/g)) {
+        if (uri.match(/jobs-batch-api\/.*\/projects\/.*\/batches\/.*\/file$/g)) {
             const formData = new FormData();
 
             Object.keys(opts.body).forEach((key) => {
