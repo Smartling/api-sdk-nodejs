@@ -1,4 +1,5 @@
 const BaseParameters = require("../../parameters");
+const SmartlingException = require("../../exception");
 
 class BaseTranslationRequestParameters extends BaseParameters {
     setTargetAssetKey(targetAssetKey = []) {
@@ -26,13 +27,21 @@ class BaseTranslationRequestParameters extends BaseParameters {
     }
 
     setSubmittedDate(submittedDate) {
-        this.set("submittedDate", submittedDate);
+        if (Object.prototype.toString.call(submittedDate) !== "[object Date]") {
+            throw new SmartlingException("Submitted date must be an instance of Date");
+        }
+
+        this.set("submittedDate", submittedDate.toISOString());
 
         return this;
     }
 
     setLastExportedDate(lastExportDate) {
-        this.set("lastExportedDate", lastExportDate);
+        if (Object.prototype.toString.call(lastExportDate) !== "[object Date]") {
+            throw new SmartlingException("Last export date must be an instance of Date");
+        }
+
+        this.set("lastExportedDate", lastExportDate.toISOString());
 
         return this;
     }

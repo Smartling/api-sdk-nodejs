@@ -50,14 +50,14 @@ if (program.identifier && program.secret) {
                 .setTargetLocaleId("fr-FR")
                 .setState(TranslationSubmissionStates.NEW)
                 .setTargetAssetKey({ foo1: "bar1" })
-                .setSubmittedDate(Date.now())
+                .setSubmittedDate(new Date())
                 .setSubmitterName("nodejs");
 
             createTranslationSubmissionParameters2
                 .setTargetLocaleId("de-DE")
                 .setState(TranslationSubmissionStates.NEW)
                 .setTargetAssetKey({ foo2: "bar2" })
-                .setSubmittedDate(Date.now())
+                .setSubmittedDate(new Date())
                 .setSubmitterName("nodejs");
 
             createTranslationRequestParameters
