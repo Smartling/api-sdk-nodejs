@@ -7,10 +7,26 @@ class SmartlingJobApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/jobs-api/v3/projects`;
     }
 
+    async createJob(projectId, params) {
+        return this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs`,
+            JSON.stringify(params.export())
+        );
+    }
+
     async getJob(projectId, translationJobUid) {
         return this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}`
+        );
+    }
+
+    async listJobs(projectId, params) {
+        return this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/jobs`,
+            params.export()
         );
     }
 }

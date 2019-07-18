@@ -2,6 +2,8 @@ const program = require("commander");
 const SmartlingAuthApi = require("../api/auth");
 const SmartlingJobFacadeApi = require("../api/job-facade");
 const winston = require("winston");
+const CreateBatchParameters = require("../api/job-facade/params/create-batch-parameters");
+const UploadFileParameters = require("../api/job-facade/params/upload-file-parameters");
 
 const transports = [
     new winston.transports.Console({
@@ -29,12 +31,46 @@ if (program.identifier && program.secret) {
 
     (async () => {
         const projectId = "test";
-        const batchUid = "test";
 
         try {
-            const result = await smartlingJobFacadeApi.getBatchStatus(projectId, batchUid);
+            const createBatchParams = new CreateBatchParameters();
+
+            createBatchParams
+                .setTranslationJobUid("test")
+                .setAuthorize(true);
+
+            logger.debug("-------- Create batch ---------");
+
+            const createBatchResult = await smartlingJobFacadeApi.createBatch(projectId, createBatchParams);
+
+            logger.debug(JSON.stringify(createBatchResult, null, 2));
+
             logger.debug("-------- Get batch status ---------");
-            logger.debug(JSON.stringify(result));
+
+            const getBatchStatusResult = await smartlingJobFacadeApi.getBatchStatus(projectId, createBatchResult.batchUid);
+
+            logger.debug(JSON.stringify(getBatchStatusResult, null, 2));
+
+            logger.debug("-------- Upload file to batch ---------");
+
+            const uploadFileParams = new UploadFileParameters();
+
+            uploadFileParams
+                .setLocalesToApprove(["fr-FR"])
+                .setFile("./examples/data/test.xml")
+                .setFileUri("test.xml")
+                .setDirective("placeholder_format", "YAML")
+                .setFileType("xml");
+
+            const uploadFileResult = await smartlingJobFacadeApi.uploadBatchFile(projectId, createBatchResult.batchUid, uploadFileParams);
+
+            logger.debug(JSON.stringify(uploadFileResult, null, 2));
+
+            logger.debug("-------- Execute batch ---------");
+
+            const executeBatchStatusResult = await smartlingJobFacadeApi.executeBatch(projectId, createBatchResult.batchUid);
+
+            logger.debug(JSON.stringify(executeBatchStatusResult, null, 2));
         } catch (e) {
             logger.error(e);
         }
