@@ -19,7 +19,7 @@ const ua = require("default-user-agent");
 class SmartlingBaseApi {
     constructor(logger) {
         this.defaultClientLibId = "smartling-api-sdk-node";
-        this.defaultClientVersion = "1.2.0";
+        this.defaultClientVersion = "1.2.2";
         this.clientLibId = this.defaultClientLibId;
         this.clientLibVersion = this.defaultClientVersion;
         this.response = {};

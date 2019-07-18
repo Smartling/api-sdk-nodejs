@@ -1,6 +1,6 @@
 {
   "name": "api-sdk-nodejs",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Package for Smartling API",
   "scripts": {
     "pretest": "eslint .",
