@@ -8,7 +8,8 @@ const ua = require("default-user-agent");
      "error", {
          "exceptMethods": [
             "fetch",
-            "ua"
+            "ua",
+            "alterRequestData"
          ]
      }
  ]

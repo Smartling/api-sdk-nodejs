@@ -4,14 +4,14 @@ class UploadFileParameters extends BaseParameters {
     setClientLibId(clientLibId, version) {
         this.set("smartling.client_lib_id", JSON.stringify({
             client: clientLibId,
-            version: version
+            version
         }));
 
         return this;
     }
 
-    setCallbackUrl(callback_url) {
-        this.set("callbackUrl", callback_url);
+    setCallbackUrl(callbackUrl) {
+        this.set("callbackUrl", callbackUrl);
 
         return this;
     }

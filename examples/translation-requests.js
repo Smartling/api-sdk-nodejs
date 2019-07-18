@@ -70,7 +70,11 @@ if (program.identifier && program.secret) {
                 .addTranslationSubmission(createTranslationSubmissionParameters2);
 
             const createTranslationRequestResponse = await smartlingTranslationRequestsApi
-                .createTranslationRequest(projectId, bucketName, createTranslationRequestParameters);
+                .createTranslationRequest(
+                    projectId,
+                    bucketName,
+                    createTranslationRequestParameters
+                );
 
             const getTranslationRequestResponse = await smartlingTranslationRequestsApi
                 .getTranslationRequest(
