@@ -12,12 +12,6 @@ class CreateBatchParameters extends BaseParameters {
 
         return this;
     }
-
-    setCallbackUrl(callbackUrl) {
-        this.set("callbackUrl", callbackUrl);
-
-        return this;
-    }
 }
 
 module.exports = CreateBatchParameters;
