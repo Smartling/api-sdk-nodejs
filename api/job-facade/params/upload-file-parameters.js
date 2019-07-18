@@ -43,6 +43,12 @@ class UploadFileParameters extends BaseParameters {
 
         return this;
     }
+
+    setDirective(key, value) {
+        this.set(`smartling.${key}`, value);
+
+        return this;
+    }
 }
 
 module.exports = UploadFileParameters;

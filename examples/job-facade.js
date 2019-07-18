@@ -59,6 +59,7 @@ if (program.identifier && program.secret) {
                 .setLocalesToApprove(["fr-FR"])
                 .setFile("./examples/data/test.xml")
                 .setFileUri("test.xml")
+                .setDirective("placeholder_format", "YAML")
                 .setFileType("xml");
 
             const uploadFileResult = await smartlingJobFacadeApi.uploadBatchFile(projectId, createBatchResult.batchUid, uploadFileParams);
