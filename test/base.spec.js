@@ -318,9 +318,7 @@ describe("Base class tests.", () => {
         it("Fail (non 200/401 response).", async () => {
             const response400Mock = {
                 status: 400,
-                text: () => {
-                    return {response: {code: "VALIDATION_ERROR", errors: []}};
-                }
+                text: () => ({ response: { code: "VALIDATION_ERROR", errors: [] } })
             };
             const requestVerb = "POST";
             const requestUri = "https://test.com";

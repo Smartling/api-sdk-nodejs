@@ -2,6 +2,16 @@ const SmartlingBaseApi = require("../base");
 const fs = require("fs");
 const FormData = require("form-data");
 
+/*
+ eslint class-methods-use-this: [
+     "error", {
+         "exceptMethods": [
+             "alterRequestData"
+         ]
+     }
+ ]
+ */
+
 class SmartlingJobFacadeApi extends SmartlingBaseApi {
     constructor(authApi, logger, smartlingApiBaseUrl) {
         super(logger);
@@ -18,14 +28,12 @@ class SmartlingJobFacadeApi extends SmartlingBaseApi {
                     formData.append(key, fs.createReadStream(
                         fs.realpathSync(opts.body[key])
                     ));
+                } else if (Array.isArray(opts.body[key])) {
+                    opts.body[key].forEach((value) => {
+                        formData.append(`${key}[]`, value);
+                    });
                 } else {
-                    if (Array.isArray(opts.body[key])) {
-                        opts.body[key].forEach((value) => {
-                            formData.append(`${key}[]`, value);
-                        });
-                    } else {
-                        formData.append(key, opts.body[key]);
-                    }
+                    formData.append(key, opts.body[key]);
                 }
             });
 

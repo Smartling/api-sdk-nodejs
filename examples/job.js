@@ -53,7 +53,8 @@ if (program.identifier && program.secret) {
 
             logger.debug("-------- Get job ---------");
 
-            const getJobResponse = await smartlingJobApi.getJob(projectId, createJobResponse.translationJobUid);
+            const getJobResponse = await smartlingJobApi
+                .getJob(projectId, createJobResponse.translationJobUid);
 
             logger.debug(JSON.stringify(getJobResponse, null, 2));
 

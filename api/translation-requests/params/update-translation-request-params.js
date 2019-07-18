@@ -6,7 +6,8 @@ class UpdateTranslationRequestParameters extends BaseTranslationRequestParameter
             this.set("translationSubmissions", []);
         }
 
-        this.parameters.translationSubmissions = this.parameters.translationSubmissions.concat(translationSubmission.export());
+        this.parameters.translationSubmissions = this.parameters
+            .translationSubmissions.concat(translationSubmission.export());
 
         return this;
     }

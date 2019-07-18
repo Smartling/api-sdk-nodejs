@@ -41,13 +41,15 @@ if (program.identifier && program.secret) {
 
             logger.debug("-------- Create batch ---------");
 
-            const createBatchResult = await smartlingJobFacadeApi.createBatch(projectId, createBatchParams);
+            const createBatchResult = await smartlingJobFacadeApi
+                .createBatch(projectId, createBatchParams);
 
             logger.debug(JSON.stringify(createBatchResult, null, 2));
 
             logger.debug("-------- Get batch status ---------");
 
-            const getBatchStatusResult = await smartlingJobFacadeApi.getBatchStatus(projectId, createBatchResult.batchUid);
+            const getBatchStatusResult = await smartlingJobFacadeApi
+                .getBatchStatus(projectId, createBatchResult.batchUid);
 
             logger.debug(JSON.stringify(getBatchStatusResult, null, 2));
 
@@ -62,13 +64,15 @@ if (program.identifier && program.secret) {
                 .setDirective("placeholder_format", "YAML")
                 .setFileType("xml");
 
-            const uploadFileResult = await smartlingJobFacadeApi.uploadBatchFile(projectId, createBatchResult.batchUid, uploadFileParams);
+            const uploadFileResult = await smartlingJobFacadeApi
+                .uploadBatchFile(projectId, createBatchResult.batchUid, uploadFileParams);
 
             logger.debug(JSON.stringify(uploadFileResult, null, 2));
 
             logger.debug("-------- Execute batch ---------");
 
-            const executeBatchStatusResult = await smartlingJobFacadeApi.executeBatch(projectId, createBatchResult.batchUid);
+            const executeBatchStatusResult = await smartlingJobFacadeApi
+                .executeBatch(projectId, createBatchResult.batchUid);
 
             logger.debug(JSON.stringify(executeBatchStatusResult, null, 2));
         } catch (e) {
