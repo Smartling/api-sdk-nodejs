@@ -16,12 +16,6 @@ class UploadFileParameters extends BaseParameters {
         return this;
     }
 
-    setAuthorized(authorized) {
-        this.set("authorize", authorized);
-
-        return this;
-    }
-
     setLocalesToApprove(localesToApprove) {
         if (!Array.isArray(localesToApprove)) {
             localesToApprove = [localesToApprove];
