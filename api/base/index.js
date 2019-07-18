@@ -100,7 +100,7 @@ class SmartlingBaseApi {
         }
 
         if (response.status >= 400) {
-            const jsonResponse = await response.json();
+            const jsonResponse = await response.text();
 
             throw new SmartlingException(`Request for ${uri} failed: ${response.status}`, JSON.stringify(jsonResponse));
         }
