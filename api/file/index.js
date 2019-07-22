@@ -22,6 +22,15 @@ class SmartlingFileApi extends SmartlingBaseApi {
             { fileUri }
         );
     }
+
+    async downloadFile(projectId, fileUri, locale, params) {
+        return this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/locales/${locale}/file`,
+            Object.assign(params.export(), { fileUri }),
+            true
+        );
+    }
 }
 
 module.exports = SmartlingFileApi;

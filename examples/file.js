@@ -1,6 +1,8 @@
 const program = require("commander");
 const SmartlingAuthApi = require("../api/auth");
 const SmartlingFileApi = require("../api/file");
+const RetrievalTypes = require("../api/file/params/retrieval-types");
+const DownloadFileParameters = require("../api/file/params/download-file-parameters");
 const winston = require("winston");
 
 const transports = [
@@ -39,6 +41,14 @@ if (program.identifier && program.secret) {
             result = await smartlingFileApi.getLastModified(projectId, fileUri);
             logger.debug("-------- Get last modified for all locales ---------");
             logger.debug(JSON.stringify(result));
+
+            const downloadFileParams = new DownloadFileParameters();
+
+            downloadFileParams.setRetrievalType(RetrievalTypes.pseudo);
+
+            result = await smartlingFileApi.downloadFile(projectId, fileUri, "fr-FR", downloadFileParams);
+            logger.debug("-------- Download file ---------");
+            logger.debug(result);
         } catch (e) {
             logger.error(e);
         }
