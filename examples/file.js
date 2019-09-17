@@ -33,6 +33,8 @@ if (program.identifier && program.secret) {
         const projectId = "test";
         const fileUri = "test";
 
+        smartlingFileApi.setOptions({ timeout: 1000 });
+
         try {
             let result = await smartlingFileApi.getStatusForAllLocales(projectId, fileUri);
             logger.debug("-------- Get status for all locales ---------");
