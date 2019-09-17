@@ -19,11 +19,16 @@ const ua = require("default-user-agent");
 class SmartlingBaseApi {
     constructor(logger) {
         this.defaultClientLibId = "smartling-api-sdk-node";
-        this.defaultClientVersion = "1.3.0";
+        this.defaultClientVersion = "1.3.1";
         this.clientLibId = this.defaultClientLibId;
         this.clientLibVersion = this.defaultClientVersion;
         this.response = {};
         this.logger = logger;
+        this.options = {};
+    }
+
+    setOptions(options) {
+        this.options = options;
     }
 
     static get clientLibId() {
@@ -74,10 +79,10 @@ class SmartlingBaseApi {
     }
 
     async makeRequest(verb, uri, payload, returnRawResponseBody = false) {
-        const opts = {
+        const opts = Object.assign({
             method: verb,
             headers: await this.getDefaultHeaders()
-        };
+        }, this.options);
 
         if (verb.toLowerCase() !== "get") {
             opts.body = payload;

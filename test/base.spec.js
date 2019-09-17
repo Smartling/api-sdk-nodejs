@@ -315,6 +315,43 @@ describe("Base class tests.", () => {
             sinon.assert.calledOnce(responseMockJsonStub);
         });
 
+        it("Custom options for api object (timeout)", async () => {
+            const requestVerb = "POST";
+            const requestUri = "https://test.com";
+            const payload = {
+                foo: "bar"
+            };
+
+            baseFetchStub.returns(responseMock);
+            responseMockJsonStub.returns({
+                response: {
+                    data: {}
+                }
+            });
+
+            base.setOptions({ timeout: 10000 });
+
+            await base.makeRequest(requestVerb, requestUri, payload);
+
+            sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
+
+            sinon.assert.calledOnce(baseFetchStub);
+            sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
+                method: requestVerb,
+                headers: {
+                    Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                },
+                body: payload,
+                timeout: 10000
+            });
+
+            sinon.assert.notCalled(authResetTokenStub);
+            sinon.assert.notCalled(responseMockTextStub);
+            sinon.assert.calledOnce(responseMockJsonStub);
+        });
+
         it("Fail (non 200/401 response).", async () => {
             const response400Mock = {
                 status: 400,
