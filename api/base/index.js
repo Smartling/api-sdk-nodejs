@@ -2,6 +2,7 @@ const SmartlingException = require("../exception");
 const fetch = require("node-fetch");
 const querystring = require("querystring");
 const ua = require("default-user-agent");
+const merge = require("merge-deep");
 
 /*
  eslint class-methods-use-this: [
@@ -79,7 +80,7 @@ class SmartlingBaseApi {
     }
 
     async makeRequest(verb, uri, payload, returnRawResponseBody = false) {
-        const opts = Object.assign({
+        const opts = merge({
             method: verb,
             headers: await this.getDefaultHeaders()
         }, this.options);
