@@ -405,8 +405,6 @@ describe("Base class tests.", () => {
         });
 
         it("Custom options for api object (timeout)", async () => {
-            baseUaStub.restore();
-
             const requestVerb = "POST";
             const requestUri = "https://test.com";
             const payload = {
@@ -419,9 +417,6 @@ describe("Base class tests.", () => {
                     data: {}
                 }
             });
-
-            base.clientLibId = "test";
-            base.clientLibVersion = "1.0.0";
 
             base.setOptions({
                 timeout: 10000,
@@ -443,7 +438,7 @@ describe("Base class tests.", () => {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
-                        "User-Agent": "test/1.0.0 Node.js/12.14.0 (Linux 4.4; x64)",
+                        "User-Agent": "test_user_agent",
                         foo: "bar"
                     },
                     body: payload,
@@ -457,7 +452,7 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "test/1.0.0 Node.js/12.14.0 (Linux 4.4; x64)",
+                    "User-Agent": "test_user_agent",
                     foo: "bar"
                 },
                 body: payload,

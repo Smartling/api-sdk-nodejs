@@ -10,7 +10,7 @@ pipeline {
             }
 
             steps {
-                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.14.0 npm install'
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node npm install'
             }
         }
 
@@ -20,7 +20,7 @@ pipeline {
             }
 
             steps {
-                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.14.0 npm run test'
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node npm run test'
                 junit "**/test-results/*.xml"
             }
         }
