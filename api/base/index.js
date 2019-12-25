@@ -20,7 +20,7 @@ const merge = require("merge-deep");
 class SmartlingBaseApi {
     constructor(logger) {
         this.defaultClientLibId = "smartling-api-sdk-node";
-        this.defaultClientVersion = "1.3.1";
+        this.defaultClientVersion = "1.3.2";
         this.clientLibId = this.defaultClientLibId;
         this.clientLibVersion = this.defaultClientVersion;
         this.response = {};
