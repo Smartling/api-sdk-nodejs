@@ -81,6 +81,7 @@ describe("Base class tests.", () => {
         let baseFetchStub;
         let baseGetDefaultHeaderSpy;
         let baseUaStub;
+        let baseAlterRequestDataSpy;
         let authResetTokenStub;
         let responseMockTextStub;
         let responseMockJsonStub;
@@ -92,6 +93,7 @@ describe("Base class tests.", () => {
             baseFetchStub = sinon.stub(base, "fetch");
             baseGetDefaultHeaderSpy = sinon.spy(base, "getDefaultHeaders");
             baseUaStub = sinon.stub(base, "ua");
+            baseAlterRequestDataSpy = sinon.spy(base, "alterRequestData");
             authResetTokenStub = sinon.stub(base.authApi, "resetToken");
             responseMockTextStub = sinon.stub(responseMock, "text");
             responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -123,6 +125,21 @@ describe("Base class tests.", () => {
             await base.makeRequest(requestVerb, requestUri, payload);
 
             sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
+
+            sinon.assert.calledOnce(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                requestUri,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: payload
+                }
+            );
 
             sinon.assert.calledOnce(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
@@ -158,6 +175,21 @@ describe("Base class tests.", () => {
 
             sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
+            sinon.assert.calledOnce(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                requestUri,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: payload
+                }
+            );
+
             sinon.assert.calledOnce(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
                 method: requestVerb,
@@ -191,6 +223,21 @@ describe("Base class tests.", () => {
             await base.makeRequest(requestVerb, requestUri, payload, true);
 
             sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
+
+            sinon.assert.calledOnce(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                requestUri,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: payload
+                }
+            );
 
             sinon.assert.calledOnce(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
@@ -226,6 +273,20 @@ describe("Base class tests.", () => {
             await base.makeRequest(requestVerb, requestUri);
 
             sinon.assert.calledTwice(baseGetDefaultHeaderSpy);
+
+            sinon.assert.calledTwice(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                requestUri,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    }
+                }
+            );
 
             sinon.assert.calledTwice(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub.getCall(0), requestUri, {
@@ -270,6 +331,20 @@ describe("Base class tests.", () => {
 
             sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
+            sinon.assert.calledOnce(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                `${requestUri}?foo=bar`,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    }
+                }
+            );
+
             sinon.assert.calledOnce(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub, `${requestUri}?foo=bar`, {
                 method: requestVerb,
@@ -300,6 +375,20 @@ describe("Base class tests.", () => {
 
             sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
+            sinon.assert.calledOnce(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                requestUri,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    }
+                }
+            );
+
             sinon.assert.calledOnce(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
                 method: requestVerb,
@@ -329,11 +418,33 @@ describe("Base class tests.", () => {
                 }
             });
 
-            base.setOptions({ timeout: 10000 });
+            base.setOptions({
+                timeout: 10000,
+                headers: {
+                    foo: "bar"
+                }
+            });
 
             await base.makeRequest(requestVerb, requestUri, payload);
 
             sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
+
+            sinon.assert.calledOnce(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                requestUri,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent",
+                        foo: "bar"
+                    },
+                    body: payload,
+                    timeout: 10000
+                }
+            );
 
             sinon.assert.calledOnce(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
@@ -341,7 +452,8 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "test_user_agent"
+                    "User-Agent": "test_user_agent",
+                    foo: "bar"
                 },
                 body: payload,
                 timeout: 10000
@@ -382,6 +494,21 @@ describe("Base class tests.", () => {
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
+                sinon.assert.calledOnce(baseAlterRequestDataSpy);
+                sinon.assert.calledWithExactly(
+                    baseAlterRequestDataSpy,
+                    requestUri,
+                    {
+                        method: requestVerb,
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        body: payload
+                    }
+                );
+
                 sinon.assert.calledOnce(baseFetchStub);
                 sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
                     method: requestVerb,
@@ -421,6 +548,21 @@ describe("Base class tests.", () => {
                 assert.equal(e.nestedException, error);
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
+
+                sinon.assert.calledOnce(baseAlterRequestDataSpy);
+                sinon.assert.calledWithExactly(
+                    baseAlterRequestDataSpy,
+                    requestUri,
+                    {
+                        method: requestVerb,
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        body: payload
+                    }
+                );
 
                 sinon.assert.calledOnce(baseFetchStub);
                 sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
