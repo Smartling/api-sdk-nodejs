@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 const querystring = require("querystring");
 const ua = require("default-user-agent");
 const merge = require("merge-deep");
+const packageJson = require("../../package.json");
 
 /*
  eslint class-methods-use-this: [
@@ -20,7 +21,7 @@ const merge = require("merge-deep");
 class SmartlingBaseApi {
     constructor(logger) {
         this.defaultClientLibId = "smartling-api-sdk-node";
-        this.defaultClientVersion = "1.3.4";
+        this.defaultClientVersion = packageJson.version;
         this.clientLibId = this.defaultClientLibId;
         this.clientLibVersion = this.defaultClientVersion;
         this.response = {};
