@@ -46,7 +46,9 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
     async getTranslationPackageContent(projectId, translationPackageUid) {
         return this.makeRequest(
             "get",
-            `${this.entrypoint}/projects/${projectId}/translation-packages/${translationPackageUid}/content`
+            `${this.entrypoint}/projects/${projectId}/translation-packages/${translationPackageUid}/content`,
+            null,
+            true
         );
     }
 
