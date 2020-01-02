@@ -62,10 +62,12 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
 
         form.append("file", readStream);
 
-        const options = this.options;
+        const opts = this.options;
         const headers = form.getHeaders();
 
         headers["Content-Type"] = headers["content-type"];
+        // eslint-disable-next-line fp/no-delete
+        delete headers["content-type"];
 
         this.options = {
             headers
@@ -77,7 +79,7 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
             form
         );
 
-        this.options = options;
+        this.options = opts;
 
         return result;
     }
