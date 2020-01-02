@@ -73,15 +73,15 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
             headers
         };
 
-        const result = await this.makeRequest(
-            "post",
-            `${this.entrypoint}/projects/${projectId}/locales/${localeId}/content`,
-            form
-        );
-
-        this.options = opts;
-
-        return result;
+        try {
+            return await this.makeRequest(
+                "post",
+                `${this.entrypoint}/projects/${projectId}/locales/${localeId}/content`,
+                form
+            );
+        } finally {
+            this.options = opts;
+        }
     }
 }
 
