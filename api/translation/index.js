@@ -25,13 +25,13 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
         return !res;
     }
 
-    async createTranslationPackage(projectId, jobUid, localeId, workflowStepUid) {
+    async createTranslationPackage(projectId, translationJobUid, localeId, workflowStepUid) {
         return this.makeRequest(
             "post",
             `${this.entrypoint}/projects/${projectId}/locales/${localeId}/translation-packages`,
             JSON.stringify({
                 workflowStepUid,
-                jobUid
+                translationJobUid
             })
         );
     }
