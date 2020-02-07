@@ -1,23 +1,7 @@
 const assert = require("assert");
 const sinon = require("sinon");
 const Base = require("../api/base");
-
-const loggerMock = {
-    debug: () => {},
-    warn: () => {},
-    error: () => {},
-    info: () => {}
-};
-const authMock = {
-    getAccessToken: () => "test_access_token",
-    getTokenType: () => "test_token_type",
-    resetToken: () => {}
-};
-const responseMock = {
-    status: 200,
-    text: () => {},
-    json: async () => {}
-};
+const { loggerMock, authMock, responseMock } = require("./mock");
 
 describe("Base class tests.", () => {
     describe("Method getDefaultHeaders", () => {
