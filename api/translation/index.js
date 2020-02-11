@@ -62,26 +62,19 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
 
         form.append("file", readStream);
 
-        const opts = this.options;
         const headers = form.getHeaders();
 
         headers["Content-Type"] = headers["content-type"];
         // eslint-disable-next-line fp/no-delete
         delete headers["content-type"];
 
-        this.options = {
+        return this.makeRequest(
+            "post",
+            `${this.entrypoint}/projects/${projectId}/locales/${localeId}/content`,
+            form,
+            false,
             headers
-        };
-
-        try {
-            return await this.makeRequest(
-                "post",
-                `${this.entrypoint}/projects/${projectId}/locales/${localeId}/content`,
-                form
-            );
-        } finally {
-            this.options = opts;
-        }
+        );
     }
 }
 

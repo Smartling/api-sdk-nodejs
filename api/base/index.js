@@ -80,10 +80,10 @@ class SmartlingBaseApi {
         return headers;
     }
 
-    async makeRequest(verb, uri, payload, returnRawResponseBody = false) {
+    async makeRequest(verb, uri, payload, returnRawResponseBody = false, headers = {}) {
         const opts = merge({
             method: verb,
-            headers: await this.getDefaultHeaders()
+            headers: merge(await this.getDefaultHeaders(), headers)
         }, this.options);
 
         if (verb.toLowerCase() !== "get") {
