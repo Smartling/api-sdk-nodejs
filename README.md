@@ -24,4 +24,8 @@ To get source code, clone the repo:
 
 `git clone git@github.com:Smartling/api-sdk-nodejs.git`
 
+Then compile the javascript:
+
+`npm install && npm run build`
+
 To contribute, fork it and follow [general GitHub guidelines](http://help.github.com/fork-a-repo/) with pull request.

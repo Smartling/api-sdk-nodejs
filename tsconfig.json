@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "types": [
+      "node"
+    ],
+    "removeComments": true,
+    "outDir": "./built",
+    "allowJs": true
+  },
+  "include": [
+    "./api/**/*.js",
+    "./api/**/*.ts",
+    "./examples/**/*.ts"
+  ]
+}
