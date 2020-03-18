@@ -1,6 +1,6 @@
 {
   "name": "api-sdk-nodejs",
-  "version": "1.3.6",
+  "version": "1.4.0",
   "description": "Package for Smartling API",
   "scripts": {
     "build": "rm -rf built && tsc && cp -R node_modules package.json built",
