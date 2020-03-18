@@ -1,18 +1,17 @@
 import { Command } from "commander5";
-import winston from "winston3";
+import winston from "winston";
 import SmartlingAuthApi from "../api/auth";
 import SmartlingAuditLogApi from "../api/audit-log";
 import Payload from "../api/audit-log/payload";
 
 const transports = [
     new winston.transports.Console({
+        timestamp: true,
+        colorize: true,
         level: "debug"
     })
 ];
-const makeLogger = () => winston.createLogger({
-    level: "debug",
-    transports
-});
+const logger = new winston.Logger({ transports });
 
 const program = new Command();
 
@@ -23,8 +22,6 @@ program
     .requiredOption("-t, --secret <secret>", "Token Secret")
     .requiredOption("-u, --identifier <identifier>", "User Identifier")
     .parse(process.argv);
-
-const logger = makeLogger();
 
 if (program.projectUid || program.accountUid) {
     const baseUrl = "https://api.smartling.com";
