@@ -26,17 +26,16 @@
     "registry": "https://artifactory-vpc.smartling.net/artifactory/api/npm/local-nodejs-connectors"
   },
   "dependencies": {
-    "@types/mocha": "^7.0.2",
-    "@types/node": "^13.9.1",
     "default-user-agent": "~1",
     "form-data": "~2",
     "merge-deep": "^3.0.2",
     "node-fetch": "~2",
-    "querystring": "^0.2.0",
-    "typescript": "^3.8.3"
+    "querystring": "^0.2.0"
   },
   "devDependencies": {
     "@smartling/eslint-config-smartling": "^1.2.3",
+    "@types/node": "^13.9.1",
+    "@types/mocha": "^7.0.2",
     "commander": "^2.17.1",
     "commander-ts": "^0.1.5",
     "commander5": "npm:commander@^5.0.0",
@@ -49,6 +48,7 @@
     "nyc": "^12.0.2",
     "reflect-metadata": "^0.1.13",
     "sinon": "^6.1.2",
+    "typescript": "^3.8.3",
     "winston": "^2.4.2"
   },
   "nyc": {
