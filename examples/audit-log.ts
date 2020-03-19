@@ -2,7 +2,8 @@ import { Command } from "commander5";
 import winston from "winston";
 import SmartlingAuthApi from "../api/auth";
 import SmartlingAuditLogApi from "../api/audit-log";
-import Payload from "../api/audit-log/payload";
+import AuditLog from "../api/audit-log/auditLog";
+import Query from "../api/audit-log/query";
 
 const transports = [
     new winston.transports.Console({
@@ -32,19 +33,22 @@ if (program.projectUid || program.accountUid) {
 
     const baseDescription = "This log was added by sdk example";
 
-    const payload = new Payload(new Date(), "UPLOAD");
+    const payload = new AuditLog(new Date(), "UPLOAD");
     payload.clientUserId = "sdk-example";
+
+    const query = new Query("example");
+    query.endTime = "now() - 1h";
 
     (async () => {
         if (program.projectUid) {
             payload.description = `${baseDescription} (project)`;
             await api.addProjectLog(program.projectUid, payload);
-            logger.info(await api.getProjectLogs(program.projectUid, "example"));
+            logger.info(JSON.stringify(await api.getProjectLogs(program.projectUid, query)));
         }
         if (program.accountUid) {
             payload.description = `${baseDescription} (account)`;
             await api.addAccountLog(program.accountUid, payload);
-            logger.info(await api.getAccountLogs(program.accountUid, "example"));
+            logger.info(JSON.stringify(await api.getAccountLogs(program.accountUid, query)));
         }
     })();
 } else {

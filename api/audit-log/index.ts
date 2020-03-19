@@ -1,6 +1,9 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
-import Payload from "./payload";
+import AuditLog from "./auditLog";
+import Response from "./response"
+import * as queryString from "querystring";
+import Query from "./query";
 
 class SmartlingAuditLogApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
@@ -12,36 +15,57 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/audit-log-api/v2`;
     }
 
-    async addAccountLog(accountUid: string, payload: Payload) {
+    async addAccountLog(accountUid: string, payload: AuditLog): Promise<object> {
         return this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/logs`,
-            payload.stringify()
+            payload.prepareForRequest()
         );
     }
 
-    async addProjectLog(projectUid: string, payload: Payload): Promise<any> {
+    async addProjectLog(projectUid: string, payload: AuditLog): Promise<object> {
         return this.makeRequest(
             "post",
             `${this.entrypoint}/projects/${projectUid}/logs`,
-            payload.stringify()
+            payload.prepareForRequest()
         );
     }
 
-    async getAccountLogs(accountUid: string, query: string, offset: number = 0, limit: number = 10, startTime: string = "now()", endTime: string = "now() - 30d", sort: string = "time:desc") {
-        return this.makeRequest(
+    async getAccountLogs(accountUid: string, query: Query): Promise<Response> {
+        return this.buildResponse(await this.makeRequestTyped<Response>(
             "get",
-            `${this.entrypoint}/accounts/${accountUid}/logs` +
-                `?q=${query}&offset=${offset}&limit=${limit}&startTime=${startTime}&endTime=${endTime}&sort=${sort}`
-        );
+            `${this.entrypoint}/accounts/${accountUid}/logs?` + queryString.stringify(query)
+        ));
     }
 
-    async getProjectLogs(projectUid: string, query: string, offset: number = 0, limit: number = 10, startTime: string = "now()", endTime: string = "now() - 30d", sort: string = "time:desc") {
-        return this.makeRequest(
+    async getProjectLogs(projectUid: string, query: Query): Promise<Response> {
+        return this.buildResponse(await this.makeRequestTyped<Response>(
             "get",
-            `${this.entrypoint}/projects/${projectUid}/logs` +
-                `?q=${query}&offset=${offset}&limit=${limit}&startTime=${startTime}&endTime=${endTime}&sort=${sort}`
-        );
+            `${this.entrypoint}/projects/${projectUid}/logs?` + queryString.stringify(query)
+        ));
+    }
+
+    private async makeRequestTyped<T>(verb, uri): Promise<T> {
+        return this.makeRequest(verb, uri);
+    }
+
+    private buildResponse(response: Response): Response {
+        const items = [];
+        response.items.forEach(function (item) {
+            const date = new Date(item.actionTime);
+            const logItem = new AuditLog(date, item.actionType);
+            Object.assign(logItem, item);
+            if (item.translationJobDueDate) {
+                logItem.translationJobDueDate = new Date(item.translationJobDueDate);
+            }
+            logItem.actionTime = date;
+            items.push(logItem);
+        });
+
+        return {
+            totalCount: response.totalCount,
+            items
+        };
     }
 }
 
