@@ -1,6 +1,6 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
-import AuditLog from "./auditLog";
+import AuditLog from "./audit-log";
 import Response from "./response"
 import * as queryString from "querystring";
 import Query from "./query";
@@ -19,7 +19,7 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         return this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/logs`,
-            payload.prepareForRequest()
+            JSON.stringify(payload)
         );
     }
 
@@ -27,45 +27,22 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         return this.makeRequest(
             "post",
             `${this.entrypoint}/projects/${projectUid}/logs`,
-            payload.prepareForRequest()
+            JSON.stringify(payload)
         );
     }
 
     async getAccountLogs(accountUid: string, query: Query): Promise<Response> {
-        return this.buildResponse(await this.makeRequestTyped<Response>(
+        return this.makeRequest(
             "get",
-            `${this.entrypoint}/accounts/${accountUid}/logs?` + queryString.stringify(query)
-        ));
+            `${this.entrypoint}/accounts/${accountUid}/logs?${queryString.stringify(query)}`
+        );
     }
 
     async getProjectLogs(projectUid: string, query: Query): Promise<Response> {
-        return this.buildResponse(await this.makeRequestTyped<Response>(
+        return this.makeRequest(
             "get",
-            `${this.entrypoint}/projects/${projectUid}/logs?` + queryString.stringify(query)
-        ));
-    }
-
-    private async makeRequestTyped<T>(verb, uri): Promise<T> {
-        return this.makeRequest(verb, uri);
-    }
-
-    private buildResponse(response: Response): Response {
-        const items = [];
-        response.items.forEach(function (item) {
-            const date = new Date(item.actionTime);
-            const logItem = new AuditLog(date, item.actionType);
-            Object.assign(logItem, item);
-            if (item.translationJobDueDate) {
-                logItem.translationJobDueDate = new Date(item.translationJobDueDate);
-            }
-            logItem.actionTime = date;
-            items.push(logItem);
-        });
-
-        return {
-            totalCount: response.totalCount,
-            items
-        };
+            `${this.entrypoint}/projects/${projectUid}/logs?${queryString.stringify(query)}`
+        );
     }
 }
 

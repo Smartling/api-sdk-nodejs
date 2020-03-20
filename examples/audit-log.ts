@@ -1,8 +1,8 @@
-import { Command } from "commander5";
+import { createCommand } from "commander";
 import winston from "winston";
 import SmartlingAuthApi from "../api/auth";
 import SmartlingAuditLogApi from "../api/audit-log";
-import AuditLog from "../api/audit-log/auditLog";
+import AuditLog from "../api/audit-log/audit-log";
 import Query from "../api/audit-log/query";
 
 const transports = [
@@ -14,7 +14,7 @@ const transports = [
 ];
 const logger = new winston.Logger({ transports });
 
-const program = new Command();
+const program = createCommand();
 
 program
     .version("1.0.0")

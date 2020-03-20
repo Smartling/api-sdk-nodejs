@@ -1,4 +1,4 @@
-import AuditLog from "./auditLog";
+import AuditLog from "./audit-log";
 
 interface Response {
     totalCount: number;
