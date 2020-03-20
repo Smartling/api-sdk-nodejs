@@ -1,8 +1,6 @@
-import AuditLog from "./audit-log";
-
-interface Response {
+interface Response<T> {
     totalCount: number;
-    items: Array<AuditLog>;
+    items: Array<T>;
 }
 
 export default Response;
