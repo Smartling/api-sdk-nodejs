@@ -1,12 +1,11 @@
 {
   "name": "api-sdk-nodejs",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "Package for Smartling API",
   "scripts": {
-    "build": "rm -rf built && tsc && cp -R node_modules package.json built",
-    "build:debug": "rm -rf built && tsc -sourcemap && cp -R node_modules package.json built",
+    "build": "rm -rf built && tsc && cp -R package.json built",
     "pretest": "eslint .",
-    "test": "MOCHA_FILE=./build/test-results/server.xml nyc mocha --reporter mocha-junit-reporter --recursive test/*"
+    "test": "npm run build && nyc mocha --reporter mocha-junit-reporter --recursive built/test/**/*.spec.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +25,7 @@
     "registry": "https://artifactory-vpc.smartling.net/artifactory/api/npm/local-nodejs-connectors"
   },
   "dependencies": {
+    "typescript": "^3.8.3",
     "default-user-agent": "~1",
     "form-data": "~2",
     "merge-deep": "^3.0.2",
@@ -47,7 +47,6 @@
     "mocha-junit-reporter": "^1.17.0",
     "nyc": "^12.0.2",
     "sinon": "^6.1.2",
-    "typescript": "^3.8.3",
     "winston": "^2.4.2"
   },
   "nyc": {

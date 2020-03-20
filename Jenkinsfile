@@ -4,24 +4,17 @@ pipeline {
     agent any
 
     stages {
-        stage('Bootstrap') {
+        stage('Run unit tests') {
             agent {
                 label 'master'
             }
 
             steps {
-                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node npm install'
-            }
-        }
-
-        stage('Test') {
-            agent {
-                label 'master'
-            }
-
-            steps {
-                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node npm run test'
-                junit "**/test-results/*.xml"
+                dir('src') {
+                    sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm install'
+                    sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm test'
+                    junit 'test-results.xml'
+                }
             }
         }
 
@@ -35,9 +28,10 @@ pipeline {
                     String scannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
                     withSonarQubeEnv('sonar') {
                         sh "${scannerHome}/bin/sonar-scanner \
-                         -Dsonar.javascript.lcov.reportPath=coverage/lcov.info \
-                         -Dsonar.sources=api \
-                         -Dsonar.exclusions=node_modules/**,test/**,.eslintrc.js,.nyc_output/**,coverage/**,build/** \
+                         -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+                         -Dsonar.coverage.exclusions=built/tests/** \
+                         -Dsonar.sources=built/api/**/*.js \
+                         -Dsonar.exclusions=built/node_modules \
                          -Dsonar.projectKey=\"api-sdk-nodejs\" \
                          -Dsonar.projectName=\"API SDK nodejs\" \
                          -Dsonar.projectVersion=${env.BUILD_NUMBER}"
@@ -74,7 +68,15 @@ pipeline {
                 label 'master'
             }
 
+            when {
+                branch 'master'
+            }
+
             steps {
+                sh 'rm -rf built coverage .nyc_output node_modules test-results.xml'
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm install --production'
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm run build'
+
                 withCredentials([file(credentialsId: 'node-npmrc-file', variable: 'FILE')]) {
                     sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` -v $FILE:/root/.npmrc node npm publish'
                 }
