@@ -1,4 +1,5 @@
 import BaseParameters from "../../parameters";
+import AuditLogDto from "../dto/audit-log-dto";
 
 class CreateAuditLogParameters extends BaseParameters {
     public setActionTime(actionTime: Date): CreateAuditLogParameters {
@@ -111,6 +112,84 @@ class CreateAuditLogParameters extends BaseParameters {
 
     private static stripMilliseconds(date: Date): string {
         return date.toISOString().split('.')[0] + "Z";
+    }
+
+    public static fromDto(auditLogDto: AuditLogDto): CreateAuditLogParameters {
+        const params = new CreateAuditLogParameters();
+
+        if (auditLogDto.actionTime) {
+            params.setActionTime(auditLogDto.actionTime);
+        }
+
+        if (auditLogDto.actionType) {
+            params.setActionType(auditLogDto.actionType);
+        }
+
+        if (auditLogDto.batchUid) {
+            params.setBatchUid(auditLogDto.batchUid);
+        }
+
+        if (auditLogDto.clientData) {
+            params.setClientData(auditLogDto.clientData);
+        }
+
+        if (auditLogDto.clientUserEmail) {
+            params.setClientUserEmail(auditLogDto.clientUserEmail);
+        }
+
+        if (auditLogDto.clientUserId) {
+            params.setClientUserId(auditLogDto.clientUserId);
+        }
+
+        if (auditLogDto.clientUserName) {
+            params.setClientUserName(auditLogDto.clientUserName);
+        }
+
+        if (auditLogDto.description) {
+            params.setDescription(auditLogDto.description);
+        }
+
+        if (auditLogDto.envId) {
+            params.setEnvId(auditLogDto.envId);
+        }
+
+        if (auditLogDto.fileUid) {
+            params.setFileUid(auditLogDto.fileUid);
+        }
+
+        if (auditLogDto.fileUri) {
+            params.setFileUri(auditLogDto.fileUri);
+        }
+
+        if (auditLogDto.sourceLocaleId) {
+            params.setSourceLocaleId(auditLogDto.sourceLocaleId);
+        }
+
+        if (auditLogDto.targetLocaleId) {
+            params.setTargetLocaleId(auditLogDto.targetLocaleId);
+        }
+
+        if (auditLogDto.targetLocaleIds) {
+            params.setTargetLocaleIds(auditLogDto.targetLocaleIds);
+        }
+
+        if (auditLogDto.translationJobAuthorize) {
+            params.setTranslationJobAuthorize(auditLogDto.translationJobAuthorize);
+        }
+
+        if (auditLogDto.translationJobDueDate) {
+            params.setTranslationJobDueDate(auditLogDto.translationJobDueDate);
+        }
+
+        if (auditLogDto.translationJobName) {
+            params.setTranslationJobName(auditLogDto.translationJobName);
+        }
+
+        if (auditLogDto.translationJobUid) {
+            params.setTranslationJobUid(auditLogDto.translationJobUid);
+        }
+
+        return params;
     }
 }
 

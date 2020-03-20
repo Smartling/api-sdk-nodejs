@@ -1,37 +1,23 @@
-const program = require("commander");
 const SmartlingAuthApi = require("../api/auth");
 const SmartlingJobFacadeApi = require("../api/job-facade");
-const winston = require("winston");
 const CreateBatchParameters = require("../api/job-facade/params/create-batch-parameters");
 const UploadFileParameters = require("../api/job-facade/params/upload-file-parameters");
 
-const transports = [
-    new winston.transports.Console({
-        timestamp: true,
-        colorize: true,
-        level: "debug"
-    })
-];
-const logger = new winston.Logger({ transports });
+const logger = console;
+const projectId = process.env.PROJECT_ID;
+const userId = process.env.USER_ID;
+const userSecret = process.env.USER_SECRET;
 
-program
-    .version("0.0.1")
-    .option("-u, --identifier <identifier>", "User Identifier")
-    .option("-t, --secret <secret>", "Token Secret")
-    .parse(process.argv);
-
-if (program.identifier && program.secret) {
+if (userId && userSecret) {
     const authApi = new SmartlingAuthApi(
-        program.identifier,
-        program.secret,
+        userId,
+        userSecret,
         logger,
         "https://api.smartling.com"
     );
     const smartlingJobFacadeApi = new SmartlingJobFacadeApi(authApi, logger, "https://api.smartling.com");
 
     (async () => {
-        const projectId = "test";
-
         try {
             const createBatchParams = new CreateBatchParameters();
 
