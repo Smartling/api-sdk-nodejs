@@ -2,6 +2,7 @@
   "name": "api-sdk-nodejs",
   "version": "1.4.0",
   "description": "Package for Smartling API",
+  "main": "built",
   "scripts": {
     "build": "rm -rf built && tsc && cp -R package.json built",
     "pretest": "eslint .",
