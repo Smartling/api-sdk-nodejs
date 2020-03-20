@@ -32,17 +32,36 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
     }
 
     async getAccountLogs(accountUid: string, query: Query): Promise<Response> {
-        return this.makeRequest(
+        return this.buildResponse(this.makeRequest(
             "get",
             `${this.entrypoint}/accounts/${accountUid}/logs?${queryString.stringify(query)}`
-        );
+        ));
     }
 
     async getProjectLogs(projectUid: string, query: Query): Promise<Response> {
-        return this.makeRequest(
+        return this.buildResponse(this.makeRequest(
             "get",
             `${this.entrypoint}/projects/${projectUid}/logs?${queryString.stringify(query)}`
-        );
+        ));
+    }
+
+    private buildResponse(response: Response): Response {
+        const items = [];
+        response.items.forEach(function (item) {
+            const date = new Date(item.actionTime);
+            const logItem = new AuditLog(date, item.actionType);
+            Object.assign(logItem, item);
+            if (item.translationJobDueDate) {
+                logItem.translationJobDueDate = new Date(item.translationJobDueDate);
+            }
+            logItem.actionTime = date;
+            items.push(logItem);
+        });
+
+        return {
+            totalCount: response.totalCount,
+            items
+        };
     }
 }
 
