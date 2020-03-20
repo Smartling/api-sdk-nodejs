@@ -32,17 +32,21 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
     }
 
     async getAccountLogs(accountUid: string, query: Query): Promise<Response> {
-        return this.buildResponse(this.makeRequest(
+        return this.buildResponse(await this.makeRequestTyped<Response>(
             "get",
             `${this.entrypoint}/accounts/${accountUid}/logs?${queryString.stringify(query)}`
         ));
     }
 
     async getProjectLogs(projectUid: string, query: Query): Promise<Response> {
-        return this.buildResponse(this.makeRequest(
+        return this.buildResponse(await this.makeRequestTyped<Response>(
             "get",
             `${this.entrypoint}/projects/${projectUid}/logs?${queryString.stringify(query)}`
         ));
+    }
+
+    private async makeRequestTyped<T>(verb, uri): Promise<T> {
+        return this.makeRequest(verb, uri);
     }
 
     private buildResponse(response: Response): Response {
