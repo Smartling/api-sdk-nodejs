@@ -32,7 +32,7 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         );
     }
 
-    public async searchAccountLevelLogRecord(accountUid: string, query: SearchAuditLogParams): Promise<Array<AuditLogDto>> {
+    public async searchAccountLevelLogRecord(accountUid: string, query: SearchAuditLogParams): Promise<Response<AuditLogDto>> {
         return this.mapItemsToDtos(
             await this.makeRequest(
                 "get",
@@ -41,7 +41,7 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         );
     }
 
-    public async searchProjectLevelLogRecord(projectUid: string, query: SearchAuditLogParams): Promise<Array<AuditLogDto>> {
+    public async searchProjectLevelLogRecord(projectUid: string, query: SearchAuditLogParams): Promise<Response<AuditLogDto>> {
         return this.mapItemsToDtos(
             await this.makeRequest(
                 "get",
@@ -50,8 +50,8 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         );
     }
 
-    private mapItemsToDtos(response: Response<object>): Array<AuditLogDto> {
-        return response.items.map((item) => {
+    private mapItemsToDtos(response: Response<object>): Response<AuditLogDto> {
+        const items: Array<AuditLogDto> = response.items.map((item) => {
             if (item["actionTime"]) {
                 item["actionTime"] = new Date(item["actionTime"]);
             }
@@ -62,6 +62,11 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
 
             return item as AuditLogDto;
         });
+
+        return {
+            items,
+            totalCount: response.totalCount
+        };
     }
 }
 
