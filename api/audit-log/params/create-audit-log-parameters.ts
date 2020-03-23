@@ -2,6 +2,13 @@ import BaseParameters from "../../parameters";
 import AuditLogDto from "../dto/audit-log-dto";
 
 class CreateAuditLogParameters extends BaseParameters {
+    constructor(actionTime: Date, actionType: string) {
+        super();
+
+        this.setActionTime(actionTime);
+        this.setActionType(actionType);
+    }
+
     public setActionTime(actionTime: Date): CreateAuditLogParameters {
         this.set("actionTime", CreateAuditLogParameters.stripMilliseconds(actionTime));
 
@@ -115,15 +122,10 @@ class CreateAuditLogParameters extends BaseParameters {
     }
 
     public static fromDto(auditLogDto: AuditLogDto): CreateAuditLogParameters {
-        const params = new CreateAuditLogParameters();
-
-        if (auditLogDto.actionTime) {
-            params.setActionTime(auditLogDto.actionTime);
-        }
-
-        if (auditLogDto.actionType) {
-            params.setActionType(auditLogDto.actionType);
-        }
+        const params = new CreateAuditLogParameters(
+            auditLogDto.actionTime,
+            auditLogDto.actionType
+        );
 
         if (auditLogDto.batchUid) {
             params.setBatchUid(auditLogDto.batchUid);

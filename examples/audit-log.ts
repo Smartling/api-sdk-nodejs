@@ -14,9 +14,12 @@ if (projectId || accountUid) {
     const authApi = new SmartlingAuthApi(userId, userSecret, logger, baseUrl);
     const api = new SmartlingAuditLogApi(authApi, logger, baseUrl);
     const baseDescription = "This log was added by sdk example";
-    const payload: CreateAuditLogParameters = (new CreateAuditLogParameters())
-        .setActionTime(new Date())
-        .setActionType("UPLOAD")
+    const payload: CreateAuditLogParameters = (
+        new CreateAuditLogParameters(
+            new Date(),
+            "UPLOAD"
+        )
+    )
         .setClientUserId("sdk-example")
         .setBatchUid("batch-uid");
 

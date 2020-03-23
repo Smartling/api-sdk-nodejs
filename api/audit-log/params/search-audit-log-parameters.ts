@@ -1,4 +1,6 @@
 import BaseParameters from "../../parameters";
+import SmartlingException from "../../exception";
+import OrderEnum from "./order-enum";
 
 class SearchAuditLogParams extends BaseParameters {
     constructor() {
@@ -8,7 +10,7 @@ class SearchAuditLogParams extends BaseParameters {
         this.setLimit(10);
         this.setStartTime("now()");
         this.setEndTime("now() - 30d");
-        this.setSort("time:desc");
+        this.setSort("time", OrderEnum.ORDER_DESC);
     }
 
     public setQuery(query: string): SearchAuditLogParams {
@@ -41,8 +43,15 @@ class SearchAuditLogParams extends BaseParameters {
         return this;
     };
 
-    public setSort(sort: string): SearchAuditLogParams {
-        this.set("sort", sort);
+    public setSort(field: string, order: OrderEnum): SearchAuditLogParams {
+        if (
+            order !== OrderEnum.ORDER_DESC &&
+            order !== OrderEnum.ORDER_ASC
+        ) {
+            throw new SmartlingException(`Allowed orders are: ${OrderEnum.ORDER_DESC}, ${OrderEnum.ORDER_ASC}`);
+        }
+
+        this.set("sort", `${field}:${order}`);
 
         return this;
     };

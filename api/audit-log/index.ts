@@ -51,7 +51,8 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
     }
 
     private mapItemsToDtos(response: Response<object>): Response<AuditLogDto> {
-        const items: Array<AuditLogDto> = response.items.map((item) => {
+        const retrievedItems = response.items || [];
+        const items: Array<AuditLogDto> = retrievedItems.map((item) => {
             if (item["actionTime"]) {
                 item["actionTime"] = new Date(item["actionTime"]);
             }
