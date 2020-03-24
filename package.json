@@ -2,7 +2,7 @@
   "name": "api-sdk-nodejs",
   "version": "1.4.0",
   "description": "Package for Smartling API",
-  "main": "built",
+  "main": "built/index.js",
   "scripts": {
     "build:dev": "rm -rf built && tsc --p tsconfig.dev.json && cp -R package.json built",
     "build": "rm -rf built && tsc && cp -R package.json built",

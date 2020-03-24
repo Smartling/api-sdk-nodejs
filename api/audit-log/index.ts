@@ -1,12 +1,12 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
 import * as queryString from "querystring";
-import AuditLogDto from "./dto/audit-log-dto";
-import Response from "./response";
-import CreateAuditLogParameters from "./params/create-audit-log-parameters";
-import SearchAuditLogParams from "./params/search-audit-log-parameters";
+import { CreateAuditLogParameters } from "./params/create-audit-log-parameters";
+import { SearchAuditLogParameters } from "./params/search-audit-log-parameters";
+import { AuditLogDto } from "./dto/audit-log-dto";
+import { Response } from "./response";
 
-class SmartlingAuditLogApi extends SmartlingBaseApi {
+export class SmartlingAuditLogApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
     private readonly entrypoint: string;
 
@@ -32,7 +32,7 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         );
     }
 
-    public async searchAccountLevelLogRecord(accountUid: string, query: SearchAuditLogParams): Promise<Response<AuditLogDto>> {
+    public async searchAccountLevelLogRecord(accountUid: string, query: SearchAuditLogParameters): Promise<Response<AuditLogDto>> {
         return this.mapItemsToDtos(
             await this.makeRequest(
                 "get",
@@ -41,7 +41,7 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         );
     }
 
-    public async searchProjectLevelLogRecord(projectUid: string, query: SearchAuditLogParams): Promise<Response<AuditLogDto>> {
+    public async searchProjectLevelLogRecord(projectUid: string, query: SearchAuditLogParameters): Promise<Response<AuditLogDto>> {
         return this.mapItemsToDtos(
             await this.makeRequest(
                 "get",
@@ -70,5 +70,3 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         };
     }
 }
-
-export default SmartlingAuditLogApi;

@@ -1,10 +1,10 @@
 import sinon from "sinon";
 import fs from "fs";
 import assert from "assert";
-import SmartlingAuditLogApi from "../api/audit-log";
-import CreateAuditLogParameters from "../api/audit-log/params/create-audit-log-parameters";
-import SearchAuditLogParameters from "../api/audit-log/params/search-audit-log-parameters";
-import OrderEnum from "../api/audit-log/params/order-enum";
+import { SmartlingAuditLogApi } from "../api/audit-log";
+import { CreateAuditLogParameters } from "../api/audit-log/params/create-audit-log-parameters";
+import { SearchAuditLogParameters } from "../api/audit-log/params/search-audit-log-parameters";
+import { OrderEnum } from "../api/audit-log/params/order-enum";
 
 const { loggerMock, authMock, responseMock } = require("./mock");
 

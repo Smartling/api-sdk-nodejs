@@ -1,7 +1,7 @@
 import BaseParameters from "../../parameters";
-import AuditLogDto from "../dto/audit-log-dto";
+import { AuditLogDto } from "../dto/audit-log-dto";
 
-class CreateAuditLogParameters extends BaseParameters {
+export class CreateAuditLogParameters extends BaseParameters {
     constructor(actionTime: Date, actionType: string) {
         super();
 
@@ -194,5 +194,3 @@ class CreateAuditLogParameters extends BaseParameters {
         return params;
     }
 }
-
-export default CreateAuditLogParameters;

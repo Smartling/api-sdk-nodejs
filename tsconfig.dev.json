@@ -18,6 +18,7 @@
   "include": [
     "api",
     "test",
-    "examples"
+    "examples",
+    "index.ts"
   ]
 }
