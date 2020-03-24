@@ -66,10 +66,6 @@ pipeline {
                 label 'master'
             }
 
-            when {
-                branch 'master'
-            }
-
             steps {
                 sh 'rm -rf built coverage .nyc_output node_modules test-results.xml'
                 sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm install --production'
