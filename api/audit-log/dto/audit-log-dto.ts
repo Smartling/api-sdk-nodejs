@@ -1,4 +1,4 @@
-interface AuditLogDto {
+export interface AuditLogDto {
     actionTime: Date;
     actionType: string;
     fileUri?: string;
@@ -18,5 +18,3 @@ interface AuditLogDto {
     clientUserName?: string;
     clientData?: object;
 }
-
-export default AuditLogDto;

@@ -1,7 +1,7 @@
 import SmartlingAuthApi from "../api/auth";
-import SmartlingAuditLogApi from "../api/audit-log";
-import CreateAuditLogParameters from "../api/audit-log/params/create-audit-log-parameters";
-import SearchAuditLogParams from "../api/audit-log/params/search-audit-log-parameters";
+import { SmartlingAuditLogApi } from "../api/audit-log/index";
+import { CreateAuditLogParameters } from "../api/audit-log/params/create-audit-log-parameters";
+import { SearchAuditLogParameters } from "../api/audit-log/params/search-audit-log-parameters";
 
 const logger = console;
 const accountUid = process.env.ACCOUNT_UID;
@@ -23,7 +23,7 @@ if (projectId || accountUid) {
         .setClientUserId("sdk-example")
         .setBatchUid("batch-uid");
 
-    const query: SearchAuditLogParams = (new SearchAuditLogParams())
+    const query: SearchAuditLogParameters = (new SearchAuditLogParameters())
         .setEndTime("now() - 1h");
 
     (async () => {
