@@ -1,5 +1,6 @@
-build/
+built/
 coverage/
 node_modules/
 .nyc_output/
 .idea/
+test-results.xml

@@ -1,7 +1,5 @@
-const program = require("commander");
 const SmartlingAuthApi = require("../api/auth");
 const SmartlingTranslationRequestsApi = require("../api/translation-requests");
-const winston = require("winston");
 const TranslationSubmissionStates = require("../api/translation-requests/params/translation-submission-states");
 const CreateTranslationSubmissionParams = require("../api/translation-requests/params/create-translation-submission-params");
 const CreateTranslationRequestParams = require("../api/translation-requests/params/create-translation-request-params");
@@ -9,25 +7,15 @@ const UpdateTranslationSubmissionParams = require("../api/translation-requests/p
 const UpdateTranslationRequestParams = require("../api/translation-requests/params/update-translation-request-params");
 const SearchTranslationRequestParams = require("../api/translation-requests/params/search-translation-request-parameters");
 
-const transports = [
-    new winston.transports.Console({
-        timestamp: true,
-        colorize: true,
-        level: "debug"
-    })
-];
-const logger = new winston.Logger({ transports });
+const logger = console;
+const projectId = process.env.PROJECT_ID;
+const userId = process.env.USER_ID;
+const userSecret = process.env.USER_SECRET;
 
-program
-    .version("0.0.1")
-    .option("-u, --identifier <identifier>", "User Identifier")
-    .option("-t, --secret <secret>", "Token Secret")
-    .parse(process.argv);
-
-if (program.identifier && program.secret) {
+if (userId && userSecret) {
     const authApi = new SmartlingAuthApi(
-        program.identifier,
-        program.secret,
+        userId,
+        userSecret,
         logger,
         "https://api.smartling.com"
     );
@@ -39,9 +27,7 @@ if (program.identifier && program.secret) {
 
     (async () => {
         try {
-            const projectId = "test";
             const bucketName = "test";
-
             const createTranslationSubmissionParameters1 = new CreateTranslationSubmissionParams();
             const createTranslationSubmissionParameters2 = new CreateTranslationSubmissionParams();
             const createTranslationRequestParameters = new CreateTranslationRequestParams();
