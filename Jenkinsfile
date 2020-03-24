@@ -10,11 +10,9 @@ pipeline {
             }
 
             steps {
-                dir('src') {
-                    sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm install'
-                    sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm test'
-                    junit 'test-results.xml'
-                }
+                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm install'
+                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm test'
+                  junit 'test-results.xml'
             }
         }
 
