@@ -2,19 +2,22 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
+    "declaration": true,
+    "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "types": [
-      "node"
+      "node",
+      "mocha"
     ],
     "removeComments": true,
-    "outDir": "./built",
+    "outDir": "built",
     "allowJs": true
   },
   "include": [
-    "./api/**/*.js",
-    "./api/**/*.ts",
-    "./examples/**/*.ts"
+    "api",
+    "test",
+    "examples"
   ]
 }

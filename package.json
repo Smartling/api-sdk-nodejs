@@ -2,11 +2,11 @@
   "name": "api-sdk-nodejs",
   "version": "1.4.0",
   "description": "Package for Smartling API",
+  "main": "built",
   "scripts": {
-    "build": "rm -rf built && tsc && cp -R node_modules package.json built",
-    "build:debug": "rm -rf built && tsc -sourcemap && cp -R node_modules package.json built",
+    "build": "rm -rf built && tsc && cp -R package.json built",
     "pretest": "eslint .",
-    "test": "MOCHA_FILE=./build/test-results/server.xml nyc mocha --reporter mocha-junit-reporter --recursive test/*"
+    "test": "npm run build && nyc mocha --reporter mocha-junit-reporter --recursive built/test/**/*.spec.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,8 @@
     "registry": "https://artifactory-vpc.smartling.net/artifactory/api/npm/local-nodejs-connectors"
   },
   "dependencies": {
+    "typescript": "^3.8.3",
+    "@types/node": "^13.9.1",
     "default-user-agent": "~1",
     "form-data": "~2",
     "merge-deep": "^3.0.2",
@@ -34,11 +36,7 @@
   },
   "devDependencies": {
     "@smartling/eslint-config-smartling": "^1.2.3",
-    "@types/node": "^13.9.1",
     "@types/mocha": "^7.0.2",
-    "commander": "^2.17.1",
-    "commander-ts": "^0.1.5",
-    "commander5": "npm:commander@^5.0.0",
     "eslint": "^4.19.1",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-import": "^2.12.0",
@@ -46,9 +44,7 @@
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "nyc": "^12.0.2",
-    "sinon": "^6.1.2",
-    "typescript": "^3.8.3",
-    "winston": "^2.4.2"
+    "sinon": "^6.1.2"
   },
   "nyc": {
     "reporter": [

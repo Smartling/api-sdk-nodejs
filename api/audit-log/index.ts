@@ -1,9 +1,10 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
-import AuditLog from "./auditLog";
-import Response from "./response"
 import * as queryString from "querystring";
-import Query from "./query";
+import AuditLogDto from "./dto/audit-log-dto";
+import Response from "./response";
+import CreateAuditLogParameters from "./params/create-audit-log-parameters";
+import SearchAuditLogParams from "./params/search-audit-log-parameters";
 
 class SmartlingAuditLogApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
@@ -15,56 +16,57 @@ class SmartlingAuditLogApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/audit-log-api/v2`;
     }
 
-    async addAccountLog(accountUid: string, payload: AuditLog): Promise<object> {
-        return this.makeRequest(
+    public async createAccountLevelLogRecord(accountUid: string, payload: CreateAuditLogParameters): Promise<void> {
+        await this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/logs`,
-            payload.prepareForRequest()
+            JSON.stringify(payload.export())
         );
     }
 
-    async addProjectLog(projectUid: string, payload: AuditLog): Promise<object> {
-        return this.makeRequest(
+    public async createProjectLevelLogRecord(projectUid: string, payload: CreateAuditLogParameters): Promise<void> {
+        await this.makeRequest(
             "post",
             `${this.entrypoint}/projects/${projectUid}/logs`,
-            payload.prepareForRequest()
+            JSON.stringify(payload.export())
         );
     }
 
-    async getAccountLogs(accountUid: string, query: Query): Promise<Response> {
-        return this.buildResponse(await this.makeRequestTyped<Response>(
-            "get",
-            `${this.entrypoint}/accounts/${accountUid}/logs?` + queryString.stringify(query)
-        ));
+    public async searchAccountLevelLogRecord(accountUid: string, query: SearchAuditLogParams): Promise<Response<AuditLogDto>> {
+        return this.mapItemsToDtos(
+            await this.makeRequest(
+                "get",
+                `${this.entrypoint}/accounts/${accountUid}/logs?${queryString.stringify(query.export())}`
+            )
+        );
     }
 
-    async getProjectLogs(projectUid: string, query: Query): Promise<Response> {
-        return this.buildResponse(await this.makeRequestTyped<Response>(
-            "get",
-            `${this.entrypoint}/projects/${projectUid}/logs?` + queryString.stringify(query)
-        ));
+    public async searchProjectLevelLogRecord(projectUid: string, query: SearchAuditLogParams): Promise<Response<AuditLogDto>> {
+        return this.mapItemsToDtos(
+            await this.makeRequest(
+                "get",
+                `${this.entrypoint}/projects/${projectUid}/logs?${queryString.stringify(query.export())}`
+            )
+        );
     }
 
-    private async makeRequestTyped<T>(verb, uri): Promise<T> {
-        return this.makeRequest(verb, uri);
-    }
-
-    private buildResponse(response: Response): Response {
-        const items = [];
-        response.items.forEach(function (item) {
-            const date = new Date(item.actionTime);
-            const logItem = new AuditLog(date, item.actionType);
-            Object.assign(logItem, item);
-            if (item.translationJobDueDate) {
-                logItem.translationJobDueDate = new Date(item.translationJobDueDate);
+    private mapItemsToDtos(response: Response<object>): Response<AuditLogDto> {
+        const retrievedItems = response.items || [];
+        const items: Array<AuditLogDto> = retrievedItems.map((item) => {
+            if (item["actionTime"]) {
+                item["actionTime"] = new Date(item["actionTime"]);
             }
-            logItem.actionTime = date;
-            items.push(logItem);
+
+            if (item["translationJobDueDate"]) {
+                item["translationJobDueDate"] = new Date(item["translationJobDueDate"]);
+            }
+
+            return item as AuditLogDto;
         });
 
         return {
-            totalCount: response.totalCount,
-            items
+            items,
+            totalCount: response.totalCount
         };
     }
 }
