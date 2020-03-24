@@ -38,7 +38,7 @@ describe("SmartlingAuditLogApi class tests.", () => {
     describe("Params", () => {
         it("Create log record parameters", () => {
             const createParams: CreateAuditLogParameters = new CreateAuditLogParameters(
-                new Date("10-10-2020"),
+                new Date("2020-10-10T00:00:00Z"),
                 "TEST"
             );
 
@@ -58,13 +58,13 @@ describe("SmartlingAuditLogApi class tests.", () => {
                 .setTargetLocaleId("target_locale")
                 .setTargetLocaleIds(["target_locales"])
                 .setTranslationJobAuthorize(true)
-                .setTranslationJobDueDate(new Date("10-10-2020"))
+                .setTranslationJobDueDate(new Date("2020-10-10T00:00:00Z"))
                 .setTranslationJobName("job_name")
                 .setTranslationJobUid("job_uid");
 
             assert.deepEqual(
                 {
-                    actionTime: "2020-10-09T21:00:00Z",
+                    actionTime: "2020-10-10T00:00:00Z",
                     actionType: "TEST",
                     batchUid: "test_batch_uid",
                     clientData: { foo: "bar" },
@@ -79,7 +79,7 @@ describe("SmartlingAuditLogApi class tests.", () => {
                     targetLocaleId: "target_locale",
                     targetLocaleIds: ["target_locales"],
                     translationJobAuthorize: true,
-                    translationJobDueDate: "2020-10-09T21:00:00Z",
+                    translationJobDueDate: "2020-10-10T00:00:00Z",
                     translationJobName: "job_name",
                     translationJobUid: "job_uid"
                 },
@@ -134,7 +134,7 @@ describe("SmartlingAuditLogApi class tests.", () => {
     describe("Methods", () => {
         it("Create project level log record", async () => {
             const createParams: CreateAuditLogParameters = new CreateAuditLogParameters(
-                new Date("10-10-2020"),
+                new Date("2020-10-10T00:00:00Z"),
                 "TEST"
             );
 
@@ -144,7 +144,7 @@ describe("SmartlingAuditLogApi class tests.", () => {
             sinon.assert.calledWithExactly(
                 auditLogApiFetchStub,
                 "https://test.com/audit-log-api/v2/projects/test_project/logs", {
-                    body: "{\"actionTime\":\"2020-10-09T21:00:00Z\",\"actionType\":\"TEST\"}",
+                    body: "{\"actionTime\":\"2020-10-10T00:00:00Z\",\"actionType\":\"TEST\"}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -157,7 +157,7 @@ describe("SmartlingAuditLogApi class tests.", () => {
 
         it("Create account level log record", async () => {
             const createParams: CreateAuditLogParameters = new CreateAuditLogParameters(
-                new Date("10-10-2020"),
+                new Date("2020-10-10T00:00:00Z"),
                 "TEST"
             );
 
@@ -167,7 +167,7 @@ describe("SmartlingAuditLogApi class tests.", () => {
             sinon.assert.calledWithExactly(
                 auditLogApiFetchStub,
                 "https://test.com/audit-log-api/v2/accounts/test_account/logs", {
-                    body: "{\"actionTime\":\"2020-10-09T21:00:00Z\",\"actionType\":\"TEST\"}",
+                    body: "{\"actionTime\":\"2020-10-10T00:00:00Z\",\"actionType\":\"TEST\"}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
