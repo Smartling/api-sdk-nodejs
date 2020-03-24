@@ -28,7 +28,7 @@ pipeline {
                         sh "${scannerHome}/bin/sonar-scanner \
                          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
                          -Dsonar.coverage.exclusions=built/tests/** \
-                         -Dsonar.sources=built/api/**/*.js \
+                         -Dsonar.sources=built \
                          -Dsonar.exclusions=built/node_modules \
                          -Dsonar.projectKey=\"api-sdk-nodejs\" \
                          -Dsonar.projectName=\"API SDK nodejs\" \
