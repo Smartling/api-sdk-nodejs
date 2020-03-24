@@ -8,7 +8,8 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "types": [
-      "node"
+      "node",
+      "mocha"
     ],
     "removeComments": true,
     "outDir": "built",
@@ -16,6 +17,7 @@
   },
   "include": [
     "api",
+    "test",
     "examples"
   ]
 }
