@@ -49,6 +49,16 @@ function assertApiClient(Type: any, apiClient: SmartlingBaseApi) {
         apiClient["authApi"].entrypoint,
         "test_base_url/auth-api/v2"
     );
+
+    assert.equal(
+        apiClient["authApi"].clientLibId,
+        "test_client_lib_id"
+    );
+
+    assert.equal(
+        apiClient["authApi"].clientLibVersion,
+        "test_client_lib_version"
+    );
 }
 
 describe("SmartlingApiFactory class tests.", () => {

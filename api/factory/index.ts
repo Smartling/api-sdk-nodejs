@@ -24,30 +24,29 @@ export class SmartlingApiFactory {
         this.baseUrl = baseUrl;
         this.clientLibMetadata = clientLibMetadata;
         this.logger = logger;
+
+        this.authApiClient.clientLibId = this.clientLibMetadata.clientLibId;
+        this.authApiClient.clientLibVersion = this.clientLibMetadata.clientLibVersion;
     }
 
     public createApiClient<T extends SmartlingBaseApi>(constructor: new (authApi: SmartlingAuthApi, logger, baseUrl: string) => T, options: object = {}): T {
         const instance = new constructor(this.authApiClient, this.logger, this.baseUrl);
 
-        this.initApiClient(instance, options);
+        instance.clientLibId = this.clientLibMetadata.clientLibId;
+        instance.clientLibVersion = this.clientLibMetadata.clientLibVersion;
 
-        return instance;
-    }
-
-    private initApiClient(apiClient: SmartlingBaseApi, options: object): void {
-        apiClient.clientLibId = this.clientLibMetadata.clientLibId;
-        apiClient.clientLibVersion = this.clientLibMetadata.clientLibVersion;
-
-        apiClient.setOptions(
+        instance.setOptions(
             Object.assign(
                 options,
                 {
                     headers: {
-                        "X-SL-ServiceOrigin": apiClient.clientLibId
+                        "X-SL-ServiceOrigin": instance.clientLibId
                     }
                 }
             )
         );
+
+        return instance;
     }
 }
 export default SmartlingApiFactory;
