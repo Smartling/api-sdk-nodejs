@@ -1,4 +1,3 @@
-import SmartlingAuthApi from "../api/auth";
 import { SmartlingAuditLogApi } from "../api/audit-log/index";
 import { CreateAuditLogParameters } from "../api/audit-log/params/create-audit-log-parameters";
 import { SearchAuditLogParameters } from "../api/audit-log/params/search-audit-log-parameters";
