@@ -1,4 +1,3 @@
-const SmartlingAuthApi = require("../api/auth");
 const SmartlingTranslationRequestsApi = require("../api/translation-requests");
 const TranslationSubmissionStates = require("../api/translation-requests/params/translation-submission-states");
 const CreateTranslationSubmissionParams = require("../api/translation-requests/params/create-translation-submission-params");
@@ -6,6 +5,7 @@ const CreateTranslationRequestParams = require("../api/translation-requests/para
 const UpdateTranslationSubmissionParams = require("../api/translation-requests/params/update-translation-submission-params");
 const UpdateTranslationRequestParams = require("../api/translation-requests/params/update-translation-request-params");
 const SearchTranslationRequestParams = require("../api/translation-requests/params/search-translation-request-parameters");
+const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -13,17 +13,18 @@ const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
-    const authApi = new SmartlingAuthApi(
+    const credentials = {
         userId,
-        userSecret,
-        logger,
-        "https://api.smartling.com"
-    );
-    const smartlingTranslationRequestsApi = new SmartlingTranslationRequestsApi(
-        authApi,
-        logger,
-        "https://api.smartling.com"
-    );
+        userSecret
+    };
+    const clientLibMetadata = {
+        clientLibId: "testClientLibId",
+        clientLibVersion: "testClientLibVersion"
+    };
+    const baseUrl = "https://api.smartling.com";
+
+    const apiFactory = new SmartlingApiFactory(credentials, clientLibMetadata, baseUrl, logger);
+    const smartlingTranslationRequestsApi = apiFactory.createApiClient(SmartlingTranslationRequestsApi);
 
     (async () => {
         try {

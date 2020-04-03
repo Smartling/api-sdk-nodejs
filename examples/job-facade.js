@@ -1,7 +1,7 @@
-const SmartlingAuthApi = require("../api/auth");
 const SmartlingJobFacadeApi = require("../api/job-facade");
 const CreateBatchParameters = require("../api/job-facade/params/create-batch-parameters");
 const UploadFileParameters = require("../api/job-facade/params/upload-file-parameters");
+const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -9,13 +9,18 @@ const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
-    const authApi = new SmartlingAuthApi(
+    const credentials = {
         userId,
-        userSecret,
-        logger,
-        "https://api.smartling.com"
-    );
-    const smartlingJobFacadeApi = new SmartlingJobFacadeApi(authApi, logger, "https://api.smartling.com");
+        userSecret
+    };
+    const clientLibMetadata = {
+        clientLibId: "testClientLibId",
+        clientLibVersion: "testClientLibVersion"
+    };
+    const baseUrl = "https://api.smartling.com";
+
+    const apiFactory = new SmartlingApiFactory(credentials, clientLibMetadata, baseUrl, logger);
+    const smartlingJobFacadeApi = apiFactory.createApiClient(SmartlingJobFacadeApi);
 
     (async () => {
         try {

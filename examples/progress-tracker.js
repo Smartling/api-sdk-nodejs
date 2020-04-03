@@ -1,5 +1,5 @@
-const SmartlingAuthApi = require("../api/auth");
 const SmartlingProgressTrackerApi = require("../api/progress-tracker");
+const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -7,17 +7,18 @@ const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
-    const authApi = new SmartlingAuthApi(
+    const credentials = {
         userId,
-        userSecret,
-        logger,
-        "https://api.smartling.com"
-    );
-    const smartlingProgressTrackerApi = new SmartlingProgressTrackerApi(
-        authApi,
-        logger,
-        "https://api.smartling.com"
-    );
+        userSecret
+    };
+    const clientLibMetadata = {
+        clientLibId: "testClientLibId",
+        clientLibVersion: "testClientLibVersion"
+    };
+    const baseUrl = "https://api.smartling.com";
+
+    const apiFactory = new SmartlingApiFactory(credentials, clientLibMetadata, baseUrl, logger);
+    const smartlingProgressTrackerApi = apiFactory.createApiClient(SmartlingProgressTrackerApi);
 
     (async () => {
         try {
