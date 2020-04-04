@@ -2,6 +2,7 @@ const assert = require("assert");
 const sinon = require("sinon");
 const Base = require("../api/base");
 const { loggerMock, authMock, responseMock } = require("./mock");
+const packageJson = require("../../package.json");
 
 describe("Base class tests.", () => {
     describe("Method getDefaultHeaders", () => {
@@ -24,7 +25,7 @@ describe("Base class tests.", () => {
             const defaultHeaders = await base.getDefaultHeaders();
 
             sinon.assert.calledOnce(baseUaStub);
-            sinon.assert.calledWithExactly(baseUaStub, base.clientLibId, base.clientLibVersion);
+            sinon.assert.calledWithExactly(baseUaStub, packageJson.name, packageJson.version);
 
             assert.deepEqual(defaultHeaders, {
                 Authorization: "test_token_type test_access_token",
@@ -37,7 +38,7 @@ describe("Base class tests.", () => {
             const defaultHeaders = await base.getDefaultHeaders();
 
             sinon.assert.calledOnce(baseUaStub);
-            sinon.assert.calledWithExactly(baseUaStub, base.clientLibId, base.clientLibVersion);
+            sinon.assert.calledWithExactly(baseUaStub, packageJson.name, packageJson.version);
 
             assert.deepEqual(defaultHeaders, {
                 "Content-Type": "application/json",
@@ -51,7 +52,7 @@ describe("Base class tests.", () => {
             const defaultHeaders = await base.getDefaultHeaders();
 
             sinon.assert.calledOnce(baseUaStub);
-            sinon.assert.calledWithExactly(baseUaStub, base.clientLibId, base.clientLibVersion);
+            sinon.assert.calledWithExactly(baseUaStub, packageJson.name, packageJson.version);
 
             assert.deepEqual(defaultHeaders, {
                 "Content-Type": "application/json",

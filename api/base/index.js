@@ -20,7 +20,7 @@ const packageJson = require("../../package.json");
 
 class SmartlingBaseApi {
     constructor(logger) {
-        this.defaultClientLibId = "smartling-api-sdk-node";
+        this.defaultClientLibId = packageJson.name;
         this.defaultClientVersion = packageJson.version;
         this.clientLibId = this.defaultClientLibId;
         this.clientLibVersion = this.defaultClientVersion;

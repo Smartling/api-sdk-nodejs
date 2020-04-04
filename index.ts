@@ -32,8 +32,6 @@ export * from "./api/audit-log/params/create-audit-log-parameters";
 export * from "./api/audit-log/params/order-enum";
 export * from "./api/audit-log/params/search-audit-log-parameters";
 export * from "./api/factory/index";
-export * from "./api/factory/dto/client-lib-metadata-dto";
-export * from "./api/factory/dto/credentials-dto";
 
 export { SmartlingAuthApi };
 export { SmartlingBaseApi };

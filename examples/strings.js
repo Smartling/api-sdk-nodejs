@@ -7,18 +7,12 @@ const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
-    const credentials = {
-        userId,
-        userSecret
-    };
-    const clientLibMetadata = {
-        clientLibId: "testClientLibId",
-        clientLibVersion: "testClientLibVersion"
-    };
     const baseUrl = "https://api.smartling.com";
-
-    const apiFactory = new SmartlingApiFactory(credentials, clientLibMetadata, baseUrl, logger);
+    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
     const smartlingStringsApi = apiFactory.createApiClient(SmartlingStringsApi);
+
+    smartlingStringsApi.clientLibId = "testClientLibId";
+    smartlingStringsApi.clientLibVersion = "testClientLibVersion";
 
     (async () => {
         try {

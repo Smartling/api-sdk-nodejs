@@ -11,26 +11,17 @@ import SmartlingProjectApi from "../api/project";
 import SmartlingStringsApi from "../api/strings";
 import SmartlingTranslationApi from "../api/translation";
 import SmartlingTranslationRequestsApi from "../api/translation-requests";
+const packageJson = require("../../package.json");
 
 function assertApiClient(Type: any, apiClient: SmartlingBaseApi) {
     assert.equal(apiClient instanceof SmartlingBaseApi, true);
     assert.equal(apiClient instanceof Type, true);
 
-    assert.equal(
-        apiClient.clientLibId,
-        "test_client_lib_id"
-    );
-
-    assert.equal(
-        apiClient.clientLibVersion,
-        "test_client_lib_version"
-    );
-
     assert.deepEqual(
         apiClient.options, {
             timeout: 100500,
             headers: {
-                "X-SL-ServiceOrigin": "test_client_lib_id"
+                "X-SL-ServiceOrigin": packageJson.name
             }
         }
     );
@@ -49,43 +40,82 @@ function assertApiClient(Type: any, apiClient: SmartlingBaseApi) {
         apiClient["authApi"].entrypoint,
         "test_base_url/auth-api/v2"
     );
-
-    assert.equal(
-        apiClient["authApi"].clientLibId,
-        "test_client_lib_id"
-    );
-
-    assert.equal(
-        apiClient["authApi"].clientLibVersion,
-        "test_client_lib_version"
-    );
 }
 
 describe("SmartlingApiFactory class tests.", () => {
     let apiFactory: SmartlingApiFactory;
 
     beforeEach(() => {
-        apiFactory = new SmartlingApiFactory({
-            userId: "test_user_id",
-            userSecret: "test_user_secret"
-        }, {
-            clientLibId: "test_client_lib_id",
-            clientLibVersion: "test_client_lib_version"
-        }, "test_base_url", {
-            info: () => {},
-            warn: () => {},
-            error: () => {}
-        });
+        apiFactory = new SmartlingApiFactory(
+            "test_user_id",
+            "test_user_secret",
+            "test_base_url", {
+                info: () => {},
+                warn: () => {},
+                error: () => {}
+            }
+        );
+    });
+
+    it("Smartling api factory returns api client with default lib id and version", () => {
+        const factory = new SmartlingApiFactory(
+            "test_user_id",
+            "test_user_secret",
+            "test_base_url"
+        );
+
+        const apiClient = factory.createApiClient(SmartlingAuditLogApi);
+
+        assert.equal(
+            apiClient.clientLibId,
+            packageJson.name
+        );
+
+        assert.equal(
+            apiClient.clientLibVersion,
+            packageJson.version
+        );
+
+        assert.equal(
+            apiClient["authApi"].clientLibId,
+            packageJson.name
+        );
+
+        assert.equal(
+            apiClient["authApi"].clientLibVersion,
+            packageJson.version
+        );
+    });
+
+    it("Default lib id and version can be modified after api client creation", () => {
+        const factory = new SmartlingApiFactory(
+            "test_user_id",
+            "test_user_secret",
+            "test_base_url"
+        );
+
+        const apiClient = factory.createApiClient(SmartlingAuditLogApi);
+
+        apiClient.clientLibId = "test_client_lib_id";
+        apiClient.clientLibVersion = "test_client_lib_version";
+
+        assert.equal(
+            apiClient.clientLibId,
+            "test_client_lib_id"
+        );
+
+        assert.equal(
+            apiClient.clientLibVersion,
+            "test_client_lib_version"
+        );
     });
 
     it("Smartling api factory provides default null logger", () => {
-        const factory = new SmartlingApiFactory({
-            userId: "test_user_id",
-            userSecret: "test_user_secret"
-        }, {
-            clientLibId: "test_client_lib_id",
-            clientLibVersion: "test_client_lib_version"
-        }, "test_base_url");
+        const factory = new SmartlingApiFactory(
+            "test_user_id",
+            "test_user_secret",
+            "test_base_url"
+        );
 
         const clientApi = factory.createApiClient(SmartlingAuditLogApi);
 
