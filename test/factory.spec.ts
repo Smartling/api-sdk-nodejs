@@ -72,11 +72,37 @@ describe("SmartlingApiFactory class tests.", () => {
             clientLibId: "test_client_lib_id",
             clientLibVersion: "test_client_lib_version"
         }, "test_base_url", {
-            debug: () => {},
             info: () => {},
             warn: () => {},
             error: () => {}
         });
+    });
+
+    it("Smartling api factory provides default null logger", () => {
+        const factory = new SmartlingApiFactory({
+            userId: "test_user_id",
+            userSecret: "test_user_secret"
+        }, {
+            clientLibId: "test_client_lib_id",
+            clientLibVersion: "test_client_lib_version"
+        }, "test_base_url");
+
+        const clientApi = factory.createApiClient(SmartlingAuditLogApi);
+
+        assert.equal(
+            typeof clientApi["logger"].debug === "function",
+            true
+        );
+
+        assert.equal(
+            typeof clientApi["logger"].warn === "function",
+            true
+        );
+
+        assert.equal(
+            typeof clientApi["logger"].error === "function",
+            true
+        );
     });
 
     it("Instantiates audit log api client", () => {

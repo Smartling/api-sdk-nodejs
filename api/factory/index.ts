@@ -13,7 +13,11 @@ export class SmartlingApiFactory {
         credentials: CredentialsDto,
         clientLibMetadata: ClientLibMetadataDto,
         baseUrl: string,
-        logger?: object
+        logger: object = {
+            debug: () => {},
+            warn: () => {},
+            error: () => {}
+        }
     ) {
         this.authApiClient = new SmartlingAuthApi(
             credentials.userId,
