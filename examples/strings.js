@@ -1,4 +1,5 @@
 const SmartlingStringsApi = require("../api/strings");
+// eslint-disable-next-line import/no-unresolved
 const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;

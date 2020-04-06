@@ -2,6 +2,7 @@ const SmartlingJobApi = require("../api/job");
 const ListJobsParameters = require("../api/job/params/list-jobs-parameters");
 const CreateJobParameters = require("../api/job/params/create-job-parameters");
 const JobStatuses = require("../api/job/params/job-statuses");
+// eslint-disable-next-line import/no-unresolved
 const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;

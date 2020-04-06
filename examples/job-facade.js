@@ -1,6 +1,7 @@
 const SmartlingJobFacadeApi = require("../api/job-facade");
 const CreateBatchParameters = require("../api/job-facade/params/create-batch-parameters");
 const UploadFileParameters = require("../api/job-facade/params/upload-file-parameters");
+// eslint-disable-next-line import/no-unresolved
 const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;

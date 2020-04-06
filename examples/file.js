@@ -1,6 +1,7 @@
 const SmartlingFileApi = require("../api/file");
 const RetrievalTypes = require("../api/file/params/retrieval-types");
 const DownloadFileParameters = require("../api/file/params/download-file-parameters");
+// eslint-disable-next-line import/no-unresolved
 const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;

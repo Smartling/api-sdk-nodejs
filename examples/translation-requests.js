@@ -5,6 +5,7 @@ const CreateTranslationRequestParams = require("../api/translation-requests/para
 const UpdateTranslationSubmissionParams = require("../api/translation-requests/params/update-translation-submission-params");
 const UpdateTranslationRequestParams = require("../api/translation-requests/params/update-translation-request-params");
 const SearchTranslationRequestParams = require("../api/translation-requests/params/search-translation-request-parameters");
+// eslint-disable-next-line import/no-unresolved
 const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;
@@ -15,7 +16,9 @@ const userSecret = process.env.USER_SECRET;
 if (userId && userSecret) {
     const baseUrl = "https://api.smartling.com";
     const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
-    const smartlingTranslationRequestsApi = apiFactory.createApiClient(SmartlingTranslationRequestsApi);
+    const smartlingTranslationRequestsApi = apiFactory.createApiClient(
+        SmartlingTranslationRequestsApi
+    );
 
     smartlingTranslationRequestsApi.clientLibId = "testClientLibId";
     smartlingTranslationRequestsApi.clientLibVersion = "testClientLibVersion";

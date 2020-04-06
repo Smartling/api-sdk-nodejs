@@ -1,4 +1,5 @@
 const SmartlingProgressTrackerApi = require("../api/progress-tracker");
+// eslint-disable-next-line import/no-unresolved
 const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;

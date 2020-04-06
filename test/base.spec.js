@@ -2,6 +2,7 @@ const assert = require("assert");
 const sinon = require("sinon");
 const Base = require("../api/base");
 const { loggerMock, authMock, responseMock } = require("./mock");
+// eslint-disable-next-line import/no-unresolved
 const packageJson = require("../../package.json");
 
 describe("Base class tests.", () => {
