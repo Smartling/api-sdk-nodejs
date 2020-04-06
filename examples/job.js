@@ -1,8 +1,8 @@
-const SmartlingAuthApi = require("../api/auth");
 const SmartlingJobApi = require("../api/job");
 const ListJobsParameters = require("../api/job/params/list-jobs-parameters");
 const CreateJobParameters = require("../api/job/params/create-job-parameters");
 const JobStatuses = require("../api/job/params/job-statuses");
+const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -10,17 +10,12 @@ const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
-    const authApi = new SmartlingAuthApi(
-        userId,
-        userSecret,
-        logger,
-        "https://api.smartling.com"
-    );
-    const smartlingJobApi = new SmartlingJobApi(
-        authApi,
-        logger,
-        "https://api.smartling.com"
-    );
+    const baseUrl = "https://api.smartling.com";
+    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
+    const smartlingJobApi = apiFactory.createApiClient(SmartlingJobApi);
+
+    smartlingJobApi.clientLibId = "testClientLibId";
+    smartlingJobApi.clientLibVersion = "testClientLibVersion";
 
     (async () => {
         try {

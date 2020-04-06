@@ -1,7 +1,7 @@
-const SmartlingAuthApi = require("../api/auth");
 const SmartlingFileApi = require("../api/file");
 const RetrievalTypes = require("../api/file/params/retrieval-types");
 const DownloadFileParameters = require("../api/file/params/download-file-parameters");
+const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -9,13 +9,12 @@ const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
-    const authApi = new SmartlingAuthApi(
-        userId,
-        userSecret,
-        logger,
-        "https://api.smartling.com"
-    );
-    const smartlingFileApi = new SmartlingFileApi(authApi, logger, "https://api.smartling.com");
+    const baseUrl = "https://api.smartling.com";
+    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
+    const smartlingFileApi = apiFactory.createApiClient(SmartlingFileApi);
+
+    smartlingFileApi.clientLibId = "testClientLibId";
+    smartlingFileApi.clientLibVersion = "testClientLibVersion";
 
     (async () => {
         const fileUri = "test";

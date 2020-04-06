@@ -1,5 +1,5 @@
-const SmartlingAuthApi = require("../api/auth");
 const SmartlingStringsApi = require("../api/strings");
+const { SmartlingApiFactory } = require("../api/factory");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -7,17 +7,12 @@ const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
-    const authApi = new SmartlingAuthApi(
-        userId,
-        userSecret,
-        logger,
-        "https://api.smartling.com"
-    );
-    const smartlingStringsApi = new SmartlingStringsApi(
-        authApi,
-        logger,
-        "https://api.smartling.com"
-    );
+    const baseUrl = "https://api.smartling.com";
+    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
+    const smartlingStringsApi = apiFactory.createApiClient(SmartlingStringsApi);
+
+    smartlingStringsApi.clientLibId = "testClientLibId";
+    smartlingStringsApi.clientLibVersion = "testClientLibVersion";
 
     (async () => {
         try {

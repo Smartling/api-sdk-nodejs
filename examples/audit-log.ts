@@ -1,7 +1,7 @@
-import SmartlingAuthApi from "../api/auth";
 import { SmartlingAuditLogApi } from "../api/audit-log/index";
 import { CreateAuditLogParameters } from "../api/audit-log/params/create-audit-log-parameters";
 import { SearchAuditLogParameters } from "../api/audit-log/params/search-audit-log-parameters";
+import { SmartlingApiFactory } from "../api/factory/index";
 
 const logger = console;
 const accountUid = process.env.ACCOUNT_UID;
@@ -11,8 +11,12 @@ const userSecret = process.env.USER_SECRET;
 
 if (projectId || accountUid) {
     const baseUrl = "https://api.smartling.com";
-    const authApi = new SmartlingAuthApi(userId, userSecret, logger, baseUrl);
-    const api = new SmartlingAuditLogApi(authApi, logger, baseUrl);
+    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
+    const smartlingAuditLogApi = apiFactory.createApiClient(SmartlingAuditLogApi, { timeout: 10000 });
+
+    smartlingAuditLogApi.clientLibId = "testClientLibId";
+    smartlingAuditLogApi.clientLibVersion = "testClientLibVersion";
+
     const baseDescription = "This log was added by sdk example";
     const payload: CreateAuditLogParameters = (
         new CreateAuditLogParameters(
@@ -32,11 +36,11 @@ if (projectId || accountUid) {
                 payload.setDescription(`${baseDescription} (project)`);
                 query.setQuery("(project)");
 
-                await api.createProjectLevelLogRecord(projectId, payload);
+                await smartlingAuditLogApi.createProjectLevelLogRecord(projectId, payload);
 
                 logger.info(
                     JSON.stringify(
-                        await api.searchProjectLevelLogRecord(projectId, query),
+                        await smartlingAuditLogApi.searchProjectLevelLogRecord(projectId, query),
                         null,
                         2
                     )
@@ -47,11 +51,11 @@ if (projectId || accountUid) {
                 payload.setDescription(`${baseDescription} (account)`);
                 query.setQuery("(account)");
 
-                await api.createAccountLevelLogRecord(accountUid, payload);
+                await smartlingAuditLogApi.createAccountLevelLogRecord(accountUid, payload);
 
                 logger.info(
                     JSON.stringify(
-                        await api.searchAccountLevelLogRecord(accountUid, query),
+                        await smartlingAuditLogApi.searchAccountLevelLogRecord(accountUid, query),
                         null,
                         2
                     )
