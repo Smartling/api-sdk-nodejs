@@ -50,7 +50,7 @@ describe("SmartlingApiFactory class tests.", () => {
             "test_user_id",
             "test_user_secret",
             "test_base_url", {
-                info: () => {},
+                debug: () => {},
                 warn: () => {},
                 error: () => {}
             }

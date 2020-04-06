@@ -1,16 +1,17 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
+import { Logger } from "./logger";
 
 export class SmartlingApiFactory {
     private authApiClient: SmartlingAuthApi;
     private baseUrl: string;
-    private logger: object;
+    private logger: Logger;
 
     constructor(
         userId: string,
         userSecret: string,
         baseUrl: string,
-        logger: object = {
+        logger: Logger = {
             debug: () => {},
             warn: () => {},
             error: () => {}
@@ -43,4 +44,3 @@ export class SmartlingApiFactory {
         return instance;
     }
 }
-export default SmartlingApiFactory;
