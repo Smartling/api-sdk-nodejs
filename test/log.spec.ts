@@ -5,7 +5,7 @@ import { SmartlingLogApi } from "../api/log/index";
 import { CreateLogParameters } from "../api/log/params/create-log-parameters";
 import { LevelEnum } from "../api/log/params/level-enum";
 
-const { loggerMock, authMock, responseMock } = require("./mock");
+const { loggerMock, responseMock } = require("./mock");
 
 describe("SmartlingAuditLogApi class tests.", () => {
     let logApi;
@@ -14,8 +14,7 @@ describe("SmartlingAuditLogApi class tests.", () => {
     let responseMockJsonStub;
 
     beforeEach(() => {
-        logApi = new SmartlingLogApi(authMock, loggerMock, "https://test.com");
-        logApi.authApi = authMock;
+        logApi = new SmartlingLogApi(null, loggerMock, "https://test.com");
 
         logApiFetchStub = sinon.stub(logApi, "fetch");
         logApiUaStub = sinon.stub(logApi, "ua");
@@ -50,7 +49,6 @@ describe("SmartlingAuditLogApi class tests.", () => {
             "https://test.com/updates/status", {
                 body: "{\"records\":[{\"message\":\"Test 1\",\"context\":{\"foo\":\"bar 1\"},\"level_name\":\"info\",\"channel\":\"TEST_CHANNEL\",\"datetime\":\"2020-10-10T00:00:00.000Z\"},{\"message\":\"Test 2\",\"context\":{\"foo\":\"bar 2\"},\"level_name\":\"info\",\"channel\":\"TEST_CHANNEL\",\"datetime\":\"2020-10-10T00:00:00.000Z\"}]}",
                 headers: {
-                    Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
                     "User-Agent": "test_user_agent"
                 },
