@@ -123,7 +123,7 @@ class SmartlingBaseApi {
 
             this.logger.debug(`Received code ${response.status}; content: ${JSON.stringify(jsonResponse)}`);
 
-            return jsonResponse.response.data ? jsonResponse.response.data : true;
+            return jsonResponse?.response?.data ? jsonResponse?.response?.data : true;
         } catch (e) {
             this.logger.error(`Couldn't parse response json: ${e.toString()}`);
 
