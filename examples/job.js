@@ -1,5 +1,6 @@
 const SmartlingJobApi = require("../api/job");
 const ListJobsParameters = require("../api/job/params/list-jobs-parameters");
+const ListJobFilesParameters = require("../api/job/params/list-job-files-parameters");
 const CreateJobParameters = require("../api/job/params/create-job-parameters");
 const JobStatuses = require("../api/job/params/job-statuses");
 // eslint-disable-next-line import/no-unresolved
@@ -39,6 +40,23 @@ if (userId && userSecret) {
                 .getJob(projectId, createJobResponse.translationJobUid);
 
             logger.debug(JSON.stringify(getJobResponse, null, 2));
+
+            logger.debug("-------- Get job files ---------");
+
+            const listJobFilesParameters = new ListJobFilesParameters();
+
+            listJobFilesParameters
+                .setLimit(500)
+                .setOffset(0);
+
+            const getJobFilesResponse = await smartlingJobApi
+                .getJobFiles(
+                    projectId,
+                    createJobResponse.translationJobUid,
+                    listJobFilesParameters
+                );
+
+            logger.debug(JSON.stringify(getJobFilesResponse, null, 2));
 
             logger.debug("-------- List jobs ---------");
 
