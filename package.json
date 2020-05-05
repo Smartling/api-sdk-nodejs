@@ -1,13 +1,14 @@
 {
   "name": "api-sdk-nodejs",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "description": "Package for Smartling API",
   "main": "built/index.js",
   "scripts": {
     "build:dev": "rm -rf built && tsc --p tsconfig.dev.json && cp -R package.json built",
     "build": "rm -rf built && tsc && cp -R package.json built",
     "pretest": "eslint .",
-    "test": "npm run build:dev && nyc mocha --reporter mocha-junit-reporter --recursive built/test/**/*.spec.js"
+    "test": "npm run build:dev && nyc mocha --reporter mocha-junit-reporter --recursive built/test/**/*.spec.js",
+    "test:dev": "npm run build:dev && nyc mocha --recursive built/test/**/*.spec.js"
   },
   "repository": {
     "type": "git",
