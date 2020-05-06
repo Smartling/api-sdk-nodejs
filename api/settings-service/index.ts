@@ -44,10 +44,10 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
         if (settingsUid) {
             path += `/${settingsUid}`;
         }
-        
+
         return path;
     }
-    
+
     private mapItemToDto(settings: object): SettingsDto {
         ["created", "modified"].forEach(function (field) {
             if (settings[field]) {
