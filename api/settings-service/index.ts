@@ -26,7 +26,9 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
     }
 
     public async getProjectLevelSettings(projectUid: string, integrationId: string, settingsUid: string): Promise<SettingsDto> {
-        return await this.makeRequest("get", this.getProjectLevelApiUrl(projectUid, integrationId, settingsUid));
+        return this.mapItemToDto(
+            await this.makeRequest("get", this.getProjectLevelApiUrl(projectUid, integrationId, settingsUid))
+        );
     }
 
     public async updateProjectLevelSettings(projectUid: string, integrationId: string, settingsUid: string, payload: SettingsPayload): Promise<SettingsDto> {
