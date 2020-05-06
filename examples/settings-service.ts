@@ -19,26 +19,29 @@ const payload: SettingsPayload = (new SettingsPayload("test"))
 (async () => {
     try {
         const settings = await smartlingSettingsServiceApi.createProjectLevelSettings(projectId, integrationId, payload);
-        const uid = settings.settingsUid;
+        if (settings) {
+            const uid = settings.settingsUid;
 
-        logger.info(`Settings uid: ${uid} created on ${settings.created.toISOString()}`);
+            logger.info(`Settings uid: ${uid} created on ${settings.created.toISOString()}`);
 
-        await smartlingSettingsServiceApi.updateProjectLevelSettings(
-            projectId,
-            integrationId,
-            uid,
-            new SettingsPayload("empty settings")
-        );
+            await smartlingSettingsServiceApi.updateProjectLevelSettings(
+                projectId,
+                integrationId,
+                uid,
+                new SettingsPayload("empty settings")
+            );
 
-        const updated = await smartlingSettingsServiceApi.getProjectLevelSettings(projectId, integrationId, uid);
+            const updated = await smartlingSettingsServiceApi.getProjectLevelSettings(projectId, integrationId, uid);
 
-        logger.info(`Settings uid: ${uid} has name ${updated.name}`);
+            logger.info(`Settings uid: ${uid} has name ${updated.name}`);
 
-        try {
-            await smartlingSettingsServiceApi.deleteProjectLevelSettings(projectId, integrationId, settings.settingsUid);
-            logger.info("Deleted settings");
-        } catch (e) {
-            logger.info("Only administrators can delete settings");
+            try {
+                if (await smartlingSettingsServiceApi.deleteProjectLevelSettings(projectId, integrationId, settings.settingsUid)) {
+                    logger.info("Deleted settings");
+                }
+            } catch (e) {
+                logger.info("Only administrators can delete settings");
+            }
         }
     } catch (e) {
         console.warn(e);

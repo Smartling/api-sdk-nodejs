@@ -58,14 +58,13 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
             createParams.setSecrets(secrets);
             createParams.setSettings(settings);
 
-            settingsServiceApiFetchStub.returns(':)');
-
-            const result = await settingsServiceApi.createProjectLevelSettings("testProjectId", "testIntegrationId", createParams);
+            await settingsServiceApi.createProjectLevelSettings("testProjectId", "testIntegrationId", createParams);
 
             sinon.assert.calledOnce(settingsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 settingsServiceApiFetchStub,
-                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings", {
+                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
+                {
                     body: `{"name":"${name}","secrets":{"secretKey":"secretValue"},"settings":{"setting":"value"}}`,
                     headers: {
                         "Authorization": "test_token_type test_access_token",
@@ -73,6 +72,64 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "post"
+                }
+            );
+        });
+        it("Should delete project level settings", async () => {
+            await settingsServiceApi.deleteProjectLevelSettings("testProjectId", "testIntegrationId", "settingsUid");
+
+            sinon.assert.calledOnce(settingsServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                settingsServiceApiFetchStub,
+                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings/settingsUid",
+                {
+                    body: undefined,
+                    headers: {
+                        "Authorization": "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
+                }
+            );
+        });
+        it("Should get project level settings", async () => {
+            await settingsServiceApi.getProjectLevelSettings("testProjectId", "testIntegrationId", "settingsUid");
+
+            sinon.assert.calledOnce(settingsServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                settingsServiceApiFetchStub,
+                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings/settingsUid", {
+                    headers: {
+                        "Authorization": "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+        it("Should update project level settings", async () => {
+            const name = "test";
+            await settingsServiceApi.updateProjectLevelSettings(
+                "testProjectId",
+                "testIntegrationId",
+                "settingsUid",
+                new SettingsPayload(name)
+            );
+
+            sinon.assert.calledOnce(settingsServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                settingsServiceApiFetchStub,
+                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings/settingsUid",
+                {
+                    body: `{"name":"${name}"}`,
+                    headers: {
+                        "Authorization": "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
                 }
             );
         });
