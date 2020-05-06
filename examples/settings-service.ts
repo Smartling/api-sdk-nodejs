@@ -40,7 +40,16 @@ const payload: SettingsPayload = (new SettingsPayload("test"))
                     logger.info("Deleted settings");
                 }
             } catch (e) {
-                logger.info("Only administrators can delete settings");
+                try {
+                    const errorPayload = JSON.parse(JSON.parse(e.payload));
+                    if (errorPayload) {
+                        if (errorPayload.response.errors[0].message === "Forbidden") {
+                            console.info(`Unable to delete settings ${uid}. Only administrators can delete settings.`);
+                        }
+                    }
+                } catch (parseError) {
+                    console.warn(e);
+                }
             }
         }
     } catch (e) {
