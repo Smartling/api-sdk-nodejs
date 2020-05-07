@@ -83,7 +83,6 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
                 settingsServiceApiFetchStub,
                 "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings/settingsUid",
                 {
-                    body: undefined,
                     headers: {
                         "Authorization": "test_token_type test_access_token",
                         "Content-Type": "application/json",
