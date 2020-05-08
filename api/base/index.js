@@ -86,7 +86,7 @@ class SmartlingBaseApi {
             headers: merge(await this.getDefaultHeaders(), headers)
         }, this.options);
 
-        if (verb.toLowerCase() !== "get") {
+        if (verb.toLowerCase() !== "get" && payload) {
             opts.body = payload;
         } else if (payload) {
             // Package node-fetch doesn't support query parameters.
