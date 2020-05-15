@@ -19,24 +19,22 @@ const payload: SettingsPayload = (new SettingsPayload("test"))
 (async () => {
     try {
         const settings = await smartlingSettingsServiceApi.createProjectLevelSettings(projectId, integrationId, payload);
-        if (settings) {
-            const uid = settings.settingsUid;
 
-            logger.info(`Settings uid: ${uid} created on ${settings.created.toISOString()}`);
+        if (settings) {
+            logger.info(`Settings for projectId=${projectId} and integrationId=${integrationId} created on ${settings.created.toISOString()}`);
 
             await smartlingSettingsServiceApi.updateProjectLevelSettings(
                 projectId,
                 integrationId,
-                uid,
                 new SettingsPayload("empty settings")
             );
 
-            const updated = await smartlingSettingsServiceApi.getProjectLevelSettings(projectId, integrationId, uid);
+            const updated = await smartlingSettingsServiceApi.getProjectLevelSettings(projectId, integrationId);
 
-            logger.info(`Settings uid: ${uid} has name ${updated.name}`);
+            logger.info(`Settings for projectId=${projectId} and integrationId=${integrationId} has name ${updated.name}`);
 
             try {
-                if (await smartlingSettingsServiceApi.deleteProjectLevelSettings(projectId, integrationId, settings.settingsUid)) {
+                if (await smartlingSettingsServiceApi.deleteProjectLevelSettings(projectId, integrationId)) {
                     logger.info("Deleted settings");
                 }
             } catch (e) {
@@ -44,7 +42,7 @@ const payload: SettingsPayload = (new SettingsPayload("test"))
                     const errorPayload = JSON.parse(JSON.parse(e.payload));
                     if (errorPayload) {
                         if (errorPayload.response.errors[0].message === "Forbidden") {
-                            console.info(`Unable to delete settings ${uid}. Only administrators can delete settings.`);
+                            console.info(`Unable to delete settings for projectId=${projectId} and integrationId=${integrationId}. Only administrators can delete settings.`);
                         }
                     }
                 } catch (parseError) {

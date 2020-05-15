@@ -21,31 +21,26 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
         ));
     }
 
-    public async deleteProjectLevelSettings(projectUid: string, integrationId: string, settingsUid: string): Promise<boolean> {
-        return await this.makeRequest("delete", this.getProjectLevelApiUrl(projectUid, integrationId, settingsUid));
+    public async deleteProjectLevelSettings(projectUid: string, integrationId: string): Promise<boolean> {
+        return await this.makeRequest("delete", this.getProjectLevelApiUrl(projectUid, integrationId));
     }
 
-    public async getProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string, settingsUid: string): Promise<SettingsDto<TSecrets, TSettings>> {
+    public async getProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string): Promise<SettingsDto<TSecrets, TSettings>> {
         return this.mapItemToDto<TSecrets, TSettings>(
-            await this.makeRequest("get", this.getProjectLevelApiUrl(projectUid, integrationId, settingsUid))
+            await this.makeRequest("get", this.getProjectLevelApiUrl(projectUid, integrationId))
         );
     }
 
-    public async updateProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string, settingsUid: string, payload: SettingsPayload): Promise<SettingsDto<TSecrets, TSettings>> {
+    public async updateProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string, payload: SettingsPayload): Promise<SettingsDto<TSecrets, TSettings>> {
         return this.mapItemToDto<TSecrets, TSettings>(await this.makeRequest(
             "put",
-            this.getProjectLevelApiUrl(projectUid, integrationId, settingsUid),
+            this.getProjectLevelApiUrl(projectUid, integrationId),
             JSON.stringify(payload.export()),
         ));
     }
 
-    private getProjectLevelApiUrl(project: string, integration: string, settingsUid?: string): string {
-        let path = `${this.entrypoint}/projects/${project}/integrations/${integration}/settings`;
-        if (settingsUid) {
-            path += `/${settingsUid}`;
-        }
-
-        return path;
+    private getProjectLevelApiUrl(project: string, integration: string): string {
+        return `${this.entrypoint}/projects/${project}/integrations/${integration}/settings`;
     }
 
     private mapItemToDto<TSecrets, TSettings>(settings: object): SettingsDto<TSecrets, TSettings> {
@@ -53,7 +48,7 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
             if (settings[field]) {
                 settings[field] = new Date(settings[field]);
             }
-        })
+        });
 
         return settings as SettingsDto<TSecrets, TSettings>;
     }
