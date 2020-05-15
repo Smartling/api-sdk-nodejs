@@ -36,6 +36,9 @@ export * from "./api/factory/index";
 export * from "./api/log/index";
 export * from "./api/log/params/create-log-parameters";
 export * from "./api/log/params/level-enum";
+export * from "./api/settings-service/index";
+export * from "./api/settings-service/dto/settings-dto";
+export * from "./api/settings-service/parameters/settings-payload";
 
 export { SmartlingAuthApi };
 export { SmartlingBaseApi };
