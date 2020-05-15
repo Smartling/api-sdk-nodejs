@@ -76,12 +76,12 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
             );
         });
         it("Should delete project level settings", async () => {
-            await settingsServiceApi.deleteProjectLevelSettings("testProjectId", "testIntegrationId", "settingsUid");
+            await settingsServiceApi.deleteProjectLevelSettings("testProjectId", "testIntegrationId");
 
             sinon.assert.calledOnce(settingsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 settingsServiceApiFetchStub,
-                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings/settingsUid",
+                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
                 {
                     headers: {
                         "Authorization": "test_token_type test_access_token",
@@ -93,12 +93,12 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
             );
         });
         it("Should get project level settings", async () => {
-            await settingsServiceApi.getProjectLevelSettings("testProjectId", "testIntegrationId", "settingsUid");
+            await settingsServiceApi.getProjectLevelSettings("testProjectId", "testIntegrationId");
 
             sinon.assert.calledOnce(settingsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 settingsServiceApiFetchStub,
-                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings/settingsUid", {
+                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings", {
                     headers: {
                         "Authorization": "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -113,14 +113,13 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
             await settingsServiceApi.updateProjectLevelSettings(
                 "testProjectId",
                 "testIntegrationId",
-                "settingsUid",
                 new SettingsPayload(name)
             );
 
             sinon.assert.calledOnce(settingsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 settingsServiceApiFetchStub,
-                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings/settingsUid",
+                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
                 {
                     body: `{"name":"${name}"}`,
                     headers: {
