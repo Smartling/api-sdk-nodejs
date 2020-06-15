@@ -1,6 +1,4 @@
-import { AssetId } from "./asset-id";
-
 export class SearchResult {
-    id: AssetId;
+    id: object;
     title: string;
 }
