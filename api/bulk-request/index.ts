@@ -1,7 +1,7 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
 import { Search as SearchParameters } from "./parameters/search";
-import { Search as SearchItem } from "./models/search";
+import { SearchResult } from "./models/search-result";
 import { RequestTranslation } from "./parameters/request-translation";
 
 export class BulkRequestServiceApi extends SmartlingBaseApi {
@@ -14,7 +14,7 @@ export class BulkRequestServiceApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}`;
     }
 
-    public async search(connector: string, projectUid: string, payload: SearchParameters): Promise<SearchItem[]> {
+    public async search(connector: string, projectUid: string, payload: SearchParameters): Promise<SearchResult[]> {
         return (await this.makeRequest(
             "post",
             `${this.entrypoint}/${connector}-api/v2/projects/${projectUid}/bulk/search`,

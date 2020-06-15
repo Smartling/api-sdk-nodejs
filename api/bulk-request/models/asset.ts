@@ -1,7 +1,7 @@
 import { AssetId } from "./asset-id";
 
-export interface Asset {
-    bulkTranslationRequestActionAssetUid: string,
-    title: string,
-    assetId: AssetId,
+export class Asset {
+    bulkTranslationRequestActionAssetUid: string;
+    title: string;
+    assetId: AssetId;
 }

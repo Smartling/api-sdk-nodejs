@@ -6,6 +6,8 @@ const logger = console;
 const projectId = process.env.PROJECT_ID;
 const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
+const spaceId = process.env.SPACE_ID;
+const submissionStatus = process.env.SUBMISSION_STATUS || "NOT_TRANSLATED";
 
 const baseUrl = "https://api.smartling.com";
 const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
@@ -18,9 +20,9 @@ const bulkRequestApi = apiFactory.createApiClient(BulkRequestServiceApi, { timeo
             projectId,
             new Search()
                 .setFilter({
-                    spaceId: "q2fjg5qulqq8",
                     assetType: "ENTRY",
-                    submissionStatus: "NEW",
+                    spaceId,
+                    submissionStatus,
                 })
                 .setSort("updatedAt")
         );
