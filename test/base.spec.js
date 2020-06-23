@@ -474,8 +474,8 @@ describe("Base class tests.", () => {
                 throw new Error("Exception is not thrown.");
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
-                assert.equal(e.message, "Request for https://test.com failed: 400");
-                assert.deepEqual(e.payload, "{\"response\":{\"code\":\"VALIDATION_ERROR\",\"errors\":[]}}");
+                assert.equal(e.message, "Request for https://test.com failed");
+                assert.deepEqual(e.payload, "{\"statusCode\":400,\"errorResponse\":{\"response\":{\"code\":\"VALIDATION_ERROR\",\"errors\":[]}}}");
                 assert.equal(e.nestedException, null);
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
@@ -522,6 +522,7 @@ describe("Base class tests.", () => {
 
             baseFetchStub.returns(responseMock);
             responseMockJsonStub.throws(error);
+            responseMockTextStub.returns("error");
 
             try {
                 await base.makeRequest(requestVerb, requestUri, payload);
@@ -529,9 +530,8 @@ describe("Base class tests.", () => {
                 throw new Error("Exception is not thrown.");
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
-                assert.equal(e.message, "200");
-                assert.deepEqual(e.payload, "{\"status\":200}");
-                assert.equal(e.nestedException, error);
+                assert.equal(e.message, "Couldn't parse response json");
+                assert.deepEqual(e.payload, '{"statusCode":200,"errorResponse":"error"}');
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
@@ -562,7 +562,7 @@ describe("Base class tests.", () => {
                 });
 
                 sinon.assert.notCalled(authResetTokenStub);
-                sinon.assert.notCalled(responseMockTextStub);
+                sinon.assert.calledOnce(responseMockTextStub);
                 sinon.assert.calledOnce(responseMockJsonStub);
             }
         });
