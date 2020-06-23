@@ -132,7 +132,7 @@ class SmartlingBaseApi {
 
             throw new SmartlingException(`Couldn't parse response json`, {
                 'statusCode' : response.status,
-                'errorResponse' : JSON.stringify(response.text())
+                'errorResponse' : response.text()
             });
         }
     }
