@@ -531,7 +531,7 @@ describe("Base class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Couldn't parse response json");
-                assert.deepEqual(e.payload, '{"statusCode":200,"errorResponse":"error"}');
+                assert.deepEqual(e.payload, "{\"statusCode\":200,\"errorResponse\":\"error\"}");
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
