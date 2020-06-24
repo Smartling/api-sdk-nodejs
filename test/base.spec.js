@@ -245,7 +245,7 @@ describe("Base class tests.", () => {
             const response401Mock = {
                 status: 401
             };
-            const requestVerb = "GET";
+            const requestVerb = "POST";
             const requestUri = "https://test.com";
 
             baseFetchStub.onCall(0).returns(response401Mock);
@@ -256,15 +256,16 @@ describe("Base class tests.", () => {
                 }
             });
 
-            await base.makeRequest(requestVerb, requestUri);
+            await base.makeRequest(requestVerb, requestUri, "payload");
 
-            sinon.assert.calledTwice(baseGetDefaultHeaderSpy);
+            // sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
             sinon.assert.calledTwice(baseAlterRequestDataSpy);
             sinon.assert.calledWithExactly(
                 baseAlterRequestDataSpy,
                 requestUri,
                 {
+                    body: "payload",
                     method: requestVerb,
                     headers: {
                         Authorization: "test_token_type test_access_token",
@@ -276,6 +277,7 @@ describe("Base class tests.", () => {
 
             sinon.assert.calledTwice(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub.getCall(0), requestUri, {
+                body: "payload",
                 method: requestVerb,
                 headers: {
                     Authorization: "test_token_type test_access_token",
@@ -287,6 +289,7 @@ describe("Base class tests.", () => {
             sinon.assert.calledOnce(authResetTokenStub);
 
             sinon.assert.calledWithExactly(baseFetchStub.getCall(1), requestUri, {
+                body: "payload",
                 method: requestVerb,
                 headers: {
                     Authorization: "test_token_type test_access_token",
