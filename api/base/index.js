@@ -105,9 +105,12 @@ class SmartlingBaseApi {
         }
 
         if (response.status >= 400) {
-            const jsonResponse = await response.text();
+            const responseText = await response.text();
 
-            throw new SmartlingException(`Request for ${uri} failed: ${response.status}`, JSON.stringify(jsonResponse));
+            throw new SmartlingException(`Request for ${uri} failed`, JSON.stringify({
+                statusCode: response.status,
+                errorResponse: responseText
+            }));
         }
 
         // Special case for file download - return raw response text.
@@ -124,7 +127,10 @@ class SmartlingBaseApi {
         } catch (e) {
             this.logger.error(`Couldn't parse response json: ${e.toString()}`);
 
-            throw new SmartlingException(response.status, JSON.stringify(response), e);
+            throw new SmartlingException("Couldn't parse response json", JSON.stringify({
+                statusCode: response.status,
+                errorResponse: response.text()
+            }));
         }
     }
 }
