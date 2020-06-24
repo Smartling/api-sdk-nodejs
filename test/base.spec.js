@@ -258,7 +258,7 @@ describe("Base class tests.", () => {
 
             await base.makeRequest(requestVerb, requestUri, "payload");
 
-            // sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
+            sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
             sinon.assert.calledTwice(baseAlterRequestDataSpy);
             sinon.assert.calledWithExactly(
