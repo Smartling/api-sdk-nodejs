@@ -101,10 +101,7 @@ class SmartlingBaseApi {
 
             this.authApi.resetToken();
 
-            response = await this.fetch(uri, this.alterRequestData(uri, {
-                method: verb,
-                headers: await this.getDefaultHeaders()
-            }));
+            response = await this.fetch(uri, this.alterRequestData(uri, opts));
         }
 
         if (response.status >= 400) {
