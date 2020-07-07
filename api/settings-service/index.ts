@@ -10,7 +10,7 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
-        this.entrypoint = `${smartlingApiBaseUrl}/connectors-settings-service-api/v2`;
+        this.entrypoint = `${smartlingApiBaseUrl}/connectors-settings-api/v2`;
     }
 
     public async createProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string, payload: SettingsPayload): Promise<SettingsDto<TSecrets, TSettings>> {
