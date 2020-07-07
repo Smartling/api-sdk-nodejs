@@ -63,7 +63,7 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
             sinon.assert.calledOnce(settingsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 settingsServiceApiFetchStub,
-                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
+                "https://test.com/connectors-settings-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
                 {
                     body: `{"name":"${name}","secrets":{"secretKey":"secretValue"},"settings":{"setting":"value"}}`,
                     headers: {
@@ -81,7 +81,7 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
             sinon.assert.calledOnce(settingsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 settingsServiceApiFetchStub,
-                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
+                "https://test.com/connectors-settings-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
                 {
                     headers: {
                         "Authorization": "test_token_type test_access_token",
@@ -98,7 +98,7 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
             sinon.assert.calledOnce(settingsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 settingsServiceApiFetchStub,
-                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings", {
+                "https://test.com/connectors-settings-api/v2/projects/testProjectId/integrations/testIntegrationId/settings", {
                     headers: {
                         "Authorization": "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -119,7 +119,7 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
             sinon.assert.calledOnce(settingsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 settingsServiceApiFetchStub,
-                "https://test.com/connectors-settings-service-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
+                "https://test.com/connectors-settings-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
                 {
                     body: `{"name":"${name}"}`,
                     headers: {
