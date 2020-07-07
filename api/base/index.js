@@ -61,29 +61,29 @@ class SmartlingBaseApi {
         return opts;
     }
 
-    async getDefaultHeaders() {
-        let headers = {};
+    async getDefaultHeaders(headers = {}) {
+        let defaultHeaders = {};
 
         /* eslint-disable-next-line no-prototype-builtins */
         if (this.hasOwnProperty("authApi") && undefined !== this.authApi) {
             const accessToken = await this.authApi.getAccessToken();
             const tokenType = await this.authApi.getTokenType();
 
-            headers = {
+            defaultHeaders = {
                 Authorization: `${tokenType} ${accessToken}`
             };
         }
 
-        headers["Content-Type"] = "application/json";
-        headers["User-Agent"] = this.ua(this.clientLibId, this.clientLibVersion);
+        defaultHeaders["Content-Type"] = "application/json";
+        defaultHeaders["User-Agent"] = this.ua(this.clientLibId, this.clientLibVersion);
 
-        return headers;
+        return merge(defaultHeaders, headers);
     }
 
     async makeRequest(verb, uri, payload, returnRawResponseBody = false, headers = {}) {
         const opts = merge({
             method: verb,
-            headers: merge(await this.getDefaultHeaders(), headers)
+            headers: await this.getDefaultHeaders(headers)
         }, this.options);
 
         if (verb.toLowerCase() !== "get" && payload) {
@@ -100,6 +100,8 @@ class SmartlingBaseApi {
             this.logger.warn("Got unexpected 401 response code, trying to re-auth carefully...");
 
             this.authApi.resetToken();
+
+            opts.headers = await this.getDefaultHeaders(headers);
 
             response = await this.fetch(uri, this.alterRequestData(uri, opts));
         }

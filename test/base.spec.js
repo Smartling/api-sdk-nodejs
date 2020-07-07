@@ -241,7 +241,65 @@ describe("Base class tests.", () => {
             sinon.assert.notCalled(responseMockJsonStub);
         });
 
-        it("Success (re-authenticate).", async () => {
+        it("Success (re-authenticate): GET request.", async () => {
+            const response401Mock = {
+                status: 401
+            };
+            const requestVerb = "GET";
+            const requestUri = "https://test.com";
+
+            baseFetchStub.onCall(0).returns(response401Mock);
+            baseFetchStub.onCall(1).returns(responseMock);
+            responseMockJsonStub.returns({
+                response: {
+                    data: {}
+                }
+            });
+
+            await base.makeRequest(requestVerb, requestUri);
+
+            sinon.assert.calledTwice(baseGetDefaultHeaderSpy);
+
+            sinon.assert.calledTwice(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                requestUri,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    }
+                }
+            );
+
+            sinon.assert.calledTwice(baseFetchStub);
+            sinon.assert.calledWithExactly(baseFetchStub.getCall(0), requestUri, {
+                method: requestVerb,
+                headers: {
+                    Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                }
+            });
+
+            sinon.assert.calledOnce(authResetTokenStub);
+
+            sinon.assert.calledWithExactly(baseFetchStub.getCall(1), requestUri, {
+                method: requestVerb,
+                headers: {
+                    Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                }
+            });
+
+            sinon.assert.notCalled(responseMockTextStub);
+            sinon.assert.calledOnce(responseMockJsonStub);
+        });
+
+        it("Success (re-authenticate): non-GET request.", async () => {
             const response401Mock = {
                 status: 401
             };
@@ -256,45 +314,53 @@ describe("Base class tests.", () => {
                 }
             });
 
-            await base.makeRequest(requestVerb, requestUri, "payload");
+            await base.makeRequest(requestVerb, requestUri, {
+                foo: "bar"
+            });
 
-            sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
+            sinon.assert.calledTwice(baseGetDefaultHeaderSpy);
 
             sinon.assert.calledTwice(baseAlterRequestDataSpy);
             sinon.assert.calledWithExactly(
                 baseAlterRequestDataSpy,
                 requestUri,
                 {
-                    body: "payload",
                     method: requestVerb,
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
+                    },
+                    body: {
+                        foo: "bar"
                     }
                 }
             );
 
             sinon.assert.calledTwice(baseFetchStub);
             sinon.assert.calledWithExactly(baseFetchStub.getCall(0), requestUri, {
-                body: "payload",
                 method: requestVerb,
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
                     "User-Agent": "test_user_agent"
+                },
+                body: {
+                    foo: "bar"
                 }
             });
 
             sinon.assert.calledOnce(authResetTokenStub);
 
             sinon.assert.calledWithExactly(baseFetchStub.getCall(1), requestUri, {
-                body: "payload",
                 method: requestVerb,
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
                     "User-Agent": "test_user_agent"
+                },
+                body: {
+                    foo: "bar"
                 }
             });
 
