@@ -525,7 +525,7 @@ describe("Base class tests.", () => {
 
             baseFetchStub.returns(responseMock);
             responseMockJsonStub.throws(error);
-            responseMockTextStub.returns("error");
+            responseMockTextStub.resolves("error");
 
             try {
                 await base.makeRequest(requestVerb, requestUri, payload);
