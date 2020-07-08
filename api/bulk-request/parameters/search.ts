@@ -4,12 +4,12 @@ export class Search extends BaseParameters {
     constructor() {
         super();
 
-        this.setOffset(0);
+        this.setOffset("0");
         this.setLimit(100);
         this.set("orderBy", "ASC");
     }
 
-    public setOffset(offset: number): this {
+    public setOffset(offset: string): this {
         this.set("offset", offset);
 
         return this;

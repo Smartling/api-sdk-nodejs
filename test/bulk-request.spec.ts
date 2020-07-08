@@ -74,7 +74,7 @@ describe("SmartlingBulkRequestServiceApi class tests.", () => {
                 someProperty: "someValue",
             }
 
-            const offset = 13;
+            const offset = "13";
             const limit = 51;
             const sortBy = "test";
             searchParameters.setOffset(offset)
@@ -101,7 +101,7 @@ describe("SmartlingBulkRequestServiceApi class tests.", () => {
                 someProperty: "someValue",
             }
 
-            const offset = 13;
+            const offset = "13";
             const limit = 51;
             const sort = "test";
 
@@ -120,7 +120,7 @@ describe("SmartlingBulkRequestServiceApi class tests.", () => {
                 bulkRequestServiceApiFetchStub,
                 `https://test.com/${connector}-api/v2/projects/${projectUid}/bulk/search`,
                 {
-                    body: `{"offset":${offset},"limit":${limit},"orderBy":"ASC","sortBy":"${sort}","filter":${JSON.stringify(filter)}}`,
+                    body: `{"offset":"${offset}","limit":${limit},"orderBy":"ASC","sortBy":"${sort}","filter":${JSON.stringify(filter)}}`,
                     headers: {
                         "Authorization": "test_token_type test_access_token",
                         "Content-Type": "application/json",
