@@ -74,7 +74,7 @@ describe("SmartlingBulkRequestServiceApi class tests.", () => {
                 someProperty: "someValue",
             }
 
-            const offset = 13;
+            const offset = "13";
             const limit = 51;
             const sortBy = "test";
             searchParameters.setOffset(offset)
@@ -101,7 +101,7 @@ describe("SmartlingBulkRequestServiceApi class tests.", () => {
                 someProperty: "someValue",
             }
 
-            const offset = 13;
+            const offset = "13";
             const limit = 51;
             const sort = "test";
 
