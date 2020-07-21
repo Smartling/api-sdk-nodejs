@@ -67,7 +67,16 @@ describe("SmartlingBulkRequestServiceApi class tests.", () => {
                 requestTranslationParameters.export()
             );
         });
-        it("Should export search", () => {
+        it("should export search with defaults", function () {
+            assert.deepEqual(
+                {
+                    limit: 100,
+                    orderBy: "ASC",
+                },
+                new Search().export()
+            );
+        });
+        it("Should export search after parameters set", () => {
             const searchParameters: Search = new Search();
 
             const filter = {
