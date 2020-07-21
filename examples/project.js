@@ -1,6 +1,6 @@
 const SmartlingProjectApi = require("../api/project");
 // eslint-disable-next-line import/no-unresolved
-const { SmartlingApiFactory } = require("../api/factory");
+const { SmartlingApiClientBuilder } = require("../api/builder");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -9,11 +9,15 @@ const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
     const baseUrl = "https://api.smartling.com";
-    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
-    const smartlingProjectApi = apiFactory.createApiClient(SmartlingProjectApi);
-
-    smartlingProjectApi.clientLibId = "testClientLibId";
-    smartlingProjectApi.clientLibVersion = "testClientLibVersion";
+    const smartlingProjectApi = new SmartlingApiClientBuilder()
+        .withLogger(logger)
+        .withBaseSmartlingApiUrl(baseUrl)
+        .withClientLibMetadata("example-lib-name", "example-liv-version")
+        .withHttpClientConfiguration({
+            timeout: 10000
+        })
+        .authWithUserIdAndUserSecret(userId, userSecret)
+        .build(SmartlingProjectApi);
 
     (async () => {
         try {

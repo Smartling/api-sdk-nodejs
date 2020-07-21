@@ -1,4 +1,4 @@
-import { SmartlingApiFactory } from "../api/factory";
+import { SmartlingApiClientBuilder } from "../api/builder";
 import { BulkRequestServiceApi } from "../api/bulk-request";
 import { Search } from "../api/bulk-request/parameters/search";
 
@@ -10,8 +10,15 @@ const spaceId = process.env.SPACE_ID;
 const submissionStatus = process.env.SUBMISSION_STATUS || "NOT_TRANSLATED";
 
 const baseUrl = "https://api.smartling.com";
-const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
-const bulkRequestApi = apiFactory.createApiClient(BulkRequestServiceApi, { timeout: 10000 });
+const bulkRequestApi = new SmartlingApiClientBuilder()
+    .withLogger(logger)
+    .withBaseSmartlingApiUrl(baseUrl)
+    .withClientLibMetadata("example-lib-name", "example-liv-version")
+    .withHttpClientConfiguration({
+        timeout: 10000
+    })
+    .authWithUserIdAndUserSecret(userId, userSecret)
+    .build(BulkRequestServiceApi);
 
 (async () => {
     try {

@@ -1,4 +1,4 @@
-import { SmartlingApiFactory } from "../api/factory";
+import { SmartlingApiClientBuilder } from "../api/builder";
 import { SmartlingSettingsServiceApi } from "../api/settings-service";
 import { SettingsPayload } from "../api/settings-service/parameters/settings-payload";
 
@@ -9,8 +9,15 @@ const userSecret = process.env.USER_SECRET;
 
 const baseUrl = "https://api.smartling.com";
 const integrationId = "example";
-const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
-const smartlingSettingsServiceApi = apiFactory.createApiClient(SmartlingSettingsServiceApi, { timeout: 10000 });
+const smartlingSettingsServiceApi = new SmartlingApiClientBuilder()
+    .withLogger(logger)
+    .withBaseSmartlingApiUrl(baseUrl)
+    .withClientLibMetadata("example-lib-name", "example-liv-version")
+    .withHttpClientConfiguration({
+        timeout: 10000
+    })
+    .authWithUserIdAndUserSecret(userId, userSecret)
+    .build(SmartlingSettingsServiceApi);
 
 const payload: SettingsPayload = (new SettingsPayload("test"))
     .setSecrets({"secret": "secretValue"})
