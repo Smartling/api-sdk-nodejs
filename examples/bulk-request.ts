@@ -13,7 +13,7 @@ const baseUrl = "https://api.smartling.com";
 const bulkRequestApi = new SmartlingApiClientBuilder()
     .withLogger(logger)
     .withBaseSmartlingApiUrl(baseUrl)
-    .withClientLibMetadata("example-lib-name", "example-liv-version")
+    .withClientLibMetadata("example-lib-name", "example-lib-version")
     .withHttpClientConfiguration({
         timeout: 10000
     })

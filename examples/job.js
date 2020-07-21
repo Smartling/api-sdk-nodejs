@@ -16,7 +16,7 @@ if (userId && userSecret) {
     const smartlingJobApi = new SmartlingApiClientBuilder()
         .withLogger(logger)
         .withBaseSmartlingApiUrl(baseUrl)
-        .withClientLibMetadata("example-lib-name", "example-liv-version")
+        .withClientLibMetadata("example-lib-name", "example-lib-version")
         .withHttpClientConfiguration({
             timeout: 10000
         })
