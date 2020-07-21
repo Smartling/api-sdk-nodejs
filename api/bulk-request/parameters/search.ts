@@ -4,7 +4,6 @@ export class Search extends BaseParameters {
     constructor() {
         super();
 
-        this.setOffset("0");
         this.setLimit(100);
         this.set("orderBy", "ASC");
     }
