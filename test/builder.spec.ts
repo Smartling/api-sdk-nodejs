@@ -94,7 +94,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
 
     beforeEach(() => {
         apiClientBuilder = new SmartlingApiClientBuilder()
-            .withLogger({
+            .setLogger({
                 debug: () => {},
                 warn: () => {},
                 error: () => {},
@@ -112,7 +112,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         const apiClientBuilder = new SmartlingApiClientBuilder()
             .authWithUserIdAndUserSecret("test_user_id", "test_user_secret")
             .setBaseSmartlingApiUrl("test_base_url")
-            .withLogger({
+            .setLogger({
                 debug: () => {},
                 warn: () => {},
                 error: () => {}
@@ -155,7 +155,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
 
         const apiClientBuilder = new SmartlingApiClientBuilder()
-            .withLogger({
+            .setLogger({
                 debug: () => {},
                 warn: () => {},
                 error: () => {},

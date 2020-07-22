@@ -10,7 +10,7 @@ const userSecret = process.env.USER_SECRET;
 const baseUrl = "https://api.smartling.com";
 const integrationId = "example";
 const smartlingSettingsServiceApi = new SmartlingApiClientBuilder()
-    .withLogger(logger)
+    .setLogger(logger)
     .setBaseSmartlingApiUrl(baseUrl)
     .setClientLibMetadata("example-lib-name", "example-lib-version")
     .setHttpClientConfiguration({

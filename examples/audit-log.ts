@@ -12,7 +12,7 @@ const userSecret = process.env.USER_SECRET;
 if (projectId || accountUid) {
     const baseUrl = "https://api.smartling.com";
     const smartlingAuditLogApi = new SmartlingApiClientBuilder()
-        .withLogger(logger)
+        .setLogger(logger)
         .setBaseSmartlingApiUrl(baseUrl)
         .setClientLibMetadata("example-lib-name", "example-lib-version")
         .setHttpClientConfiguration({

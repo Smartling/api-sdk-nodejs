@@ -7,7 +7,7 @@ const logger = console;
 
 const baseUrl = "https://api.smartling.com";
 const smartlingLogApi = new SmartlingApiClientBuilder()
-    .withLogger(logger)
+    .setLogger(logger)
     .setBaseSmartlingApiUrl(baseUrl)
     .setClientLibMetadata("example-lib-name", "example-lib-version")
     .setHttpClientConfiguration({

@@ -17,7 +17,7 @@ export class SmartlingApiClientBuilder {
         error: () => {}
     };
 
-    public withLogger(logger: Logger) {
+    public setLogger(logger: Logger) {
         this.logger = logger;
 
         return this;

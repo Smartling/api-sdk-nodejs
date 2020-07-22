@@ -11,7 +11,7 @@ const submissionStatus = process.env.SUBMISSION_STATUS || "NOT_TRANSLATED";
 
 const baseUrl = "https://api.smartling.com";
 const bulkRequestApi = new SmartlingApiClientBuilder()
-    .withLogger(logger)
+    .setLogger(logger)
     .setBaseSmartlingApiUrl(baseUrl)
     .setClientLibMetadata("example-lib-name", "example-lib-version")
     .setHttpClientConfiguration({
