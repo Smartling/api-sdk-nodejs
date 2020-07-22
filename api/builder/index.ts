@@ -23,19 +23,19 @@ export class SmartlingApiClientBuilder {
         return this;
     }
 
-    public withBaseSmartlingApiUrl(baseSmartlingApiUrl: string): SmartlingApiClientBuilder {
+    public setBaseSmartlingApiUrl(baseSmartlingApiUrl: string): SmartlingApiClientBuilder {
         this.baseSmartlingApiUrl = baseSmartlingApiUrl;
 
         return this;
     }
 
-    public withHttpClientConfiguration(httpClientOptions: object): SmartlingApiClientBuilder {
+    public setHttpClientConfiguration(httpClientOptions: object): SmartlingApiClientBuilder {
         this.httpClientOptions = httpClientOptions;
 
         return this;
     }
 
-    public withClientLibMetadata(clientLibId: string, clientLibVersion: string): SmartlingApiClientBuilder {
+    public setClientLibMetadata(clientLibId: string, clientLibVersion: string): SmartlingApiClientBuilder {
         this.clientLibId = clientLibId;
         this.clientLibVersion = clientLibVersion;
 
@@ -49,8 +49,8 @@ export class SmartlingApiClientBuilder {
         return this;
     }
 
-    public authWithExistingAuthApiClient(existingAuthApiClient: SmartlingAuthApi): SmartlingApiClientBuilder {
-        this.authApiClient = existingAuthApiClient;
+    public authWithAuthApiClient(authApiClient: SmartlingAuthApi): SmartlingApiClientBuilder {
+        this.authApiClient = authApiClient;
 
         return this;
     }

@@ -13,9 +13,9 @@ if (projectId || accountUid) {
     const baseUrl = "https://api.smartling.com";
     const smartlingAuditLogApi = new SmartlingApiClientBuilder()
         .withLogger(logger)
-        .withBaseSmartlingApiUrl(baseUrl)
-        .withClientLibMetadata("example-lib-name", "example-lib-version")
-        .withHttpClientConfiguration({
+        .setBaseSmartlingApiUrl(baseUrl)
+        .setClientLibMetadata("example-lib-name", "example-lib-version")
+        .setHttpClientConfiguration({
             timeout: 10000
         })
         .authWithUserIdAndUserSecret(userId, userSecret)

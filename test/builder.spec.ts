@@ -100,18 +100,18 @@ describe("SmartlingApiClientBuilder class tests.", () => {
                 error: () => {},
                 test: () => {}
             })
-            .withClientLibMetadata("example-lib-name", "example-lib-version")
-            .withHttpClientConfiguration({
+            .setClientLibMetadata("example-lib-name", "example-lib-version")
+            .setHttpClientConfiguration({
                 timeout: 100500
             })
             .authWithUserIdAndUserSecret("test_user_id", "test_user_secret")
-            .withBaseSmartlingApiUrl("test_base_url");
+            .setBaseSmartlingApiUrl("test_base_url");
     });
 
     it("Smartling api builder returns api client with default lib id and version", () => {
         const apiClientBuilder = new SmartlingApiClientBuilder()
             .authWithUserIdAndUserSecret("test_user_id", "test_user_secret")
-            .withBaseSmartlingApiUrl("test_base_url")
+            .setBaseSmartlingApiUrl("test_base_url")
             .withLogger({
                 debug: () => {},
                 warn: () => {},
@@ -161,15 +161,15 @@ describe("SmartlingApiClientBuilder class tests.", () => {
                 error: () => {},
                 test: () => {}
             })
-            .withClientLibMetadata("example-lib-name", "example-lib-version")
-            .withHttpClientConfiguration({
+            .setClientLibMetadata("example-lib-name", "example-lib-version")
+            .setHttpClientConfiguration({
                 timeout: 100500,
                 headers: {
                     "test-additional-header": "bar"
                 }
             })
-            .authWithExistingAuthApiClient(authApiClient)
-            .withBaseSmartlingApiUrl("test_base_url");
+            .authWithAuthApiClient(authApiClient)
+            .setBaseSmartlingApiUrl("test_base_url");
 
         const apiClient = apiClientBuilder.build(SmartlingAuditLogApi);
 
@@ -212,7 +212,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
     it("Smartling api builder provides default null logger", () => {
         const apiClientBuilder = new SmartlingApiClientBuilder()
             .authWithUserIdAndUserSecret("test_user_id", "test_user_secret")
-            .withBaseSmartlingApiUrl("test_base_url");
+            .setBaseSmartlingApiUrl("test_base_url");
 
         const apiClient = apiClientBuilder.build(SmartlingAuditLogApi);
 
