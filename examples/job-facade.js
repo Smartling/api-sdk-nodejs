@@ -2,7 +2,7 @@ const SmartlingJobFacadeApi = require("../api/job-facade");
 const CreateBatchParameters = require("../api/job-facade/params/create-batch-parameters");
 const UploadFileParameters = require("../api/job-facade/params/upload-file-parameters");
 // eslint-disable-next-line import/no-unresolved
-const { SmartlingApiFactory } = require("../api/factory");
+const { SmartlingApiClientBuilder } = require("../api/builder");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -11,18 +11,22 @@ const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
     const baseUrl = "https://api.smartling.com";
-    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
-    const smartlingJobFacadeApi = apiFactory.createApiClient(SmartlingJobFacadeApi);
-
-    smartlingJobFacadeApi.clientLibId = "testClientLibId";
-    smartlingJobFacadeApi.clientLibVersion = "testClientLibVersion";
+    const smartlingJobFacadeApi = new SmartlingApiClientBuilder()
+        .withLogger(logger)
+        .setBaseSmartlingApiUrl(baseUrl)
+        .setClientLibMetadata("example-lib-name", "example-lib-version")
+        .setHttpClientConfiguration({
+            timeout: 10000
+        })
+        .authWithUserIdAndUserSecret(userId, userSecret)
+        .build(SmartlingJobFacadeApi);
 
     (async () => {
         try {
             const createBatchParams = new CreateBatchParameters();
 
             createBatchParams
-                .setTranslationJobUid("test")
+                .setTranslationJobUid("ae39gwaudv6q")
                 .setAuthorize(true);
 
             logger.debug("-------- Create batch ---------");

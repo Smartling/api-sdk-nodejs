@@ -11,9 +11,13 @@ import SmartlingProjectApi from "../api/project";
 import SmartlingStringsApi from "../api/strings";
 import SmartlingTranslationApi from "../api/translation";
 import SmartlingTranslationRequestsApi from "../api/translation-requests";
+import { SmartlingSettingsServiceApi } from "../api/settings-service";
+import { SmartlingLogApi } from "../api/log";
+import { BulkRequestServiceApi } from "../api/bulk-request";
+
 const packageJson = require("../../package.json");
 
-function assertApiClient(Type: any, apiClient: SmartlingBaseApi) {
+function assertApiClient(Type: any, apiClient: SmartlingBaseApi, assertAuthClient: boolean = true) {
     assert.equal(apiClient instanceof SmartlingBaseApi, true);
     assert.equal(apiClient instanceof Type, true);
 
@@ -26,20 +30,22 @@ function assertApiClient(Type: any, apiClient: SmartlingBaseApi) {
         }
     );
 
-    assert.equal(
-        apiClient["authApi"].userIdentifier,
-        "test_user_id"
-    );
+    if (assertAuthClient === true) {
+        assert.equal(
+            apiClient["authApi"].userIdentifier,
+            "test_user_id"
+        );
 
-    assert.equal(
-        apiClient["authApi"].tokenSecret,
-        "test_user_secret"
-    );
+        assert.equal(
+            apiClient["authApi"].tokenSecret,
+            "test_user_secret"
+        );
 
-    assert.equal(
-        apiClient["authApi"].entrypoint,
-        "test_base_url/auth-api/v2"
-    );
+        assert.equal(
+            apiClient["authApi"].entrypoint,
+            "test_base_url/auth-api/v2"
+        );
+    }
 }
 
 describe("SmartlingApiFactory class tests.", () => {
@@ -195,6 +201,28 @@ describe("SmartlingApiFactory class tests.", () => {
         assertApiClient(
             SmartlingTranslationRequestsApi,
             apiFactory.createApiClient(SmartlingTranslationRequestsApi, { timeout: 100500 })
+        );
+    });
+
+    it("Instantiates settings service api client", () => {
+        assertApiClient(
+            SmartlingSettingsServiceApi,
+            apiFactory.createApiClient(SmartlingSettingsServiceApi, { timeout: 100500 })
+        );
+    });
+
+    it("Instantiates log service api client", () => {
+        assertApiClient(
+            SmartlingLogApi,
+            apiFactory.createApiClient(SmartlingLogApi, { timeout: 100500 }),
+            false
+        );
+    });
+
+    it("Instantiates bulk request service api client", () => {
+        assertApiClient(
+            BulkRequestServiceApi,
+            apiFactory.createApiClient(BulkRequestServiceApi, { timeout: 100500 })
         );
     });
 });

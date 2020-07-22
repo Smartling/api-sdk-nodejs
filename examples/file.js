@@ -2,7 +2,7 @@ const SmartlingFileApi = require("../api/file");
 const RetrievalTypes = require("../api/file/params/retrieval-types");
 const DownloadFileParameters = require("../api/file/params/download-file-parameters");
 // eslint-disable-next-line import/no-unresolved
-const { SmartlingApiFactory } = require("../api/factory");
+const { SmartlingApiClientBuilder } = require("../api/builder");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -11,16 +11,18 @@ const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
     const baseUrl = "https://api.smartling.com";
-    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
-    const smartlingFileApi = apiFactory.createApiClient(SmartlingFileApi);
-
-    smartlingFileApi.clientLibId = "testClientLibId";
-    smartlingFileApi.clientLibVersion = "testClientLibVersion";
+    const smartlingFileApi = new SmartlingApiClientBuilder()
+        .withLogger(logger)
+        .setBaseSmartlingApiUrl(baseUrl)
+        .setClientLibMetadata("example-lib-name", "example-lib-version")
+        .setHttpClientConfiguration({
+            timeout: 10000
+        })
+        .authWithUserIdAndUserSecret(userId, userSecret)
+        .build(SmartlingFileApi);
 
     (async () => {
         const fileUri = "test";
-
-        smartlingFileApi.setOptions({ timeout: 1000 });
 
         try {
             let result = await smartlingFileApi.getStatusForAllLocales(projectId, fileUri);
