@@ -1,4 +1,4 @@
-import { SmartlingApiFactory } from "../api/factory/index";
+import { SmartlingApiClientBuilder } from "../api/builder";
 import { SmartlingLogApi } from "../api/log/index";
 import { CreateLogParameters } from "../api/log/params/create-log-parameters";
 import { LevelEnum } from "../api/log/params/level-enum";
@@ -6,11 +6,14 @@ import { LevelEnum } from "../api/log/params/level-enum";
 const logger = console;
 
 const baseUrl = "https://api.smartling.com";
-const apiFactory = new SmartlingApiFactory(null, null, baseUrl, logger);
-const smartlingLogApi = apiFactory.createApiClient(SmartlingLogApi, { timeout: 10000 });
-
-smartlingLogApi.clientLibId = "testClientLibId";
-smartlingLogApi.clientLibVersion = "testClientLibVersion";
+const smartlingLogApi = new SmartlingApiClientBuilder()
+    .setLogger(logger)
+    .setBaseSmartlingApiUrl(baseUrl)
+    .setClientLibMetadata("example-lib-name", "example-lib-version")
+    .setHttpClientConfiguration({
+        timeout: 10000
+    })
+    .build(SmartlingLogApi);
 
 const payload: CreateLogParameters = new CreateLogParameters();
 

@@ -1,7 +1,7 @@
 import { SmartlingAuditLogApi } from "../api/audit-log/index";
 import { CreateAuditLogParameters } from "../api/audit-log/params/create-audit-log-parameters";
 import { SearchAuditLogParameters } from "../api/audit-log/params/search-audit-log-parameters";
-import { SmartlingApiFactory } from "../api/factory/index";
+import { SmartlingApiClientBuilder } from "../api/builder";
 
 const logger = console;
 const accountUid = process.env.ACCOUNT_UID;
@@ -11,11 +11,15 @@ const userSecret = process.env.USER_SECRET;
 
 if (projectId || accountUid) {
     const baseUrl = "https://api.smartling.com";
-    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
-    const smartlingAuditLogApi = apiFactory.createApiClient(SmartlingAuditLogApi, { timeout: 10000 });
-
-    smartlingAuditLogApi.clientLibId = "testClientLibId";
-    smartlingAuditLogApi.clientLibVersion = "testClientLibVersion";
+    const smartlingAuditLogApi = new SmartlingApiClientBuilder()
+        .setLogger(logger)
+        .setBaseSmartlingApiUrl(baseUrl)
+        .setClientLibMetadata("example-lib-name", "example-lib-version")
+        .setHttpClientConfiguration({
+            timeout: 10000
+        })
+        .authWithUserIdAndUserSecret(userId, userSecret)
+        .build(SmartlingAuditLogApi);
 
     const baseDescription = "This log was added by sdk example";
     const payload: CreateAuditLogParameters = (

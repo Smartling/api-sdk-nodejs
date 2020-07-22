@@ -38,6 +38,7 @@ export * from "./api/audit-log/params/create-audit-log-parameters";
 export * from "./api/audit-log/params/order-enum";
 export * from "./api/audit-log/params/search-audit-log-parameters";
 export * from "./api/factory/index";
+export * from "./api/builder/index";
 export * from "./api/log/index";
 export * from "./api/log/params/create-log-parameters";
 export * from "./api/log/params/level-enum";

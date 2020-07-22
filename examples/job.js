@@ -4,7 +4,7 @@ const ListJobFilesParameters = require("../api/job/params/list-job-files-paramet
 const CreateJobParameters = require("../api/job/params/create-job-parameters");
 const JobStatuses = require("../api/job/params/job-statuses");
 // eslint-disable-next-line import/no-unresolved
-const { SmartlingApiFactory } = require("../api/factory");
+const { SmartlingApiClientBuilder } = require("../api/builder");
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -13,11 +13,15 @@ const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
     const baseUrl = "https://api.smartling.com";
-    const apiFactory = new SmartlingApiFactory(userId, userSecret, baseUrl, logger);
-    const smartlingJobApi = apiFactory.createApiClient(SmartlingJobApi);
-
-    smartlingJobApi.clientLibId = "testClientLibId";
-    smartlingJobApi.clientLibVersion = "testClientLibVersion";
+    const smartlingJobApi = new SmartlingApiClientBuilder()
+        .withLogger(logger)
+        .setBaseSmartlingApiUrl(baseUrl)
+        .setClientLibMetadata("example-lib-name", "example-lib-version")
+        .setHttpClientConfiguration({
+            timeout: 10000
+        })
+        .authWithUserIdAndUserSecret(userId, userSecret)
+        .build(SmartlingJobApi);
 
     (async () => {
         try {
