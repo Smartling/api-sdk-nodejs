@@ -105,6 +105,24 @@ describe("SmartlingBulkRequestServiceApi class tests.", () => {
     });
 
     describe("Methods", () => {
+        it('should get supported locales', async function () {
+            const connector = "connector";
+            const projectUid = "testProjectUid";
+            await bulkRequestServiceApi.getSupportedLocales(connector, projectUid);
+            sinon.assert.calledOnce(bulkRequestServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                bulkRequestServiceApiFetchStub,
+                `https://test.com/${connector}-api/v2/projects/${projectUid}/bulk/supportedLocales`,
+                {
+                    headers: {
+                        "Authorization": "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
         it("Should search", async () => {
             const filter = {
                 someProperty: "someValue",
