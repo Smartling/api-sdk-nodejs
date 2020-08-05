@@ -16,8 +16,14 @@ export class BulkRequestServiceApi extends SmartlingBaseApi {
     }
 
     public async getSupportedLocales(connector: string, projectUid: string): Promise<string[]> {
+        if (typeof connector !== "string") {
+            throw new SmartlingException("connector must be string");
+        }
         if (connector === "") {
             throw new SmartlingException("connector must not be empty string");
+        }
+        if (typeof projectUid !== "string") {
+            throw new SmartlingException("projectUid must be string");
         }
         if (projectUid === "") {
             throw new SmartlingException("projectUid must not be empty string");
