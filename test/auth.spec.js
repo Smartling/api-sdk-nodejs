@@ -1,14 +1,8 @@
 const assert = require("assert");
 const sinon = require("sinon");
 const Auth = require("../api/auth");
+const { loggerMock, responseMock } = require("./mock");
 const SmartlingException = require("../api/exception");
-
-const loggerMock = {
-    debug: () => {},
-    warn: () => {},
-    error: () => {},
-    info: () => {}
-};
 
 describe("Auth class tests.", () => {
     let auth;
@@ -27,18 +21,34 @@ describe("Auth class tests.", () => {
         authResetRequestTimeStampSpy.restore();
     });
 
-    it("Method authenticate.", async () => {
-        await auth.authenticate();
+    describe("Method authenticate.", () => {
+        it("Success flow", async () => {
+            await auth.authenticate();
 
-        sinon.assert.calledOnce(authResetRequestTimeStampSpy);
+            sinon.assert.calledOnce(authResetRequestTimeStampSpy);
 
-        sinon.assert.calledOnce(authMakeRequestStub);
-        sinon.assert.calledWithExactly(
-            authMakeRequestStub,
-            "post",
-            "https://api.smartling.com/auth-api/v2/authenticate",
-            "{\"userIdentifier\":\"test_user_id\",\"userSecret\":\"test_user_secret\"}"
-        );
+            sinon.assert.calledOnce(authMakeRequestStub);
+            sinon.assert.calledWithExactly(
+                authMakeRequestStub,
+                "post",
+                "https://api.smartling.com/auth-api/v2/authenticate",
+                "{\"userIdentifier\":\"test_user_id\",\"userSecret\":\"test_user_secret\"}"
+            );
+        });
+
+        it("Auth endpoint returned non-200 response code", async () => {
+            authMakeRequestStub.restore();
+
+            const baseFetchStub = sinon.stub(auth, "fetch");
+            const response401Mock = {
+                status: 401
+            };
+
+            baseFetchStub.onCall(0).returns(response401Mock);
+            baseFetchStub.onCall(1).returns(responseMock);
+
+            await auth.authenticate();
+        });
     });
 
     describe("Method refreshToken.", () => {
