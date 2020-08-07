@@ -99,6 +99,7 @@ class SmartlingBaseApi {
         if (response.status === 401) {
             this.logger.warn("Got unexpected 401 response code, trying to re-auth carefully...");
 
+            /* eslint-disable-next-line no-prototype-builtins */
             if (this.hasOwnProperty("authApi") && this.authApi !== undefined) {
                 this.authApi.resetToken();
             }
