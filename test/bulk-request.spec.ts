@@ -112,7 +112,7 @@ describe("SmartlingBulkRequestServiceApi class tests.", () => {
             sinon.assert.calledOnce(bulkRequestServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 bulkRequestServiceApiFetchStub,
-                `https://test.com/${connector}-api/v2/projects/${projectUid}/bulk/supportedLocales`,
+                `https://test.com/connectors-bulk-submit-api/v2/projects/${projectUid}/integrations/${connector}/supported-locales`,
                 {
                     headers: {
                         "Authorization": "test_token_type test_access_token",
