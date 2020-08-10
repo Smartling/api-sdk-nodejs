@@ -27,10 +27,6 @@ import translationSubmissionStates from "./api/translation-requests/params/trans
 import UpdateTranslationRequestParameters from "./api/translation-requests/params/update-translation-request-params";
 import UpdateTranslationSubmissionParameters from "./api/translation-requests/params/update-translation-submission-params";
 import { BulkRequestServiceApi } from "./api/bulk-request";
-import { Search as BulkRequestSearchParameters } from "./api/bulk-request/parameters/search";
-import { RequestTranslation as BulkRequestRequestTranslationParameters } from "./api/bulk-request/parameters/request-translation";
-import { Asset as BulkRequestAsset } from "./api/bulk-request/models/asset";
-import { SearchResult as BulkRequestSearchResult } from "./api/bulk-request/models/search-result";
 
 export * from "./api/audit-log/index";
 export * from "./api/audit-log/dto/audit-log-dto";
@@ -52,10 +48,6 @@ export { SmartlingException };
 export { SmartlingFileApi };
 export { DownloadFileParameters };
 export { BulkRequestServiceApi };
-export { BulkRequestSearchParameters };
-export { BulkRequestRequestTranslationParameters };
-export { BulkRequestAsset };
-export { BulkRequestSearchResult };
 export { retrievalTypes };
 export { SmartlingJobApi };
 export { CreateJobParameters };
