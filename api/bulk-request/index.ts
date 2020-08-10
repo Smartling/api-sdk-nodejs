@@ -30,7 +30,7 @@ export class BulkRequestServiceApi extends SmartlingBaseApi {
         }
         return (await this.makeRequest(
             "get",
-            `${this.entrypoint}/${connector}-api/v2/projects/${projectUid}/bulk/supportedLocales`
+            `${this.entrypoint}/connectors-bulk-submit-api/v2/projects/${projectUid}/integrations/${connector}/supported-locales`
         )).items;
     }
 
