@@ -8,7 +8,7 @@ class SmartlingProgressTrackerApi extends SmartlingBaseApi {
     }
 
     async createRecord(projectId, spaceId, objectId, data) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/projects/${projectId}/spaces/${spaceId}/objects/${objectId}/records`,
             JSON.stringify(data)
@@ -16,21 +16,21 @@ class SmartlingProgressTrackerApi extends SmartlingBaseApi {
     }
 
     async getRecord(projectId, spaceId, objectId, recordId) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/projects/${projectId}/spaces/${spaceId}/objects/${objectId}/records/${recordId}`
         );
     }
 
     async getRecords(projectId, spaceId, objectId) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/projects/${projectId}/spaces/${spaceId}/objects/${objectId}/records`
         );
     }
 
     async updateRecord(projectId, spaceId, objectId, recordId, data) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "put",
             `${this.entrypoint}/projects/${projectId}/spaces/${spaceId}/objects/${objectId}/records/${recordId}`,
             JSON.stringify(data)
@@ -38,21 +38,21 @@ class SmartlingProgressTrackerApi extends SmartlingBaseApi {
     }
 
     async deleteRecord(projectId, spaceId, objectId, recordId) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "delete",
             `${this.entrypoint}/projects/${projectId}/spaces/${spaceId}/objects/${objectId}/records/${recordId}`
         );
     }
 
     async deleteRecords(projectId, spaceId, objectId) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "delete",
             `${this.entrypoint}/projects/${projectId}/spaces/${spaceId}/objects/${objectId}`
         );
     }
 
     async getToken(accountUid) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/accounts/${accountUid}/token`
         );

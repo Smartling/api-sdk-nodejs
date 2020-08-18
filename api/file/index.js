@@ -8,7 +8,7 @@ class SmartlingFileApi extends SmartlingBaseApi {
     }
 
     async getStatusForAllLocales(projectId, fileUri) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/file/status`,
             { fileUri }
@@ -16,7 +16,7 @@ class SmartlingFileApi extends SmartlingBaseApi {
     }
 
     async getLastModified(projectId, fileUri) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/file/last-modified`,
             { fileUri }
@@ -24,7 +24,7 @@ class SmartlingFileApi extends SmartlingBaseApi {
     }
 
     async downloadFile(projectId, fileUri, locale, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
             Object.assign(params.export(), { fileUri }),

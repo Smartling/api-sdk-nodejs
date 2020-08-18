@@ -8,7 +8,7 @@ class SmartlingProjectApi extends SmartlingBaseApi {
     }
 
     async getProjectDetails(projectId) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}`
         );

@@ -8,7 +8,7 @@ class SmartlingJobApi extends SmartlingBaseApi {
     }
 
     async createJob(projectId, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs`,
             JSON.stringify(params.export())
@@ -16,14 +16,14 @@ class SmartlingJobApi extends SmartlingBaseApi {
     }
 
     async getJob(projectId, translationJobUid) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}`
         );
     }
 
     async getJobFiles(projectId, translationJobUid, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/files`,
             params.export()
@@ -31,7 +31,7 @@ class SmartlingJobApi extends SmartlingBaseApi {
     }
 
     async listJobs(projectId, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs`,
             params.export()

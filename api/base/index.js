@@ -50,7 +50,7 @@ class SmartlingBaseApi {
     }
 
     async fetch(uri, options) {
-        return fetch(uri, options);
+        return await fetch(uri, options);
     }
 
     ua(clientId, clientVersion) {

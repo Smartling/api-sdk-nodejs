@@ -28,7 +28,7 @@ class SmartlingStringsApi extends SmartlingBaseApi {
     }
 
     async getStringsData(projectId, hashCodes) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/string-data`,
             JSON.stringify({

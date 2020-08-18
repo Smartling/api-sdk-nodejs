@@ -45,7 +45,7 @@ class SmartlingJobFacadeApi extends SmartlingBaseApi {
     }
 
     async createBatch(projectId, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches`,
             JSON.stringify(params.export())
@@ -53,7 +53,7 @@ class SmartlingJobFacadeApi extends SmartlingBaseApi {
     }
 
     async uploadBatchFile(projectId, batchUid, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}/file`,
             params.export()
@@ -61,7 +61,7 @@ class SmartlingJobFacadeApi extends SmartlingBaseApi {
     }
 
     async executeBatch(projectId, batchUid) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}`,
             JSON.stringify({
@@ -71,7 +71,7 @@ class SmartlingJobFacadeApi extends SmartlingBaseApi {
     }
 
     async getBatchStatus(projectId, batchUid) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/batches/${batchUid}`
         );

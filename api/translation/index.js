@@ -26,7 +26,7 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
     }
 
     async createTranslationPackage(projectId, translationJobUid, localeId, workflowStepUid) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/projects/${projectId}/locales/${localeId}/translation-packages`,
             JSON.stringify({
@@ -37,14 +37,14 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
     }
 
     async getTranslationPackage(projectId, translationPackageUid) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/projects/${projectId}/translation-packages/${translationPackageUid}`
         );
     }
 
     async getTranslationPackageContent(projectId, translationPackageUid) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/projects/${projectId}/translation-packages/${translationPackageUid}/content`,
             null,
@@ -68,7 +68,7 @@ class SmartlingTranslationApi extends SmartlingBaseApi {
         // eslint-disable-next-line fp/no-delete
         delete headers["content-type"];
 
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/projects/${projectId}/locales/${localeId}/content`,
             form,
