@@ -8,7 +8,7 @@ class SmartlingTranslationRequestsApi extends SmartlingBaseApi {
     }
 
     async createTranslationRequest(projectId, bucketName, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/projects/${projectId}/buckets/${bucketName}/translation-requests`,
             JSON.stringify(params.export())
@@ -16,14 +16,14 @@ class SmartlingTranslationRequestsApi extends SmartlingBaseApi {
     }
 
     async getTranslationRequest(projectId, bucketName, translationRequestUid) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/projects/${projectId}/buckets/${bucketName}/translation-requests/${translationRequestUid}`
         );
     }
 
     async updateTranslationRequest(projectId, bucketName, translationRequestUid, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "put",
             `${this.entrypoint}/projects/${projectId}/buckets/${bucketName}/translation-requests/${translationRequestUid}`,
             JSON.stringify(params.export())
@@ -31,7 +31,7 @@ class SmartlingTranslationRequestsApi extends SmartlingBaseApi {
     }
 
     async searchTranslationRequests(projectId, bucketName, params) {
-        return this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/projects/${projectId}/buckets/${bucketName}/translation-requests`,
             params.export()

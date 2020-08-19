@@ -24,7 +24,7 @@ class SmartlingAuthApi extends SmartlingBaseApi {
     async authenticate() {
         this.resetRequestTimeStamp();
 
-        return this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/authenticate`,
             JSON.stringify({
@@ -38,7 +38,7 @@ class SmartlingAuthApi extends SmartlingBaseApi {
         if (this.tokenExists() && this.tokenCanBeRenewed()) {
             this.resetRequestTimeStamp();
 
-            return this.makeRequest(
+            return await this.makeRequest(
                 "post",
                 `${this.entrypoint}/authenticate/refresh`,
                 JSON.stringify({
@@ -47,7 +47,7 @@ class SmartlingAuthApi extends SmartlingBaseApi {
             );
         }
 
-        return this.authenticate();
+        return await this.authenticate();
     }
 
     resetRequestTimeStamp() {
