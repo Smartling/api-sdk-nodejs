@@ -1,4 +1,5 @@
 const SmartlingBaseApi = require("../base");
+const FormData = require("form-data");
 
 class SmartlingFileApi extends SmartlingBaseApi {
     constructor(authApi, logger, smartlingApiBaseUrl) {
@@ -29,6 +30,26 @@ class SmartlingFileApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
             Object.assign(params.export(), { fileUri }),
             true
+        );
+    }
+
+    async deleteFile(projectId, fileUri) {
+        const form = new FormData();
+
+        form.append("fileUri", fileUri);
+
+        const headers = form.getHeaders();
+
+        headers["Content-Type"] = headers["content-type"];
+        // eslint-disable-next-line fp/no-delete
+        delete headers["content-type"];
+
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/file/delete`,
+            form,
+            false,
+            headers
         );
     }
 }

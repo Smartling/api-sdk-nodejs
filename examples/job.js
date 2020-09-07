@@ -2,6 +2,7 @@ const SmartlingJobApi = require("../api/job");
 const ListJobsParameters = require("../api/job/params/list-jobs-parameters");
 const ListJobFilesParameters = require("../api/job/params/list-job-files-parameters");
 const CreateJobParameters = require("../api/job/params/create-job-parameters");
+const RemoveFileParameters = require("../api/job/params/remove-file-parameters");
 const JobStatuses = require("../api/job/params/job-statuses");
 // eslint-disable-next-line import/no-unresolved
 const { SmartlingApiClientBuilder } = require("../api/builder");
@@ -25,6 +26,14 @@ if (userId && userSecret) {
 
     (async () => {
         try {
+            logger.debug("-------- Remove file from job ---------");
+
+            const removeFileParameters = new RemoveFileParameters();
+
+            removeFileParameters.setFileUri("fileUri.xml");
+
+            await smartlingJobApi.removeFileFromJob(projectId, "jobUid", removeFileParameters);
+
             logger.debug("-------- Create job ---------");
 
             const createJobParams = new CreateJobParameters();

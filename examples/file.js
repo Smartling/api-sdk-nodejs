@@ -40,6 +40,9 @@ if (userId && userSecret) {
             result = await smartlingFileApi.downloadFile(projectId, fileUri, "fr-FR", downloadFileParams);
             logger.debug("-------- Download file ---------");
             logger.debug(result);
+
+            await smartlingFileApi.deleteFile(projectId, fileUri);
+            logger.debug("-------- File deleted ---------");
         } catch (e) {
             logger.error(e);
         }
