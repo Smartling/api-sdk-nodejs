@@ -9,6 +9,7 @@ import CreateJobParameters from "./api/job/params/create-job-parameters";
 import jobStatuses from "./api/job/params/job-statuses";
 import ListJobsParameters from "./api/job/params/list-jobs-parameters";
 import ListJobFilesParameters from "./api/job/params/list-job-files-parameters";
+import RemoveFileParameters from "./api/job/params/remove-file-parameters";
 import SmartlingJobFacadeApi from "./api/job-facade/index";
 import CreateBatchParameters from "./api/job-facade/params/create-batch-parameters";
 import UploadFileParameters from "./api/job-facade/params/upload-file-parameters";
@@ -54,6 +55,7 @@ export { CreateJobParameters };
 export { jobStatuses };
 export { ListJobsParameters };
 export { ListJobFilesParameters };
+export { RemoveFileParameters }
 export { SmartlingJobFacadeApi };
 export { CreateBatchParameters };
 export { UploadFileParameters };
