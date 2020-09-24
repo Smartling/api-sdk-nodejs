@@ -14,6 +14,7 @@ import SmartlingTranslationRequestsApi from "../api/translation-requests";
 import { SmartlingSettingsServiceApi } from "../api/settings-service";
 import { SmartlingLogApi } from "../api/log";
 import { BulkRequestServiceApi } from "../api/bulk-request";
+import { PublishedFilesApi } from "../api/published-files/index";
 
 const packageJson = require("../../package.json");
 
@@ -223,6 +224,13 @@ describe("SmartlingApiFactory class tests.", () => {
         assertApiClient(
             BulkRequestServiceApi,
             apiFactory.createApiClient(BulkRequestServiceApi, { timeout: 100500 })
+        );
+    });
+
+    it("Instantiates published files api client", () => {
+        assertApiClient(
+            PublishedFilesApi,
+            apiFactory.createApiClient(PublishedFilesApi, { timeout: 100500 })
         );
     });
 });

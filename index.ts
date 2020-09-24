@@ -42,6 +42,10 @@ export * from "./api/log/params/level-enum";
 export * from "./api/settings-service/index";
 export * from "./api/settings-service/dto/settings-dto";
 export * from "./api/settings-service/parameters/settings-payload";
+export * from "./api/published-files/index";
+export * from "./api/published-files/dto/published-file-dto";
+export * from "./api/published-files/params/recently-published-files-parameters";
+export * from "./api/published-files/response";
 
 export { SmartlingAuthApi };
 export { SmartlingBaseApi };
