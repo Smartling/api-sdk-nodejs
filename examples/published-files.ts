@@ -3,12 +3,11 @@ import { RecentlyPublishedFilesParameters } from "../api/published-files/params/
 import { SmartlingApiClientBuilder } from "../api/builder";
 
 const logger = console;
-const accountUid = process.env.ACCOUNT_UID;
 const projectId = process.env.PROJECT_ID;
 const userId = process.env.USER_ID;
 const userSecret = process.env.USER_SECRET;
 
-if (projectId || accountUid) {
+if (projectId) {
     const baseUrl = "https://api.smartling.com";
     const publishedFilesApi = new SmartlingApiClientBuilder()
         .setLogger(logger)
@@ -39,5 +38,5 @@ if (projectId || accountUid) {
         }
      })();
 } else {
-    logger.info("Must specify one of projectUid or accountUid");
+    logger.info("Must specify one of projectUid");
 }
