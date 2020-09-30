@@ -1,11 +1,7 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
-import {PropertyMappingDto} from "./dto/property-mapping-dto";
-import {PropertyDto} from "./dto/property-dto";
-import {MappingDto} from "./dto/mapping-dto";
 import {Response} from "../published-files/response";
-import {PropertyMappingsParameters} from "./params/property-mappings-parameters";
-import {PropertyParameters} from "./params/property-parameters";
+import BaseParameters from "../parameters";
 
 export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	private readonly authApi: SmartlingAuthApi;
@@ -21,9 +17,9 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	public async createProjectPropertyMapping(
 		projectId: string,
 		integrationId: string,
-		params: PropertyMappingsParameters
-	): Promise<PropertyMappingDto<PropertyDto, MappingDto>> {
-		return this.mapItemToDto<PropertyDto, MappingDto>(await this.makeRequest(
+		params: BaseParameters
+	): Promise<any> {
+		return this.mapItemToDto(await this.makeRequest(
 			"post",
 			this.getProjectPropertyMappingsApiUrl(projectId, integrationId),
 			JSON.stringify(params.export())
@@ -33,9 +29,9 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	public async createAccountPropertyMapping(
 		accountUid: string,
 		integrationId: string,
-		params: PropertyMappingsParameters
-	): Promise<PropertyMappingDto<PropertyDto, MappingDto>> {
-		return this.mapItemToDto<PropertyDto, MappingDto>(await this.makeRequest(
+		params: BaseParameters
+	): Promise<any> {
+		return this.mapItemToDto(await this.makeRequest(
 			"post",
 			this.getAccountPropertyMappingsApiUrl(accountUid, integrationId),
 			JSON.stringify(params.export())
@@ -46,9 +42,9 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		projectId: string,
 		integrationId: string,
 		propertyMappingUid: string,
-		params: PropertyMappingsParameters
-	): Promise<PropertyMappingDto<PropertyDto, MappingDto>> {
-		return this.mapItemToDto<PropertyDto, MappingDto>(await this.makeRequest(
+		params: BaseParameters
+	): Promise<any> {
+		return this.mapItemToDto(await this.makeRequest(
 			"put",
 			`${this.getProjectPropertyMappingsApiUrl(projectId, integrationId)}/${propertyMappingUid}`,
 			JSON.stringify(params.export())
@@ -59,9 +55,9 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		accountUid: string,
 		integrationId: string,
 		propertyMappingUid: string,
-		params: PropertyMappingsParameters
-	): Promise<PropertyMappingDto<PropertyDto, MappingDto>> {
-		return this.mapItemToDto<PropertyDto, MappingDto>(await this.makeRequest(
+		params: BaseParameters
+	): Promise<any> {
+		return this.mapItemToDto(await this.makeRequest(
 			"put",
 			`${this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)}/${propertyMappingUid}`,
 			JSON.stringify(params.export())
@@ -71,8 +67,8 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	public async getAccountPropertyMappings(
 		accountUid: string,
 		integrationId: string
-	): Promise<Response<PropertyMappingDto<PropertyDto, MappingDto>>> {
-		return this.mapItemsToDtos<PropertyDto, MappingDto>(await this.makeRequest(
+	): Promise<Response<any>> {
+		return this.mapItemsToDtos(await this.makeRequest(
 			"get",
 			this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)
 		));
@@ -81,8 +77,8 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	public async getProjectPropertyMappings(
 		projectId: string,
 		integrationId: string
-	): Promise<Response<PropertyMappingDto<PropertyDto, MappingDto>>> {
-		return this.mapItemsToDtos<PropertyDto, MappingDto>(await this.makeRequest(
+	): Promise<Response<any>> {
+		return this.mapItemsToDtos(await this.makeRequest(
 			"get",
 			this.getProjectPropertyMappingsApiUrl(projectId, integrationId),
 		));
@@ -91,9 +87,9 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	public async searchAccountPropertyMappings(
 		accountUid: string,
 		integrationId: string,
-		params: PropertyParameters
-	): Promise<Response<PropertyMappingDto<PropertyDto, MappingDto>>> {
-		return this.mapItemsToDtos<PropertyDto, MappingDto>(await this.makeRequest(
+		params: BaseParameters
+	): Promise<Response<any>> {
+		return this.mapItemsToDtos(await this.makeRequest(
 			"get",
 			`${this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)}?property=${JSON.stringify(params.export())}`
 		));
@@ -102,9 +98,9 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	public async searchProjectPropertyMappings(
 		projectId: string,
 		integrationId: string,
-		params: PropertyParameters
-	): Promise<Response<PropertyMappingDto<PropertyDto, MappingDto>>> {
-		return this.mapItemsToDtos<PropertyDto, MappingDto>(await this.makeRequest(
+		params: BaseParameters
+	): Promise<Response<any>> {
+		return this.mapItemsToDtos(await this.makeRequest(
 			"get",
 			`${this.getProjectPropertyMappingsApiUrl(projectId, integrationId)}?property=${JSON.stringify(params.export())}`
 		));
@@ -118,20 +114,20 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		return `${this.entrypoint}/accounts/${accountUid}/integrations/${integrationId}/property-mappings`;
 	}
 
-	private mapItemToDto<T, S>(propertyMapping: object): PropertyMappingDto<T, S> {
+	private mapItemToDto(propertyMapping: object): any {
 		["created", "modified"].forEach(function (field) {
 			if (propertyMapping[field]) {
 				propertyMapping[field] = new Date(propertyMapping[field]);
 			}
 		});
 
-		return propertyMapping as PropertyMappingDto<T, S>;
+		return propertyMapping;
 	}
 
-	private mapItemsToDtos<T, S>(response: Response<object>): Response<PropertyMappingDto<T, S>> {
+	private mapItemsToDtos(response: Response<object>): Response<any> {
 		const retrievedItems = response.items || [];
-		const items: Array<PropertyMappingDto<T, S>> = retrievedItems.map(item => {
-			return this.mapItemToDto(item) as PropertyMappingDto<T, S>;
+		const items: Array<any> = retrievedItems.map(item => {
+			return this.mapItemToDto(item);
 		});
 
 		return {

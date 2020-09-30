@@ -1,9 +1,0 @@
-export enum ActionEnum {
-	TRANSLATE = "TRANSLATE",
-	PLAIN_TEXT = "PLAIN_TEXT",
-	HTML = "HTML",
-	COPY = "COPY",
-	JSON = "JSON",
-	MARKDOWN = "MARKDOWN",
-	RTF = "RTF"
-}

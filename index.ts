@@ -46,6 +46,7 @@ export * from "./api/published-files/index";
 export * from "./api/published-files/dto/published-file-dto";
 export * from "./api/published-files/params/recently-published-files-parameters";
 export * from "./api/published-files/response";
+export * from "./api/property-mappings/index";
 
 export { SmartlingAuthApi };
 export { SmartlingBaseApi };

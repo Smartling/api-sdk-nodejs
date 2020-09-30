@@ -1,35 +1,22 @@
 import "mocha"
 import sinon from "sinon";
 import assert from "assert";
-import {ActionEnum} from "../api/property-mappings/params/action-enum";
-import {PropertyParameters} from "../api/property-mappings/params/property-parameters";
-import {MappingParameters} from "../api/property-mappings/params/mapping-parameters";
-import {PropertyMappingsParameters} from "../api/property-mappings/params/property-mappings-parameters";
 import {SmartlingPropertyMappingsApi} from "../api/property-mappings";
+import BaseParameters from "../api/parameters";
 
 const {loggerMock, authMock, responseMock} = require("./mock");
 
-const contentType = "contactPage";
-const name = "title";
-const space = "q2fjg5qulqq8";
+const propertyMappings = {key: "key", value: "value"};
 
 describe("SmartlingPropertyMappingsApi class tests.", () => {
 	let propertyMappingsApi: SmartlingPropertyMappingsApi;
 	let propertyMappingsServiceApiFetchStub;
 	let propertyMappingsServiceApiUaStub;
 	let responseMockJsonStub;
-	let propertyMappingsParameters: PropertyMappingsParameters;
+	let propertyMappingsParameters: BaseParameters;
 
 	beforeEach(() => {
-		const propertyParameters: PropertyParameters = (new PropertyParameters())
-			.setContentType(contentType)
-			.setName(name)
-			.setSpace(space);
-		const mappingParameters: MappingParameters = (new MappingParameters())
-			.setAction(ActionEnum.TRANSLATE);
-		propertyMappingsParameters = (new PropertyMappingsParameters())
-			.setMapping(mappingParameters)
-			.setProperty(propertyParameters);
+		propertyMappingsParameters = new BaseParameters(propertyMappings);
 
 		propertyMappingsApi = new SmartlingPropertyMappingsApi(authMock, loggerMock, "https://test.com");
 		propertyMappingsServiceApiFetchStub = sinon.stub(propertyMappingsApi, "fetch");
@@ -51,16 +38,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 
 	describe("Params", () => {
 		it("Create property mapping parameters", () => {
-			assert.deepEqual({
-					"property": {
-						"space": space,
-						"contentType": contentType,
-						"name": name
-					},
-					"mapping": {
-						"action": ActionEnum.TRANSLATE
-					}
-				},
+			assert.deepEqual(propertyMappings,
 				propertyMappingsParameters.export()
 			);
 		});
@@ -75,7 +53,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings",
 				{
-					body: `{"mapping":{"action":"${ActionEnum.TRANSLATE}"},"property":{"contentType":"${contentType}","name":"${name}","space":"${space}"}}`,
+					body: `{"key":"key","value":"value"}`,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",
@@ -103,20 +81,16 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 			);
 		});
 		it("Should search project property mappings", async () => {
-			const propertyParameters: PropertyParameters = (new PropertyParameters())
-				.setContentType(contentType)
-				.setSpace(space);
-
 			await propertyMappingsApi.searchProjectPropertyMappings(
 				"testProjectId",
 				"testIntegrationId",
-				propertyParameters
+				propertyMappingsParameters
 			);
 
 			sinon.assert.calledOnce(propertyMappingsServiceApiFetchStub);
 			sinon.assert.calledWithExactly(
 				propertyMappingsServiceApiFetchStub,
-				`https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings?property={"contentType":"${contentType}","space":"${space}"}`,
+				`https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings?property={"key":"key","value":"value"}`,
 				{
 					headers: {
 						"Authorization": "test_token_type test_access_token",
@@ -124,6 +98,111 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 						"User-Agent": "test_user_agent"
 					},
 					method: "get"
+				}
+			);
+		});
+
+		it("Should update project property mappings", async () => {
+			await propertyMappingsApi.updateProjectPropertyMapping(
+				"testProjectId",
+				"testIntegrationId",
+				"propertyMappingUid",
+				propertyMappingsParameters
+			);
+
+			sinon.assert.calledOnce(propertyMappingsServiceApiFetchStub);
+			sinon.assert.calledWithExactly(
+				propertyMappingsServiceApiFetchStub,
+				"https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings/propertyMappingUid",
+				{
+					body: `{"key":"key","value":"value"}`,
+					headers: {
+						"Authorization": "test_token_type test_access_token",
+						"Content-Type": "application/json",
+						"User-Agent": "test_user_agent"
+					},
+					method: "put"
+				}
+			);
+		});
+
+		it("Should create account property mappings", async () => {
+			await propertyMappingsApi.createAccountPropertyMapping("testAccountUid", "testIntegrationId", propertyMappingsParameters);
+
+			sinon.assert.calledOnce(propertyMappingsServiceApiFetchStub);
+			sinon.assert.calledWithExactly(
+				propertyMappingsServiceApiFetchStub,
+				"https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings",
+				{
+					body: `{"key":"key","value":"value"}`,
+					headers: {
+						"Authorization": "test_token_type test_access_token",
+						"Content-Type": "application/json",
+						"User-Agent": "test_user_agent"
+					},
+					method: "post"
+				}
+			);
+		});
+
+		it("Should get account property mappings", async () => {
+			await propertyMappingsApi.getAccountPropertyMappings("testAccountUid", "testIntegrationId");
+
+			sinon.assert.calledOnce(propertyMappingsServiceApiFetchStub);
+			sinon.assert.calledWithExactly(
+				propertyMappingsServiceApiFetchStub,
+				"https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings", {
+					headers: {
+						"Authorization": "test_token_type test_access_token",
+						"Content-Type": "application/json",
+						"User-Agent": "test_user_agent"
+					},
+					method: "get"
+				}
+			);
+		});
+		it("Should search account property mappings", async () => {
+			await propertyMappingsApi.searchAccountPropertyMappings(
+				"testAccountUid",
+				"testIntegrationId",
+				propertyMappingsParameters
+			);
+
+			sinon.assert.calledOnce(propertyMappingsServiceApiFetchStub);
+			sinon.assert.calledWithExactly(
+				propertyMappingsServiceApiFetchStub,
+				`https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings?property={"key":"key","value":"value"}`,
+				{
+					headers: {
+						"Authorization": "test_token_type test_access_token",
+						"Content-Type": "application/json",
+						"User-Agent": "test_user_agent"
+					},
+					method: "get"
+				}
+			);
+		});
+
+		it("Should update account property mappings", async () => {
+			await propertyMappingsApi.updateAccountPropertyMapping(
+				"testAccountUid",
+				"testIntegrationId",
+				"propertyMappingUid",
+				propertyMappingsParameters
+			);
+
+			sinon.assert.calledOnce(propertyMappingsServiceApiFetchStub);
+			sinon.assert.calledWithExactly(
+				propertyMappingsServiceApiFetchStub,
+				"https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings/propertyMappingUid",
+				{
+					body: `{"key":"key","value":"value"}`,
+					headers: {
+						"Authorization": "test_token_type test_access_token",
+						"Content-Type": "application/json",
+						"User-Agent": "test_user_agent"
+					},
+					method: "put"
 				}
 			);
 		});

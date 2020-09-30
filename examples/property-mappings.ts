@@ -1,9 +1,6 @@
 import {SmartlingApiClientBuilder} from "../api/builder";
 import {SmartlingPropertyMappingsApi} from "../api/property-mappings";
-import {PropertyMappingsParameters} from "../api/property-mappings/params/property-mappings-parameters";
-import {MappingParameters} from "../api/property-mappings/params/mapping-parameters";
-import {PropertyParameters} from "../api/property-mappings/params/property-parameters";
-import {ActionEnum} from "../api/property-mappings/params/action-enum";
+import BaseParameters from "../api/parameters";
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -23,19 +20,11 @@ if (projectId) {
 		.authWithUserIdAndUserSecret(userId, userSecret)
 		.build(SmartlingPropertyMappingsApi);
 
-	const propertyParameters: PropertyParameters = (new PropertyParameters())
-		.setContentType("contactPage")
-		.setName("title")
-		.setSpace("q2fjg5qulqq8");
-	const mappingParameters: MappingParameters = (new MappingParameters())
-		.setAction(ActionEnum.TRANSLATE);
-	const propertyMappingsParameters: PropertyMappingsParameters = (new PropertyMappingsParameters())
-		.setMapping(mappingParameters)
-		.setProperty(propertyParameters);
+	const baseParameters: BaseParameters = new BaseParameters({key: "key", value: "value"});
 
 	(async () => {
 		try {
-			await propertyMappingsApi.createProjectPropertyMapping(projectId, integrationId, propertyMappingsParameters);
+			await propertyMappingsApi.createProjectPropertyMapping(projectId, integrationId, baseParameters);
 
 			logger.info(
 				JSON.stringify(
@@ -47,7 +36,7 @@ if (projectId) {
 
 			logger.info(
 				JSON.stringify(
-					await propertyMappingsApi.searchProjectPropertyMappings(projectId, integrationId, propertyParameters),
+					await propertyMappingsApi.searchProjectPropertyMappings(projectId, integrationId, baseParameters),
 					null,
 					2
 				)
