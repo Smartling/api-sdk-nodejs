@@ -16,6 +16,7 @@ import { SmartlingSettingsServiceApi } from "../api/settings-service";
 import { SmartlingLogApi } from "../api/log";
 import { BulkRequestServiceApi } from "../api/bulk-request";
 import { PublishedFilesApi } from "../api/published-files/index";
+import { SmartlingPropertyMappingsApi } from "../api/property-mappings";
 
 const packageJson = require("../../package.json");
 
@@ -322,6 +323,13 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         assertApiClient(
             PublishedFilesApi,
             apiClientBuilder.build(PublishedFilesApi)
+        );
+    });
+
+    it("Instantiates property mappings api client", () => {
+        assertApiClient(
+            SmartlingPropertyMappingsApi,
+            apiClientBuilder.build(SmartlingPropertyMappingsApi)
         );
     });
 });
