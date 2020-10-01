@@ -1,6 +1,6 @@
 import {SmartlingApiClientBuilder} from "../api/builder";
 import {SmartlingPropertyMappingsApi} from "../api/property-mappings";
-import BaseParameters from "../api/parameters";
+import {PropertyMappingParameters} from "../api/property-mappings/parameters/property-mapping-parameters";
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -20,11 +20,15 @@ if (projectId) {
 		.authWithUserIdAndUserSecret(userId, userSecret)
 		.build(SmartlingPropertyMappingsApi);
 
-	const baseParameters: BaseParameters = new BaseParameters({key: "key", value: "value"});
+	const property = {key: "key", value: "value"};
+	const mapping = {name: "anyMapping"};
+	const propertyMappingParameters: PropertyMappingParameters = new PropertyMappingParameters()
+		.setProperty(property)
+		.setMapping(mapping);
 
 	(async () => {
 		try {
-			await propertyMappingsApi.createProjectPropertyMapping(projectId, integrationId, baseParameters);
+			await propertyMappingsApi.createProjectPropertyMapping(projectId, integrationId, propertyMappingParameters);
 
 			logger.info(
 				JSON.stringify(
@@ -36,7 +40,7 @@ if (projectId) {
 
 			logger.info(
 				JSON.stringify(
-					await propertyMappingsApi.searchProjectPropertyMappings(projectId, integrationId, baseParameters),
+					await propertyMappingsApi.searchProjectPropertyMappings(projectId, integrationId, propertyMappingParameters),
 					null,
 					2
 				)

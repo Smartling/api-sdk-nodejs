@@ -2,21 +2,24 @@ import "mocha"
 import sinon from "sinon";
 import assert from "assert";
 import {SmartlingPropertyMappingsApi} from "../api/property-mappings";
-import BaseParameters from "../api/parameters";
+import {PropertyMappingParameters} from "../api/property-mappings/parameters/property-mapping-parameters";
 
 const {loggerMock, authMock, responseMock} = require("./mock");
 
-const propertyMappings = {key: "key", value: "value"};
+const property = {key: "key", value: "value"};
+const mapping = {name: "anyMapping"};
 
 describe("SmartlingPropertyMappingsApi class tests.", () => {
 	let propertyMappingsApi: SmartlingPropertyMappingsApi;
 	let propertyMappingsServiceApiFetchStub;
 	let propertyMappingsServiceApiUaStub;
 	let responseMockJsonStub;
-	let propertyMappingsParameters: BaseParameters;
+	let propertyMappingsParameters: PropertyMappingParameters;
 
 	beforeEach(() => {
-		propertyMappingsParameters = new BaseParameters(propertyMappings);
+		propertyMappingsParameters = new PropertyMappingParameters()
+			.setMapping(mapping)
+			.setProperty(property);
 
 		propertyMappingsApi = new SmartlingPropertyMappingsApi(authMock, loggerMock, "https://test.com");
 		propertyMappingsServiceApiFetchStub = sinon.stub(propertyMappingsApi, "fetch");
@@ -38,7 +41,11 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 
 	describe("Params", () => {
 		it("Create property mapping parameters", () => {
-			assert.deepEqual(propertyMappings,
+			assert.deepEqual(
+				{
+					mapping: mapping,
+					property: property
+				},
 				propertyMappingsParameters.export()
 			);
 		});
@@ -53,7 +60,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings",
 				{
-					body: `{"key":"key","value":"value"}`,
+					body: `{"mapping":{"name":"anyMapping"},"property":{"key":"key","value":"value"}}`,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",
@@ -115,7 +122,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings/propertyMappingUid",
 				{
-					body: `{"key":"key","value":"value"}`,
+					body: `{"mapping":{"name":"anyMapping"},"property":{"key":"key","value":"value"}}`,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",
@@ -134,7 +141,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings",
 				{
-					body: `{"key":"key","value":"value"}`,
+					body: `{"mapping":{"name":"anyMapping"},"property":{"key":"key","value":"value"}}`,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",
@@ -196,7 +203,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings/propertyMappingUid",
 				{
-					body: `{"key":"key","value":"value"}`,
+					body: `{"mapping":{"name":"anyMapping"},"property":{"key":"key","value":"value"}}`,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",

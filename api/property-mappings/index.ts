@@ -1,7 +1,8 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
 import {Response} from "../published-files/response";
-import BaseParameters from "../parameters";
+import {PropertyMappingParameters} from "./parameters/property-mapping-parameters";
+import {PropertyMappingDto} from "./dto/property-mapping-dto";
 
 export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	private readonly authApi: SmartlingAuthApi;
@@ -14,95 +15,99 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		this.entrypoint = `${smartlingApiBaseUrl}/connectors-property-mappings-api/v2`;
 	}
 
-	public async createProjectPropertyMapping(
+	public async createProjectPropertyMapping<TProperty, TMapping>(
 		projectId: string,
 		integrationId: string,
-		params: BaseParameters
-	): Promise<any> {
-		return this.mapItemToDto(await this.makeRequest(
+		params: PropertyMappingParameters
+	): Promise<PropertyMappingDto<TProperty, TMapping>> {
+		return this.mapItemToDto<TProperty, TMapping>(await this.makeRequest(
 			"post",
 			this.getProjectPropertyMappingsApiUrl(projectId, integrationId),
 			JSON.stringify(params.export())
 		));
 	}
 
-	public async createAccountPropertyMapping(
+	public async createAccountPropertyMapping<TProperty, TMapping>(
 		accountUid: string,
 		integrationId: string,
-		params: BaseParameters
-	): Promise<any> {
-		return this.mapItemToDto(await this.makeRequest(
+		params: PropertyMappingParameters
+	): Promise<PropertyMappingDto<TProperty, TMapping>> {
+		return this.mapItemToDto<TProperty, TMapping>(await this.makeRequest(
 			"post",
 			this.getAccountPropertyMappingsApiUrl(accountUid, integrationId),
 			JSON.stringify(params.export())
 		));
 	}
 
-	public async updateProjectPropertyMapping(
+	public async updateProjectPropertyMapping<TProperty, TMapping>(
 		projectId: string,
 		integrationId: string,
 		propertyMappingUid: string,
-		params: BaseParameters
-	): Promise<any> {
-		return this.mapItemToDto(await this.makeRequest(
+		params: PropertyMappingParameters
+	): Promise<PropertyMappingDto<TProperty, TMapping>> {
+		return this.mapItemToDto<TProperty, TMapping>(await this.makeRequest(
 			"put",
 			`${this.getProjectPropertyMappingsApiUrl(projectId, integrationId)}/${propertyMappingUid}`,
 			JSON.stringify(params.export())
 		));
 	}
 
-	public async updateAccountPropertyMapping(
+	public async updateAccountPropertyMapping<TProperty, TMapping>(
 		accountUid: string,
 		integrationId: string,
 		propertyMappingUid: string,
-		params: BaseParameters
-	): Promise<any> {
-		return this.mapItemToDto(await this.makeRequest(
+		params: PropertyMappingParameters
+	): Promise<PropertyMappingDto<TProperty, TMapping>> {
+		return this.mapItemToDto<TProperty, TMapping>(await this.makeRequest(
 			"put",
 			`${this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)}/${propertyMappingUid}`,
 			JSON.stringify(params.export())
 		));
 	}
 
-	public async getAccountPropertyMappings(
+	public async getAccountPropertyMappings<TProperty, TMapping>(
 		accountUid: string,
 		integrationId: string
-	): Promise<Response<any>> {
-		return this.mapItemsToDtos(await this.makeRequest(
+	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
+		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
 			this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)
 		));
 	}
 
-	public async getProjectPropertyMappings(
+	public async getProjectPropertyMappings<TProperty, TMapping>(
 		projectId: string,
 		integrationId: string
-	): Promise<Response<any>> {
-		return this.mapItemsToDtos(await this.makeRequest(
+	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
+		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
 			this.getProjectPropertyMappingsApiUrl(projectId, integrationId),
 		));
 	}
 
-	public async searchAccountPropertyMappings(
+	public async searchAccountPropertyMappings<TProperty, TMapping>(
 		accountUid: string,
 		integrationId: string,
-		params: BaseParameters
-	): Promise<Response<any>> {
-		return this.mapItemsToDtos(await this.makeRequest(
+		params: PropertyMappingParameters
+	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
+		const parameters = params.export();
+		const propertyParam = parameters['property'] || {};
+		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
-			`${this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)}?property=${JSON.stringify(params.export())}`
+			`${this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)}?property=${JSON.stringify(propertyParam)}`
 		));
 	}
 
-	public async searchProjectPropertyMappings(
+	public async searchProjectPropertyMappings<TProperty, TMapping>(
 		projectId: string,
 		integrationId: string,
-		params: BaseParameters
-	): Promise<Response<any>> {
-		return this.mapItemsToDtos(await this.makeRequest(
+		params: PropertyMappingParameters
+	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
+		const parameters = params.export();
+		const propertyParam = parameters['property'] || {};
+		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
-			`${this.getProjectPropertyMappingsApiUrl(projectId, integrationId)}?property=${JSON.stringify(params.export())}`
+			`${this.getProjectPropertyMappingsApiUrl(projectId, integrationId)}?property=${JSON.stringify(propertyParam)}`
 		));
 	}
 
@@ -114,19 +119,19 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		return `${this.entrypoint}/accounts/${accountUid}/integrations/${integrationId}/property-mappings`;
 	}
 
-	private mapItemToDto(propertyMapping: object): any {
+	private mapItemToDto<TProperty, TMapping>(propertyMapping: PropertyMappingDto<TProperty, TMapping>): PropertyMappingDto<TProperty, TMapping> {
 		["created", "modified"].forEach(function (field) {
 			if (propertyMapping[field]) {
 				propertyMapping[field] = new Date(propertyMapping[field]);
 			}
 		});
 
-		return propertyMapping;
+		return propertyMapping as PropertyMappingDto<TProperty, TMapping>;
 	}
 
-	private mapItemsToDtos(response: Response<object>): Response<any> {
+	private mapItemsToDtos<TProperty, TMapping>(response: Response<PropertyMappingDto<TProperty, TMapping>>): Response<PropertyMappingDto<TProperty, TMapping>> {
 		const retrievedItems = response.items || [];
-		const items: Array<any> = retrievedItems.map(item => {
+		const items: Array<PropertyMappingDto<TProperty, TMapping>> = retrievedItems.map(item => {
 			return this.mapItemToDto(item);
 		});
 
