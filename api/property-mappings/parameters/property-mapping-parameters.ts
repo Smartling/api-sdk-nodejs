@@ -1,6 +1,10 @@
 import BaseParameters from "../../parameters";
 
 export class PropertyMappingParameters extends BaseParameters {
+	constructor(property?: string) {
+		super({property});
+	}
+
 	public setProperty(property: object): PropertyMappingParameters {
 		this.set("property", property);
 

@@ -8,6 +8,7 @@ const {loggerMock, authMock, responseMock} = require("./mock");
 
 const property = {key: "key", value: "value"};
 const mapping = {name: "anyMapping"};
+const expectedBodyParams = `{"property":{"key":"key","value":"value"},"mapping":{"name":"anyMapping"}}`;
 
 describe("SmartlingPropertyMappingsApi class tests.", () => {
 	let propertyMappingsApi: SmartlingPropertyMappingsApi;
@@ -60,7 +61,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings",
 				{
-					body: `{"mapping":{"name":"anyMapping"},"property":{"key":"key","value":"value"}}`,
+					body: expectedBodyParams,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",
@@ -88,16 +89,18 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 			);
 		});
 		it("Should search project property mappings", async () => {
+			const propertyParam = JSON.stringify(property);
+			const params = new PropertyMappingParameters(propertyParam);
 			await propertyMappingsApi.searchProjectPropertyMappings(
 				"testProjectId",
 				"testIntegrationId",
-				propertyMappingsParameters
+				params
 			);
 
 			sinon.assert.calledOnce(propertyMappingsServiceApiFetchStub);
 			sinon.assert.calledWithExactly(
 				propertyMappingsServiceApiFetchStub,
-				`https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings?property={"key":"key","value":"value"}`,
+				`https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings?property=${encodeURIComponent(propertyParam)}`,
 				{
 					headers: {
 						"Authorization": "test_token_type test_access_token",
@@ -122,7 +125,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/projects/testProjectId/integrations/testIntegrationId/property-mappings/propertyMappingUid",
 				{
-					body: `{"mapping":{"name":"anyMapping"},"property":{"key":"key","value":"value"}}`,
+					body: expectedBodyParams,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",
@@ -141,7 +144,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings",
 				{
-					body: `{"mapping":{"name":"anyMapping"},"property":{"key":"key","value":"value"}}`,
+					body: expectedBodyParams,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",
@@ -169,16 +172,18 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 			);
 		});
 		it("Should search account property mappings", async () => {
+			const propertyParam = JSON.stringify(property);
+			const params = new PropertyMappingParameters(propertyParam);
 			await propertyMappingsApi.searchAccountPropertyMappings(
 				"testAccountUid",
 				"testIntegrationId",
-				propertyMappingsParameters
+				params
 			);
 
 			sinon.assert.calledOnce(propertyMappingsServiceApiFetchStub);
 			sinon.assert.calledWithExactly(
 				propertyMappingsServiceApiFetchStub,
-				`https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings?property={"key":"key","value":"value"}`,
+				`https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings?property=${encodeURIComponent(propertyParam)}`,
 				{
 					headers: {
 						"Authorization": "test_token_type test_access_token",
@@ -203,7 +208,7 @@ describe("SmartlingPropertyMappingsApi class tests.", () => {
 				propertyMappingsServiceApiFetchStub,
 				"https://test.com/connectors-property-mappings-api/v2/accounts/testAccountUid/integrations/testIntegrationId/property-mappings/propertyMappingUid",
 				{
-					body: `{"mapping":{"name":"anyMapping"},"property":{"key":"key","value":"value"}}`,
+					body: expectedBodyParams,
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",

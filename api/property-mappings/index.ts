@@ -1,3 +1,4 @@
+import * as queryString from "querystring";
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
 import {Response} from "../published-files/response";
@@ -90,11 +91,9 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		integrationId: string,
 		params: PropertyMappingParameters
 	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
-		const parameters = params.export();
-		const propertyParam = parameters['property'] || {};
 		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
-			`${this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)}?property=${JSON.stringify(propertyParam)}`
+			`${this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)}?${queryString.stringify(params.export())}`
 		));
 	}
 
@@ -103,11 +102,9 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		integrationId: string,
 		params: PropertyMappingParameters
 	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
-		const parameters = params.export();
-		const propertyParam = parameters['property'] || {};
 		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
-			`${this.getProjectPropertyMappingsApiUrl(projectId, integrationId)}?property=${JSON.stringify(propertyParam)}`
+			`${this.getProjectPropertyMappingsApiUrl(projectId, integrationId)}?${queryString.stringify(params.export())}`
 		));
 	}
 
