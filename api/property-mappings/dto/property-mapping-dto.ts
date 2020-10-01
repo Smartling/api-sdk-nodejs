@@ -1,5 +1,5 @@
 export interface PropertyMappingDto<TProperty, TMapping> {
-	propertyMappingUid?: string;
+	propertyMappingUid: string;
 	property: TProperty;
 	mapping: TMapping;
 	created?: Date;
