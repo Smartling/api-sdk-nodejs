@@ -1,9 +1,9 @@
 import * as queryString from "querystring";
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
-import {Response} from "../published-files/response";
 import {PropertyMappingParameters} from "./parameters/property-mapping-parameters";
 import {PropertyMappingDto} from "./dto/property-mapping-dto";
+import { Response } from "../http/response";
 
 export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	private readonly authApi: SmartlingAuthApi;
@@ -134,6 +134,7 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 
 		return {
 			items,
+			totalCount: response.totalCount
 		};
 	}
 }

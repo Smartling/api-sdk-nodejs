@@ -4,7 +4,7 @@ import * as queryString from "querystring";
 import { CreateAuditLogParameters } from "./params/create-audit-log-parameters";
 import { SearchAuditLogParameters } from "./params/search-audit-log-parameters";
 import { AuditLogDto } from "./dto/audit-log-dto";
-import { Response } from "./response";
+import { Response } from "../http/response";
 
 export class SmartlingAuditLogApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;

@@ -2,7 +2,7 @@ import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
 import { RecentlyPublishedFilesParameters } from "./params/recently-published-files-parameters";
 import { PublishedFileDto } from "./dto/published-file-dto";
-import { Response } from "./response";
+import { Response } from "../http/response";
 
 export class PublishedFilesApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
@@ -37,6 +37,7 @@ export class PublishedFilesApi extends SmartlingBaseApi {
 
         return {
             items,
+            totalCount: response.totalCount
         };
     }
 }
