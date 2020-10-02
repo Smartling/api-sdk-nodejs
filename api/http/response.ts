@@ -1,4 +1,4 @@
-export interface Response<T> {
+export interface HTTPResponse<T> {
     totalCount: number;
     items: Array<T>;
 }

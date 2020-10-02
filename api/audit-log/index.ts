@@ -4,7 +4,7 @@ import * as queryString from "querystring";
 import { CreateAuditLogParameters } from "./params/create-audit-log-parameters";
 import { SearchAuditLogParameters } from "./params/search-audit-log-parameters";
 import { AuditLogDto } from "./dto/audit-log-dto";
-import { Response } from "../http/response";
+import { HTTPResponse } from "../http/response";
 
 export class SmartlingAuditLogApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
@@ -32,7 +32,7 @@ export class SmartlingAuditLogApi extends SmartlingBaseApi {
         );
     }
 
-    public async searchAccountLevelLogRecord(accountUid: string, query: SearchAuditLogParameters): Promise<Response<AuditLogDto>> {
+    public async searchAccountLevelLogRecord(accountUid: string, query: SearchAuditLogParameters): Promise<HTTPResponse<AuditLogDto>> {
         return this.mapItemsToDtos(
             await this.makeRequest(
                 "get",
@@ -41,7 +41,7 @@ export class SmartlingAuditLogApi extends SmartlingBaseApi {
         );
     }
 
-    public async searchProjectLevelLogRecord(projectUid: string, query: SearchAuditLogParameters): Promise<Response<AuditLogDto>> {
+    public async searchProjectLevelLogRecord(projectUid: string, query: SearchAuditLogParameters): Promise<HTTPResponse<AuditLogDto>> {
         return this.mapItemsToDtos(
             await this.makeRequest(
                 "get",
@@ -50,7 +50,7 @@ export class SmartlingAuditLogApi extends SmartlingBaseApi {
         );
     }
 
-    private mapItemsToDtos(response: Response<object>): Response<AuditLogDto> {
+    private mapItemsToDtos(response: HTTPResponse<object>): HTTPResponse<AuditLogDto> {
         const retrievedItems = response.items || [];
         const items: Array<AuditLogDto> = retrievedItems.map((item) => {
             if (item["actionTime"]) {

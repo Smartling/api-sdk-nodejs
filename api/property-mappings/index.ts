@@ -3,7 +3,7 @@ import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
 import {PropertyMappingParameters} from "./parameters/property-mapping-parameters";
 import {PropertyMappingDto} from "./dto/property-mapping-dto";
-import { Response } from "../http/response";
+import {HTTPResponse} from "../http/response";
 
 export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	private readonly authApi: SmartlingAuthApi;
@@ -69,7 +69,7 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	public async getAccountPropertyMappings<TProperty, TMapping>(
 		accountUid: string,
 		integrationId: string
-	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
+	): Promise<HTTPResponse<PropertyMappingDto<TProperty, TMapping>>> {
 		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
 			this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)
@@ -79,7 +79,7 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 	public async getProjectPropertyMappings<TProperty, TMapping>(
 		projectId: string,
 		integrationId: string
-	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
+	): Promise<HTTPResponse<PropertyMappingDto<TProperty, TMapping>>> {
 		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
 			this.getProjectPropertyMappingsApiUrl(projectId, integrationId),
@@ -90,7 +90,7 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		accountUid: string,
 		integrationId: string,
 		params: PropertyMappingParameters
-	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
+	): Promise<HTTPResponse<PropertyMappingDto<TProperty, TMapping>>> {
 		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
 			`${this.getAccountPropertyMappingsApiUrl(accountUid, integrationId)}?${queryString.stringify(params.export())}`
@@ -101,7 +101,7 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		projectId: string,
 		integrationId: string,
 		params: PropertyMappingParameters
-	): Promise<Response<PropertyMappingDto<TProperty, TMapping>>> {
+	): Promise<HTTPResponse<PropertyMappingDto<TProperty, TMapping>>> {
 		return this.mapItemsToDtos<TProperty, TMapping>(await this.makeRequest(
 			"get",
 			`${this.getProjectPropertyMappingsApiUrl(projectId, integrationId)}?${queryString.stringify(params.export())}`
@@ -126,7 +126,7 @@ export class SmartlingPropertyMappingsApi extends SmartlingBaseApi {
 		return propertyMapping as PropertyMappingDto<TProperty, TMapping>;
 	}
 
-	private mapItemsToDtos<TProperty, TMapping>(response: Response<PropertyMappingDto<TProperty, TMapping>>): Response<PropertyMappingDto<TProperty, TMapping>> {
+	private mapItemsToDtos<TProperty, TMapping>(response: HTTPResponse<PropertyMappingDto<TProperty, TMapping>>): HTTPResponse<PropertyMappingDto<TProperty, TMapping>> {
 		const retrievedItems = response.items || [];
 		const items: Array<PropertyMappingDto<TProperty, TMapping>> = retrievedItems.map(item => {
 			return this.mapItemToDto(item);
