@@ -1,3 +1,3 @@
 export interface Response<T> {
-    items: Array<T>;
+	items: Array<T>;
 }

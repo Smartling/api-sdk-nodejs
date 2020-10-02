@@ -43,9 +43,13 @@ export * from "./api/settings-service/index";
 export * from "./api/settings-service/dto/settings-dto";
 export * from "./api/settings-service/parameters/settings-payload";
 export * from "./api/published-files/index";
+export * from "./api/published-files/response";
 export * from "./api/published-files/dto/published-file-dto";
 export * from "./api/published-files/params/recently-published-files-parameters";
-export * from "./api/published-files/response";
+export * from "./api/property-mappings/index";
+export * from "./api/property-mappings/dto/property-mapping-dto";
+export * from "./api/property-mappings/parameters/property-mapping-parameters";
+export * from "./api/http/response";
 
 export { SmartlingAuthApi };
 export { SmartlingBaseApi };

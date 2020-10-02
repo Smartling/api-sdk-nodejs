@@ -36,7 +36,7 @@ export class PublishedFilesApi extends SmartlingBaseApi {
         });
 
         return {
-            items,
+            items
         };
     }
 }
