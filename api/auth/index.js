@@ -67,8 +67,10 @@ class SmartlingAuthApi extends SmartlingBaseApi {
     }
 
     tokenCanBeRenewed() {
-        return this.tokenExists()
-            && (this.time() < (this.requestTimestamp + this.response.refreshExpiresIn));
+        const refreshTokenExpirationTime = (this.requestTimestamp + this.response.refreshExpiresIn)
+            - this.ttlCorrectionSec;
+
+        return this.tokenExists() && this.time() < refreshTokenExpirationTime;
     }
 
     async getAccessToken() {
