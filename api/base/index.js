@@ -114,7 +114,8 @@ class SmartlingBaseApi {
 
             throw new SmartlingException(`Request for ${uri} failed`, JSON.stringify({
                 statusCode: response.status,
-                errorResponse: responseText
+                errorResponse: responseText,
+                requestId: response.headers.get("x-sl-requestid")
             }));
         }
 
@@ -134,7 +135,8 @@ class SmartlingBaseApi {
 
             throw new SmartlingException("Couldn't parse response json", JSON.stringify({
                 statusCode: response.status,
-                errorResponse: await response.text()
+                errorResponse: await response.text(),
+                requestId: response.headers.get("x-sl-requestid")
             }));
         }
     }
