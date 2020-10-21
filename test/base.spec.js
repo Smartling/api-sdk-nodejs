@@ -522,7 +522,10 @@ describe("Base class tests.", () => {
         it("Fail (non 200/401 response).", async () => {
             const response400Mock = {
                 status: 400,
-                text: () => ({ response: { code: "VALIDATION_ERROR", errors: [] } })
+                text: () => ({ response: { code: "VALIDATION_ERROR", errors: [] } }),
+                headers: {
+                    get: () => "test-request-id"
+                }
             };
             const requestVerb = "POST";
             const requestUri = "https://test.com";
@@ -544,7 +547,7 @@ describe("Base class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Request for https://test.com failed");
-                assert.deepEqual(e.payload, "{\"statusCode\":400,\"errorResponse\":{\"response\":{\"code\":\"VALIDATION_ERROR\",\"errors\":[]}}}");
+                assert.deepEqual(e.payload, "{\"statusCode\":400,\"errorResponse\":{\"response\":{\"code\":\"VALIDATION_ERROR\",\"errors\":[]}},\"requestId\":\"test-request-id\"}");
                 assert.equal(e.nestedException, null);
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
@@ -589,6 +592,10 @@ describe("Base class tests.", () => {
                 foo: "bar"
             };
 
+            responseMock.headers = {
+                get: () => "test-request-id"
+            };
+
             baseFetchStub.returns(responseMock);
             responseMockJsonStub.throws(error);
             responseMockTextStub.resolves("error");
@@ -600,7 +607,7 @@ describe("Base class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Couldn't parse response json");
-                assert.deepEqual(e.payload, "{\"statusCode\":200,\"errorResponse\":\"error\"}");
+                assert.deepEqual(e.payload, "{\"statusCode\":200,\"errorResponse\":\"error\",\"requestId\":\"test-request-id\"}");
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
