@@ -6,4 +6,28 @@ export class RecentlyPublishedFilesParameters extends BaseParameters {
 
         return this;
     };
+
+    setLimit(limit: number) {
+        this.set("limit", limit);
+
+        return this;
+    }
+
+    setOffset(offset: number) {
+        this.set("offset", offset);
+
+        return this;
+    }
+
+    setFileUris(fileUris: Array<string>) {
+        this.set("fileUris[]", fileUris);
+
+        return this;
+    }
+
+    setLocaleIds(localeIds: Array<string>) {
+        this.set("localeIds[]", localeIds);
+
+        return this;
+    }
 }
