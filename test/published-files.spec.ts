@@ -37,7 +37,7 @@ describe("Published files class tests.", () => {
         const params: RecentlyPublishedFilesParameters = new RecentlyPublishedFilesParameters();
 
         params.setPublishedAfterDate(new Date("2020-09-24T00:00:00Z"));
-        params.setFileUris(["test_1.xml", "test_2.xml"]);
+        params.setFileUris(["test:_1.xml", "test/file&_2.xml"]);
         params.setLocaleIds(["fr", "de"]);
         params.setOffset(0);
         params.setLimit(100);
@@ -47,7 +47,7 @@ describe("Published files class tests.", () => {
         sinon.assert.calledOnce(publishedFilesApiFetchStub);
         sinon.assert.calledWithExactly(
             publishedFilesApiFetchStub,
-            "https://test.com/published-files-api/v2/projects/test_project/files/list/recently-published?publishedAfter=2020-09-24T00%3A00%3A00Z&fileUris%5B%5D=test_1.xml&fileUris%5B%5D=test_2.xml&localeIds%5B%5D=fr&localeIds%5B%5D=de&offset=0&limit=100", {
+            "https://test.com/published-files-api/v2/projects/test_project/files/list/recently-published?publishedAfter=2020-09-24T00%3A00%3A00Z&fileUris%5B%5D=test%3A_1.xml&fileUris%5B%5D=test%2Ffile%26_2.xml&localeIds%5B%5D=fr&localeIds%5B%5D=de&offset=0&limit=100", {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
@@ -56,5 +56,23 @@ describe("Published files class tests.", () => {
                 method: "get"
             }
         );
+    });
+
+    it("Invalid offset", async () => {
+        try {
+            new RecentlyPublishedFilesParameters().setOffset(-1);
+        } catch (e) {
+            assert.equal(e.constructor.name, "SmartlingException");
+            assert.equal(e.message, "Offset must be >= 0");
+        }
+    });
+
+    it("Invalid limit", async () => {
+        try {
+            new RecentlyPublishedFilesParameters().setLimit(0);
+        } catch (e) {
+            assert.equal(e.constructor.name, "SmartlingException");
+            assert.equal(e.message, "Limit must be > 0");
+        }
     });
 });
