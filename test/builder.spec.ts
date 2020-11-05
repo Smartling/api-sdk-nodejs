@@ -17,6 +17,7 @@ import { SmartlingLogApi } from "../api/log";
 import { BulkRequestServiceApi } from "../api/bulk-request";
 import { PublishedFilesApi } from "../api/published-files/index";
 import { SmartlingPropertyMappingsApi } from "../api/property-mappings";
+import { SmartlingTokensApi } from "../api/tokens";
 
 const packageJson = require("../../package.json");
 
@@ -330,6 +331,13 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         assertApiClient(
             SmartlingPropertyMappingsApi,
             apiClientBuilder.build(SmartlingPropertyMappingsApi)
+        );
+    });
+
+    it("Instantiates tokens api client", () => {
+        assertApiClient(
+            SmartlingTokensApi,
+            apiClientBuilder.build(SmartlingTokensApi)
         );
     });
 });
