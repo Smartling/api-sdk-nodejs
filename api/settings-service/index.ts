@@ -11,7 +11,7 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
     private readonly entrypoint: string;
     private secretsCodec: Codec | null = null;
 
-    constructor(authApi, logger, smartlingApiBaseUrl: string) {
+    constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/connectors-settings-api/v2`;

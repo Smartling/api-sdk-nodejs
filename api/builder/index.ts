@@ -55,7 +55,7 @@ export class SmartlingApiClientBuilder {
         return this;
     }
 
-    public build<T extends SmartlingBaseApi>(constructor: new (authApi: SmartlingAuthApi, logger, baseUrl: string, ...extra) => T, ...extra): T {
+    public build<T extends SmartlingBaseApi>(constructor: new (authApi: SmartlingAuthApi, logger, baseUrl: string) => T): T {
         if (this.authApiClient === null && this.userId !== null && this.userSecret !== null) {
             this.authApiClient = new SmartlingAuthApi(
                 this.userId,
@@ -68,7 +68,7 @@ export class SmartlingApiClientBuilder {
             this.authApiClient["clientLibVersion"] = this.clientLibVersion;
         }
 
-        const instance = new constructor(this.authApiClient, this.logger, this.baseSmartlingApiUrl, extra);
+        const instance = new constructor(this.authApiClient, this.logger, this.baseSmartlingApiUrl);
 
         instance["clientLibId"] = this.clientLibId;
         instance["clientLibVersion"] = this.clientLibVersion;
