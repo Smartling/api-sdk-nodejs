@@ -5,6 +5,7 @@ import { SettingsPayload } from "../api/settings-service/parameters/settings-pay
 import SecretsCodec from "../api/settings-service/encode/secrets-codec";
 import NoOpDecryptor from "../api/settings-service/encode/no-op-decryptor";
 import AesEncryptor from "../api/settings-service/encode/aes-encryptor";
+import EncryptionError from "../api/settings-service/errors/encryption-error";
 
 const {loggerMock, authMock, responseMock} = require("./mock");
 
@@ -137,12 +138,31 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
     });
 
     describe("Encryption", () => {
-        it('should not allow codec creation with wrong decoder and encoder pair', function () {
-            try {
-                new SecretsCodec(new NoOpDecryptor(), new AesEncryptor(), '12345678901234567890123456789012');
-            } catch (e) {
-                assert.equal('Strings differ after an encrypt-decrypt pass, check settings', e.message);
-            }
+        it('should not allow codec creation with wrong decoder and encoder pair', () => {
+            assert.throws(() => {settingsServiceApi.setSecretsCodec(new SecretsCodec(new NoOpDecryptor(), new AesEncryptor(), '12345678901234567890123456789012'))}, EncryptionError);
+        });
+        it('should alter secrets if codec present', async () => {
+            settingsServiceApi.setSecretsCodec(new SecretsCodec());
+            const name = 'test';
+            const createParams: SettingsPayload = new SettingsPayload(name);
+            createParams.setSecrets({test: true});
+
+            await settingsServiceApi.createProjectLevelSettings("testProjectId", "testIntegrationId", createParams);
+
+            sinon.assert.calledOnce(settingsServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                settingsServiceApiFetchStub,
+                "https://test.com/connectors-settings-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
+                {
+                    body: `{"name":"${name}","secrets":{"encodedWith":"NoOpEncryptor","value":"{\\"test\\":true}"}}`,
+                    headers: {
+                        "Authorization": "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
         });
     });
 });
