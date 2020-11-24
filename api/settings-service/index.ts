@@ -53,7 +53,7 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
         return `${this.entrypoint}/projects/${project}/integrations/${integration}/settings`;
     }
 
-    private mapItemToDto<TSecrets, TSettings>(settings: any): SettingsDto<TSecrets, TSettings> {
+    private mapItemToDto<TSecrets, TSettings>(settings: object & {secrets?: object}): SettingsDto<TSecrets, TSettings> {
         ["created", "modified"].forEach(function (field) {
             if (settings[field]) {
                 settings[field] = new Date(settings[field]);
