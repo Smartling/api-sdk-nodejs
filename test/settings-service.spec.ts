@@ -2,6 +2,9 @@ import sinon from "sinon";
 import assert from "assert";
 import { SmartlingSettingsServiceApi } from "../api/settings-service";
 import { SettingsPayload } from "../api/settings-service/parameters/settings-payload";
+import SecretsCodec from "../api/settings-service/encode/secrets-codec";
+import NoOpDecryptor from "../api/settings-service/encode/no-op-decryptor";
+import AesEncryptor from "../api/settings-service/encode/aes-encryptor";
 
 const {loggerMock, authMock, responseMock} = require("./mock");
 
@@ -130,6 +133,16 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
                     method: "put"
                 }
             );
+        });
+    });
+
+    describe("Encryption", () => {
+        it('should not allow codec creation with wrong decoder and encoder pair', function () {
+            try {
+                new SecretsCodec(new NoOpDecryptor(), new AesEncryptor(), '12345678901234567890123456789012');
+            } catch (e) {
+                assert.equal('Strings differ after an encrypt-decrypt pass, check settings', e.message);
+            }
         });
     });
 });
