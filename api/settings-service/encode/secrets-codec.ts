@@ -1,9 +1,9 @@
-import Encryptor from "./encryptor";
+import Codec from "./codec";
 import Decryptor from "./decryptor";
+import EncodedSecrets from "./encoded-secrets";
+import Encryptor from "./encryptor";
 import NoOpDecryptor from "./no-op-decryptor";
 import NoOpEncryptor from "./no-op-encryptor";
-import Codec from "./codec";
-import EncodedSecrets from "./encoded-secrets";
 
 export default class SecretsCodec implements Codec {
     private readonly decryptor: Decryptor;

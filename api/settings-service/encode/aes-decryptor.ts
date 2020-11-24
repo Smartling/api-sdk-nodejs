@@ -3,12 +3,12 @@ import Decryptor from "./decryptor";
 
 export default class AesDecryptor implements Decryptor {
     public decrypt(subject: string, password: string): string {
-        const parts = subject.split(':');
-        const iv = Buffer.from(parts.shift(), 'hex');
-        const decipher = crypto.createDecipheriv('aes256', password, iv);
-        let result = decipher.update(parts.join(':'), 'hex', 'utf8');
-        result += decipher.final('utf8');
+        const inputEncoding = 'hex';
+        const outputEncoding = 'utf8';
 
-        return result;
+        const parts = subject.split(':');
+        const iv = Buffer.from(parts.shift(), inputEncoding);
+        const decipher = crypto.createDecipheriv('aes256', password, iv);
+        return decipher.update(parts.join(':'), inputEncoding, outputEncoding) + decipher.final(outputEncoding);
     }
 }
