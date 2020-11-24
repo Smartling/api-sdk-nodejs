@@ -6,11 +6,21 @@ import { SettingsDto } from "./dto/settings-dto";
 export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
     private readonly entrypoint: string;
+    public secretsDecryptor: Decryptor;
+    public secretsEncryptor: Encryptor;
 
-    constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
+    constructor(authApi, logger, smartlingApiBaseUrl: string, secretsEncryptor: Encryptor = new NoOpEncryptor(), secretsDecryptor: Decryptor = new NoOpDecryptor()) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/connectors-settings-api/v2`;
+        if (Array.isArray(secretsEncryptor)) {
+            this.secretsDecryptor = secretsEncryptor[1];
+            this.secretsEncryptor = secretsEncryptor[0];
+        } else {
+            this.secretsDecryptor = secretsDecryptor;
+            this.secretsEncryptor = secretsEncryptor;
+        }
+        this.checkDecryptAfterEncrypt();
     }
 
     public async createProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string, payload: SettingsPayload): Promise<SettingsDto<TSecrets, TSettings>> {
@@ -51,5 +61,14 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
         });
 
         return settings as SettingsDto<TSecrets, TSettings>;
+    }
+
+    private checkDecryptAfterEncrypt() {
+        const string = randomBytes(32).toString('hex');
+        const encrypted = this.secretsEncryptor.encrypt(string, this.secretsEncryptor.testPassword);
+        const decrypted = this.secretsDecryptor.decrypt(encrypted, this.secretsEncryptor.testPassword);
+        if (string !== decrypted) {
+            throw new Error('Strings differ after a single encrypt-decrypt pass, check your encryptor and decryptor settings');
+        }
     }
 }
