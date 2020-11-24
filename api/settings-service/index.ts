@@ -58,7 +58,7 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
                 settings[field] = new Date(settings[field]);
             }
         });
-        if (settings.hasOwnProperty('secrets') && SmartlingSettingsServiceApi.isEncodedSecrets(settings.secrets)) {
+        if (this.secretsCodec !== null && settings.hasOwnProperty('secrets') && SmartlingSettingsServiceApi.isEncodedSecrets(settings.secrets)) {
             settings.secrets = this.secretsCodec.decode(settings.secrets);
         }
 
