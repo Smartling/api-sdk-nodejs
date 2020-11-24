@@ -1,0 +1,29 @@
+import Encryptor from "./encryptor";
+import Decryptor from "./decryptor";
+import NoOpDecryptor from "./no-op-decryptor";
+import NoOpEncryptor from "./no-op-encryptor";
+import Codec from "./codec";
+import EncodedSecrets from "./encoded-secrets";
+
+export default class SecretsCodec implements Codec {
+    private readonly decryptor: Decryptor;
+    private readonly encryptor: Encryptor;
+    public password: string;
+
+    constructor(decryptor: Decryptor = new NoOpDecryptor(), encryptor: Encryptor = new NoOpEncryptor(), password: string = '') {
+        this.decryptor = decryptor;
+        this.encryptor = encryptor;
+        this.password = password;
+    }
+
+    decode<TSecrets>(secrets: EncodedSecrets): TSecrets {
+        return JSON.parse(this.decryptor.decrypt(secrets.value, this.password));
+    }
+
+    encode(secrets: any): EncodedSecrets {
+        return {
+            encodedWith: this.encryptor.constructor.name,
+            value: this.encryptor.encrypt(JSON.stringify(secrets), this.password),
+        }
+    }
+}

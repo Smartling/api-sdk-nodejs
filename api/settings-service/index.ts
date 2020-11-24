@@ -1,33 +1,27 @@
+import Codec from "./encode/codec";
+import EncodedSecrets from "./encode/encoded-secrets";
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
-import { SettingsPayload } from "./parameters/settings-payload";
 import { SettingsDto } from "./dto/settings-dto";
+import { SettingsPayload } from "./parameters/settings-payload";
+import { randomBytes } from "crypto";
 
 export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
     private readonly entrypoint: string;
-    public secretsDecryptor: Decryptor;
-    public secretsEncryptor: Encryptor;
+    private secretsCodec: Codec | null = null;
 
-    constructor(authApi, logger, smartlingApiBaseUrl: string, secretsEncryptor: Encryptor = new NoOpEncryptor(), secretsDecryptor: Decryptor = new NoOpDecryptor()) {
+    constructor(authApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/connectors-settings-api/v2`;
-        if (Array.isArray(secretsEncryptor)) {
-            this.secretsDecryptor = secretsEncryptor[1];
-            this.secretsEncryptor = secretsEncryptor[0];
-        } else {
-            this.secretsDecryptor = secretsDecryptor;
-            this.secretsEncryptor = secretsEncryptor;
-        }
-        this.checkDecryptAfterEncrypt();
     }
 
     public async createProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string, payload: SettingsPayload): Promise<SettingsDto<TSecrets, TSettings>> {
         return this.mapItemToDto<TSecrets, TSettings>(await this.makeRequest(
             "post",
             this.getProjectLevelApiUrl(projectUid, integrationId),
-            JSON.stringify(payload.export()),
+            JSON.stringify(this.encodeSecrets(payload).export()),
         ));
     }
 
@@ -41,11 +35,16 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
         );
     }
 
+    public setSecretsCodec(codec: Codec) {
+        this.secretsCodec = codec;
+        this.assertDecryptAfterEncryptSuccess();
+    }
+
     public async updateProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string, payload: SettingsPayload): Promise<SettingsDto<TSecrets, TSettings>> {
         return this.mapItemToDto<TSecrets, TSettings>(await this.makeRequest(
             "put",
             this.getProjectLevelApiUrl(projectUid, integrationId),
-            JSON.stringify(payload.export()),
+            JSON.stringify(this.encodeSecrets(payload).export()),
         ));
     }
 
@@ -53,22 +52,37 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
         return `${this.entrypoint}/projects/${project}/integrations/${integration}/settings`;
     }
 
-    private mapItemToDto<TSecrets, TSettings>(settings: object): SettingsDto<TSecrets, TSettings> {
+    private mapItemToDto<TSecrets, TSettings>(settings: any): SettingsDto<TSecrets, TSettings> {
         ["created", "modified"].forEach(function (field) {
             if (settings[field]) {
                 settings[field] = new Date(settings[field]);
             }
         });
+        if (settings.hasOwnProperty('secrets') && SmartlingSettingsServiceApi.isEncodedSecrets(settings.secrets)) {
+            settings.secrets = this.secretsCodec.decode(settings.secrets);
+        }
 
         return settings as SettingsDto<TSecrets, TSettings>;
     }
 
-    private checkDecryptAfterEncrypt() {
+    private assertDecryptAfterEncryptSuccess() {
         const string = randomBytes(32).toString('hex');
-        const encrypted = this.secretsEncryptor.encrypt(string, this.secretsEncryptor.testPassword);
-        const decrypted = this.secretsDecryptor.decrypt(encrypted, this.secretsEncryptor.testPassword);
+        const encrypted = this.secretsCodec.encode(string);
+        const decrypted = this.secretsCodec.decode(encrypted);
         if (string !== decrypted) {
-            throw new Error('Strings differ after a single encrypt-decrypt pass, check your encryptor and decryptor settings');
+            throw new Error('Strings differ after an encrypt-decrypt pass, check your codec settings');
         }
+    }
+
+    private encodeSecrets(payload: SettingsPayload): SettingsPayload {
+        if (this.secretsCodec === null || typeof payload.export().secrets === 'undefined') {
+            return payload;
+        }
+
+        return payload.setSecrets(this.secretsCodec.encode(payload.export().secrets));
+    }
+
+    private static isEncodedSecrets(object: any): object is EncodedSecrets {
+        return object !== null && typeof object === 'object' && object.hasOwnProperty('encodedWith') && object.hasOwnProperty('value') && typeof object.encodedWith === 'string' && typeof object.value === 'string';
     }
 }
