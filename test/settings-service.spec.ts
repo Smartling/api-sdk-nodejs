@@ -164,5 +164,27 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
                 }
             );
         });
+        it('should not alter empty secrets even if codec present', async () => {
+            settingsServiceApi.setSecretsCodec(new SecretsCodec());
+            const name = 'test';
+            const createParams: SettingsPayload = new SettingsPayload(name);
+            createParams.setSettings({test: true});
+            await settingsServiceApi.createProjectLevelSettings("testProjectId", "testIntegrationId", createParams);
+
+            sinon.assert.calledOnce(settingsServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                settingsServiceApiFetchStub,
+                "https://test.com/connectors-settings-api/v2/projects/testProjectId/integrations/testIntegrationId/settings",
+                {
+                    body: `{"name":"${name}","settings":{"test":true}}`,
+                    headers: {
+                        "Authorization": "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        })
     });
 });
