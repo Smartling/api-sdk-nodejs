@@ -7,8 +7,7 @@ export default class AesDecryptor implements Decryptor {
         const outputEncoding = 'utf8';
 
         const parts = subject.split(':');
-        const iv = Buffer.from(parts.shift(), inputEncoding);
-        const decipher = crypto.createDecipheriv('aes256', password, iv);
+        const decipher = crypto.createDecipheriv('aes256', password, Buffer.from(parts.shift(), inputEncoding));
         return decipher.update(parts.join(':'), inputEncoding, outputEncoding) + decipher.final(outputEncoding);
     }
 }
