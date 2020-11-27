@@ -1,6 +1,4 @@
-import AesDecryptor from "../api/settings-service/encode/aes-decryptor";
-import AesEncryptor from "../api/settings-service/encode/aes-encryptor";
-import SecretsCodec from "../api/settings-service/encode/secrets-codec";
+import AesCodec from "../api/settings-service/encode/aes-codec";
 import { SettingsPayload } from "../api/settings-service/parameters/settings-payload";
 import { SmartlingApiClientBuilder } from "../api/builder";
 import { SmartlingSettingsServiceApi } from "../api/settings-service";
@@ -22,7 +20,7 @@ const smartlingSettingsServiceApi = new SmartlingApiClientBuilder()
     .authWithUserIdAndUserSecret(userId, userSecret)
     .build(SmartlingSettingsServiceApi);
 
-smartlingSettingsServiceApi.setSecretsCodec(new SecretsCodec(new AesDecryptor(), new AesEncryptor(), '12345678901234567890123456789012'));
+smartlingSettingsServiceApi.setSecretsCodec(new AesCodec('12345678901234567890123456789012'));
 
 const payload: SettingsPayload = (new SettingsPayload("test"))
     .setSecrets({"secret": "secretValue"})
