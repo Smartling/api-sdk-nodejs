@@ -1,11 +1,9 @@
 import Codec from "./encode/codec";
 import EncodedSecrets from "./encode/encoded-secrets";
-import EncryptionError from "./errors/encryption-error";
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
 import { SettingsDto } from "./dto/settings-dto";
 import { SettingsPayload } from "./parameters/settings-payload";
-import { randomBytes } from "crypto";
 
 export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
@@ -38,7 +36,6 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
 
     public setSecretsCodec(codec: Codec) {
         this.secretsCodec = codec;
-        this.assertDecryptAfterEncryptSuccess();
     }
 
     public async updateProjectLevelSettings<TSecrets, TSettings>(projectUid: string, integrationId: string, payload: SettingsPayload): Promise<SettingsDto<TSecrets, TSettings>> {
@@ -64,15 +61,6 @@ export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
         }
 
         return settings as SettingsDto<TSecrets, TSettings>;
-    }
-
-    private assertDecryptAfterEncryptSuccess() {
-        const string = randomBytes(32).toString('hex');
-        const encrypted = this.secretsCodec.encode(string);
-        const decrypted = this.secretsCodec.decode(encrypted);
-        if (string !== decrypted) {
-            throw new EncryptionError('Strings differ after an encrypt-decrypt pass, check codec settings');
-        }
     }
 
     private encodeSecrets(payload: SettingsPayload): SettingsPayload {
