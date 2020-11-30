@@ -1,11 +1,11 @@
 import Codec from "./codec";
 import EncodedSecrets from "./encoded-secrets";
-import EncryptionError from "../errors/encryption-error";
+import DecryptionError from "../errors/decryption-error";
 
 export default abstract class AbstractCodec implements Codec {
     public assertCanDecode(secret: EncodedSecrets) {
         if (secret.encodedWith !== this.getName()) {
-            throw new EncryptionError(`Trying to decode an object encoded with ${secret.encodedWith} by ${this.getName()} codec`);
+            throw new DecryptionError(`Trying to decode an object encoded with ${secret.encodedWith} by ${this.getName()} codec`);
         }
     }
 
@@ -14,7 +14,7 @@ export default abstract class AbstractCodec implements Codec {
         try {
             return JSON.parse(this.decrypt(secrets.value));
         } catch (e) {
-            throw new EncryptionError('Unable to parse secrets object after decoding', e);
+            throw new DecryptionError('Unable to parse secrets object after decoding', e);
         }
     }
 

@@ -180,7 +180,15 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
                     method: "post"
                 }
             );
-        })
+        });
+        it('should return unwrapped secrets if codec present on decoding', async () => {
+            settingsServiceApi.setSecretsCodec(new NoOpCodec());
+            const secret = "value";
+            responseMockJsonStub.returns({
+                response: {data: {created: new Date().toString(), secrets: {encodedWith: "NoOpCodec", value: JSON.stringify({secret: secret})}}}
+            });
+            assert.strictEqual((await settingsServiceApi.getProjectLevelSettings("testProjectId", "testIntegrationId")).secrets.secret, secret);
+        });
     });
 });
 

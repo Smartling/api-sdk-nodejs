@@ -8,7 +8,7 @@ import { SettingsPayload } from "./parameters/settings-payload";
 export class SmartlingSettingsServiceApi extends SmartlingBaseApi {
     private readonly authApi: SmartlingAuthApi;
     private readonly entrypoint: string;
-    private secretsCodec: Codec | null = null;
+    private secretsCodec: Codec = null;
 
     constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
