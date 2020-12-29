@@ -1,7 +1,6 @@
 const assert = require("assert");
 const sinon = require("sinon");
 const Auth = require("../api/auth");
-const { AccessTokenProvider } = require("../api/auth/access-token-provider");
 const { loggerMock, responseMock } = require("./mock");
 const SmartlingException = require("../api/exception");
 
@@ -399,19 +398,5 @@ describe("Auth class tests.", () => {
 
             assert.equal(auth.tokenCanBeRenewed(), false);
         });
-    });
-
-    it("Access token provider", async () => {
-        const accessTokenProvider = new AccessTokenProvider("accessToken", "tokenType");
-
-        assert.equal(
-            await accessTokenProvider.getAccessToken(),
-            "accessToken"
-        );
-
-        assert.equal(
-            await accessTokenProvider.getTokenType(),
-            "tokenType"
-        );
     });
 });
