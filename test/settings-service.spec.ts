@@ -4,8 +4,9 @@ import { SmartlingSettingsServiceApi } from "../api/settings-service";
 import { SettingsPayload } from "../api/settings-service/parameters/settings-payload";
 import NoOpCodec from "../api/settings-service/encode/no-op-codec";
 import AesCodec from "../api/settings-service/encode/aes-codec";
+import { AccessTokenProvider } from "../api/auth/access-token-provider";
 
-const {loggerMock, authMock, responseMock} = require("./mock");
+const {loggerMock, responseMock} = require("./mock");
 
 describe("SmartlingSettingsServiceApi class tests.", () => {
     let settingsServiceApi;
@@ -14,7 +15,7 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
     let responseMockJsonStub;
 
     beforeEach(() => {
-        settingsServiceApi = new SmartlingSettingsServiceApi(authMock, loggerMock, "https://test.com");
+        settingsServiceApi = new SmartlingSettingsServiceApi(new AccessTokenProvider("test_access_token", "test_token_type"), loggerMock, "https://test.com");
         settingsServiceApiFetchStub = sinon.stub(settingsServiceApi, "fetch");
         settingsServiceApiUaStub = sinon.stub(settingsServiceApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -38,7 +39,7 @@ describe("SmartlingSettingsServiceApi class tests.", () => {
 
             createParams
                 .setSecrets({"testSecret": "testSecretValue"})
-                .setSettings({"testSetting": "testSettingValue"})
+                .setSettings({"testSetting": "testSettingValue"});
 
             assert.deepEqual(
                 {
