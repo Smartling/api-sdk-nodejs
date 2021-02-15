@@ -53,6 +53,7 @@ export * from "./api/property-mappings/dto/property-mapping-dto";
 export * from "./api/property-mappings/parameters/property-mapping-parameters";
 export * from "./api/http/response";
 export * from "./api/auth/access-token-provider";
+export * from "./api/authorization";
 
 export { SmartlingAuthApi };
 export { SmartlingBaseApi };
