@@ -9,7 +9,7 @@ export class SmartlingLocaleAPI extends SmartlingBaseApi {
 	constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
 		super(logger);
 		this.authApi = authApi;
-		this.entrypoint = `${smartlingApiBaseUrl}/locales-api/v2/`;
+		this.entrypoint = `${smartlingApiBaseUrl}/locales-api/v2`;
 	}
 
 	public async listLocales(params: LocaleParameters) {
