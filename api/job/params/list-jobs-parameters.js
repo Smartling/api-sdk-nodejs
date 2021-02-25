@@ -1,5 +1,6 @@
 const BaseParameters = require("../../parameters/index");
 const SmartlingException = require("../../exception");
+const JobOrderEnum = require("./order-enum");
 
 class ListJobsParameters extends BaseParameters {
     setName(jobName) {
@@ -30,6 +31,20 @@ class ListJobsParameters extends BaseParameters {
 
     setStatuses(statuses) {
         this.set("translationJobStatus", statuses);
+
+        return this;
+    }
+
+    setSort(field, order) {
+        if (
+            order !== JobOrderEnum.DESC &&
+            order !== JobOrderEnum.ASC
+        ) {
+            throw new SmartlingException(`Allowed orders are: ${JobOrderEnum.ORDER_DESC}, ${JobOrderEnum.ORDER_ASC}`);
+        }
+
+        this.set("sortBy", field);
+        this.set("sortDirection", order);
 
         return this;
     }

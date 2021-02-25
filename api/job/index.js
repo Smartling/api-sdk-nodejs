@@ -38,6 +38,14 @@ class SmartlingJobApi extends SmartlingBaseApi {
         );
     }
 
+    async searchJobs(projectId, params) {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/search`,
+            params.export()
+        );
+    }
+
     async removeFileFromJob(projectId, translationJobUid, params) {
         return await this.makeRequest(
             "post",
