@@ -17,6 +17,7 @@ import { BulkRequestServiceApi } from "../api/bulk-request";
 import { PublishedFilesApi } from "../api/published-files/index";
 import { SmartlingPropertyMappingsApi } from "../api/property-mappings";
 import { SmartlingTokensApi } from "../api/tokens";
+import {SmartlingLocaleAPI} from "../api/locale";
 
 const packageJson = require("../../package.json");
 
@@ -247,6 +248,13 @@ describe("SmartlingApiFactory class tests.", () => {
         assertApiClient(
             SmartlingTokensApi,
             apiFactory.createApiClient(SmartlingTokensApi, { timeout: 100500 })
+        );
+    });
+
+    it("Instantiates locale api client", () => {
+        assertApiClient(
+            SmartlingLocaleAPI,
+            apiFactory.createApiClient(SmartlingLocaleAPI, { timeout: 100500 })
         );
     });
 });
