@@ -12,6 +12,12 @@ class DownloadFileParameters extends BaseParameters {
 
         return this;
     }
+
+    setDebugMode(debugMode) {
+        this.set("debugMode", debugMode);
+
+        return this;
+    }
 }
 
 module.exports = DownloadFileParameters;
