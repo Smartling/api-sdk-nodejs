@@ -21,11 +21,6 @@ class UploadFileParameters extends BaseParameters {
         this.set("fileUri", fileUri);
         return this;
     }
-
-    setNamespace(namespace) {
-        this.set("namespace", namespace);
-        return this;
-    }
 }
 
 module.exports = UploadFileParameters;

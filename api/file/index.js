@@ -52,7 +52,7 @@ class SmartlingFileApi extends SmartlingBaseApi {
         formData.append("file", parameters.file);
         formData.append("fileUri", parameters.fileUri);
         formData.append("fileType", parameters.fileType);
-        formData.append("smartling.namespace", parameters["smartling.file_uri_as_namespace"] ? parameters.fileUri : parameters.namespace);
+        formData.append("smartling.namespace", parameters["smartling.namespace"]);
 
         return await this.makeRequest(
             "post",
