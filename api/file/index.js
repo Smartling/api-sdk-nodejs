@@ -43,7 +43,7 @@ class SmartlingFileApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/file/delete`,
             form,
             false,
-            SmartlingFileApi.alterHeaders(form)
+            SmartlingFileApi.fixContentTypeHeaderCase(form)
         );
     }
 
@@ -59,11 +59,11 @@ class SmartlingFileApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/file`,
             formData,
             false,
-            SmartlingFileApi.alterHeaders(formData),
+            SmartlingFileApi.fixContentTypeHeaderCase(formData),
         );
     }
 
-    static alterHeaders(form) {
+    static fixContentTypeHeaderCase(form) {
         const headers = form.getHeaders();
 
         headers["Content-Type"] = headers["content-type"];
