@@ -1,8 +1,9 @@
 const BaseParameters = require("../../parameters/index");
 
 class UploadFileParameters extends BaseParameters {
-    setDirectives(directives) {
-        this.set("directives", directives);
+    setDirective(key, value) {
+        this.set(`smartling.${key}`, value);
+
         return this;
     }
 
