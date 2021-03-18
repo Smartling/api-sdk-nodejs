@@ -13,8 +13,8 @@ class DownloadFileParameters extends BaseParameters {
         return this;
     }
 
-    setDebugMode(debugMode) {
-        this.set("debugMode", debugMode);
+    enableDebugMode() {
+        this.set("debugMode", 1);
 
         return this;
     }
