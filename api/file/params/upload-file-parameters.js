@@ -11,13 +11,13 @@ class UploadFileParameters extends BaseParameters {
         return this;
     }
 
-    setFileUri(fileUri) {
-        this.set("fileUri", fileUri);
+    setFileType(fileType) {
+        this.set("fileType", fileType);
         return this;
     }
 
-    setFileType(fileType) {
-        this.set("fileType", fileType);
+    setFileUri(fileUri) {
+        this.set("fileUri", fileUri);
         return this;
     }
 
