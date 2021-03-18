@@ -1,16 +1,14 @@
-import SmartlingBaseApi from "../base";
-import FormData from 'form-data';
-import DownloadFileParameters from "./params/download-file-parameters";
+const SmartlingBaseApi = require("../base");
+const FormData = require("form-data");
 
-export default class SmartlingFileApi extends SmartlingBaseApi {
-    private readonly entrypoint: string;
-
-    constructor(private authApi, logger, smartlingApiBaseUrl: string) {
+class SmartlingFileApi extends SmartlingBaseApi {
+    constructor(authApi, logger, smartlingApiBaseUrl) {
         super(logger);
+        this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/files-api/v2/projects`;
     }
 
-    async getStatusForAllLocales(projectId: string, fileUri: string): Promise<{ directives: { [index: string]: any }, items: [{ localeId: string }], filetype: string; namespace?: { name: string } }> {
+    async getStatusForAllLocales(projectId, fileUri) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/file/status`,
@@ -26,7 +24,7 @@ export default class SmartlingFileApi extends SmartlingBaseApi {
         );
     }
 
-    async downloadFile(projectId: string, fileUri: string, locale: string, params: DownloadFileParameters): Promise<string> {
+    async downloadFile(projectId, fileUri, locale, params) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
@@ -49,12 +47,12 @@ export default class SmartlingFileApi extends SmartlingBaseApi {
         );
     }
 
-    async uploadFile(projectId: string, fileUri: string, fileType: string, contents: string, namespace: string = null) {
+    async uploadFile(projectId, parameters) {
         const formData = new FormData();
-        formData.append('file', contents);
-        formData.append('fileUri', fileUri);
-        formData.append('fileType', fileType);
-        formData.append('smartling.namespace', namespace === null ? fileUri : namespace);
+        formData.append("file", parameters.file);
+        formData.append("fileUri", parameters.fileUri);
+        formData.append("fileType", parameters.fileType);
+        formData.append("smartling.namespace", parameters.directives.file_uri_as_namespace ? parameters.fileUri : parameters.namespace);
 
         return await this.makeRequest(
             "post",
@@ -65,7 +63,7 @@ export default class SmartlingFileApi extends SmartlingBaseApi {
         );
     }
 
-    private static alterHeaders(form: FormData): { [index: string]: string } {
+    static alterHeaders(form) {
         const headers = form.getHeaders();
 
         headers["Content-Type"] = headers["content-type"];
