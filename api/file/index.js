@@ -38,19 +38,42 @@ class SmartlingFileApi extends SmartlingBaseApi {
 
         form.append("fileUri", fileUri);
 
-        const headers = form.getHeaders();
-
-        headers["Content-Type"] = headers["content-type"];
-        // eslint-disable-next-line fp/no-delete
-        delete headers["content-type"];
-
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/file/delete`,
             form,
             false,
-            headers
+            SmartlingFileApi.fixContentTypeHeaderCase(form)
         );
+    }
+
+    async uploadFile(projectId, parameters) {
+        const formData = new FormData();
+        const exported = parameters.export();
+        Object.keys(exported).forEach((key) => {
+            if (key === "file") {
+                formData.append(key, exported[key], "file");
+            } else {
+                formData.append(key, exported[key]);
+            }
+        });
+
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/file`,
+            formData,
+            false,
+            SmartlingFileApi.fixContentTypeHeaderCase(formData),
+        );
+    }
+
+    static fixContentTypeHeaderCase(form) {
+        const headers = form.getHeaders();
+
+        headers["Content-Type"] = headers["content-type"];
+        // eslint-disable-next-line fp/no-delete
+        delete headers["content-type"];
+        return headers;
     }
 }
 
