@@ -49,10 +49,14 @@ class SmartlingFileApi extends SmartlingBaseApi {
 
     async uploadFile(projectId, parameters) {
         const formData = new FormData();
-        formData.append("file", parameters.file);
-        formData.append("fileUri", parameters.fileUri);
-        formData.append("fileType", parameters.fileType);
-        formData.append("smartling.namespace", parameters["smartling.namespace"]);
+        const obj = parameters.export();
+        Object.keys(obj).forEach((key) => {
+            if (key === "file") {
+                formData.append(key, obj[key], "file");
+            } else {
+                formData.append(key, obj[key]);
+            }
+        });
 
         return await this.makeRequest(
             "post",
