@@ -17,7 +17,6 @@ import UploadFileParameters from "./api/job-facade/params/upload-file-parameters
 import BaseParameters from "./api/parameters/index";
 import SmartlingProgressTrackerApi from "./api/progress-tracker/index";
 import SmartlingProjectApi from "./api/project/index";
-import SmartlingStringsApi from "./api/strings/index";
 import SmartlingTranslationApi from "./api/translation/index";
 import SmartlingTranslationRequestsApi from "./api/translation-requests/index";
 import BaseTranslationRequestParameters from "./api/translation-requests/params/base-translation-request-parameters";
@@ -29,6 +28,7 @@ import translationSubmissionStates from "./api/translation-requests/params/trans
 import UpdateTranslationRequestParameters from "./api/translation-requests/params/update-translation-request-params";
 import UpdateTranslationSubmissionParameters from "./api/translation-requests/params/update-translation-submission-params";
 import { BulkRequestServiceApi } from "./api/bulk-request";
+import { SmartlingSearchStringsApi, SmartlingStringsApi } from "./api/strings/index";
 
 export * from "./api/audit-log/index";
 export * from "./api/audit-log/dto/audit-log-dto";
@@ -56,6 +56,15 @@ export * from "./api/http/response";
 export * from "./api/auth/access-token-provider";
 export * from "./api/locale/index";
 export * from "./api/locale/parameters/locale-parameters";
+export * from "./api/strings/params/fetch-source-strings-parameters";
+export * from "./api/strings/dto/source-string-dto";
+export * from "./api/strings/dto/source-string-key-dto";
+export * from "./api/context/index";
+export * from "./api/context/dto/context-dto";
+export * from "./api/context/dto/context-match-async-dto";
+export * from "./api/context/params/context-upload-parameters";
+export * from "./api/context/params/context-automatic-match-parameters";
+export * from "./api/context/params/context-type-enum";
 
 export { SmartlingAuthApi };
 export { SmartlingBaseApi };
@@ -77,6 +86,7 @@ export { UploadFileParameters };
 export { BaseParameters };
 export { SmartlingProgressTrackerApi };
 export { SmartlingProjectApi };
+export { SmartlingSearchStringsApi };
 export { SmartlingStringsApi };
 export { SmartlingTranslationApi };
 export { SmartlingTranslationRequestsApi };
