@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 const { SmartlingSearchStringsApi } = require("../api/strings");
 // eslint-disable-next-line import/no-unresolved
 const { SmartlingApiClientBuilder } = require("../api/builder");

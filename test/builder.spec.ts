@@ -9,15 +9,16 @@ import SmartlingJobApi from "../api/job";
 import SmartlingJobFacadeApi from "../api/job-facade";
 import SmartlingProgressTrackerApi from "../api/progress-tracker";
 import SmartlingProjectApi from "../api/project";
-import SmartlingStringsApi from "../api/strings";
 import SmartlingTranslationApi from "../api/translation";
 import SmartlingTranslationRequestsApi from "../api/translation-requests";
+import { SmartlingSearchStringsApi } from "../api/strings";
 import { SmartlingSettingsServiceApi } from "../api/settings-service";
 import { SmartlingLogApi } from "../api/log";
 import { BulkRequestServiceApi } from "../api/bulk-request";
 import { PublishedFilesApi } from "../api/published-files/index";
 import { SmartlingPropertyMappingsApi } from "../api/property-mappings";
 import { SmartlingTokensApi } from "../api/tokens";
+import { SmartlingContextApi } from "../api/context";
 
 const packageJson = require("../../package.json");
 
@@ -277,10 +278,10 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
     });
 
-    it("Instantiates strings api client", () => {
+    it("Instantiates search strings api client", () => {
         assertApiClient(
-            SmartlingStringsApi,
-            apiClientBuilder.build(SmartlingStringsApi)
+            SmartlingSearchStringsApi,
+            apiClientBuilder.build(SmartlingSearchStringsApi)
         );
     });
 
@@ -338,6 +339,13 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         assertApiClient(
             SmartlingTokensApi,
             apiClientBuilder.build(SmartlingTokensApi)
+        );
+    });
+
+    it("Instantiates context api client", () => {
+        assertApiClient(
+            SmartlingContextApi,
+            apiClientBuilder.build(SmartlingContextApi)
         );
     });
 });

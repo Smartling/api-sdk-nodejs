@@ -13,7 +13,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
 		super(logger);
 
 		this.authApi = authApi;
-		this.entrypoint = `${smartlingApiBaseUrl}/context-api/v2/projects/`;
+		this.entrypoint = `${smartlingApiBaseUrl}/context-api/v2/projects`;
 	}
 
 	async upload(projectId: string, params: ContextUploadParameters): Promise<ContextDto> {
@@ -25,6 +25,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
 	}
 
 	async runAutomaticMatch(projectId: string, contextUid: string, params: ContextAutomaticMatchParameters): Promise<ContextMatchAsyncDto> {
+
 		return await this.makeRequest(
 			"post",
 			`${this.entrypoint}/${projectId}/contexts/${contextUid}/match/async`,

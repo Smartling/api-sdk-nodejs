@@ -8,16 +8,17 @@ import SmartlingJobApi from "../api/job";
 import SmartlingJobFacadeApi from "../api/job-facade";
 import SmartlingProgressTrackerApi from "../api/progress-tracker";
 import SmartlingProjectApi from "../api/project";
-import SmartlingStringsApi from "../api/strings";
 import SmartlingTranslationApi from "../api/translation";
 import SmartlingTranslationRequestsApi from "../api/translation-requests";
+import { SmartlingSearchStringsApi } from "../api/strings";
 import { SmartlingSettingsServiceApi } from "../api/settings-service";
 import { SmartlingLogApi } from "../api/log";
 import { BulkRequestServiceApi } from "../api/bulk-request";
 import { PublishedFilesApi } from "../api/published-files/index";
 import { SmartlingPropertyMappingsApi } from "../api/property-mappings";
 import { SmartlingTokensApi } from "../api/tokens";
-import {SmartlingLocaleAPI} from "../api/locale";
+import { SmartlingLocaleAPI } from "../api/locale";
+import { SmartlingContextApi } from "../api/context";
 
 const packageJson = require("../../package.json");
 
@@ -187,10 +188,10 @@ describe("SmartlingApiFactory class tests.", () => {
         );
     });
 
-    it("Instantiates strings api client", () => {
+    it("Instantiates search strings api client", () => {
         assertApiClient(
-            SmartlingStringsApi,
-            apiFactory.createApiClient(SmartlingStringsApi, { timeout: 100500 })
+            SmartlingSearchStringsApi,
+            apiFactory.createApiClient(SmartlingSearchStringsApi, { timeout: 100500 })
         );
     });
 
@@ -255,6 +256,13 @@ describe("SmartlingApiFactory class tests.", () => {
         assertApiClient(
             SmartlingLocaleAPI,
             apiFactory.createApiClient(SmartlingLocaleAPI, { timeout: 100500 })
+        );
+    });
+
+    it("Instantiates context api client", () => {
+        assertApiClient(
+            SmartlingContextApi,
+            apiFactory.createApiClient(SmartlingContextApi, { timeout: 100500 })
         );
     });
 });
