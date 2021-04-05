@@ -1,7 +1,7 @@
 import "mocha"
 import sinon from "sinon";
 import assert from "assert";
-import {SmartlingStringsApi} from "../api/strings";
+import SmartlingStringsApi from "../api/strings";
 import {FetchSourceStringsParameters} from "../api/strings/params/fetch-source-strings-parameters";
 
 const {loggerMock, authMock, responseMock} = require("./mock");

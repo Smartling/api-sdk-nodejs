@@ -1,4 +1,5 @@
 import BaseParameters from "../../parameters";
+import SmartlingException from "../../exception";
 
 export class FetchSourceStringsParameters extends BaseParameters {
 	setHashCodes(hashCodes: string[]): FetchSourceStringsParameters {
@@ -14,12 +15,18 @@ export class FetchSourceStringsParameters extends BaseParameters {
 	}
 
 	setLimit(limit: number): FetchSourceStringsParameters {
+		if (limit < 0) {
+			throw new SmartlingException("Limit parameter cannot be a negative number");
+		}
 		this.set("limit", limit);
 
 		return this;
 	}
 
 	setOffset(offset: number): FetchSourceStringsParameters {
+		if (offset < 0) {
+			throw new SmartlingException("offset parameter cannot be a negative number");
+		}
 		this.set("offset", offset);
 
 		return this;

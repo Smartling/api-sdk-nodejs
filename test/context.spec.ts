@@ -12,9 +12,9 @@ const fileName = "testContextFileName";
 
 const stringHashCodes = ["testStringHashCode1", "testStringHashCode2"];
 const expectedAutomaticMatchParams = {
-	overrideContextOlderThanDays: 1,
+	stringHashcodes: stringHashCodes,
 	contentFileUri: fileName,
-	stringHashcodes: stringHashCodes
+	overrideContextOlderThanDays: 1
 };
 
 describe("SmartlingContextApi class tests.", () => {
@@ -67,7 +67,7 @@ describe("SmartlingContextApi class tests.", () => {
 				contextServiceApiFetchStub,
 				`https://test.com/context-api/v2/projects/${projectId}/contexts/${contextUid}/match/async`,
 				{
-					body: expectedAutomaticMatchParams,
+					body: JSON.stringify(expectedAutomaticMatchParams),
 					headers: {
 						"Authorization": "test_token_type test_access_token",
 						"Content-Type": "application/json",

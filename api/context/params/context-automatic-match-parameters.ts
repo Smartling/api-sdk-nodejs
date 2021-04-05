@@ -1,4 +1,5 @@
 import BaseParameters from "../../parameters";
+import SmartlingException from "../../exception";
 
 export class ContextAutomaticMatchParameters extends BaseParameters {
 	setFileUri(fileUri: string): ContextAutomaticMatchParameters {
@@ -14,8 +15,8 @@ export class ContextAutomaticMatchParameters extends BaseParameters {
 	}
 
 	setOverrideContextOlderThanDays(overrideContextOlderThanDays: number): ContextAutomaticMatchParameters {
-		if (overrideContextOlderThanDays <= 1) {
-
+		if (overrideContextOlderThanDays < 1) {
+			throw new SmartlingException("Override context older than days should be a positive number");
 		}
 		this.set("overrideContextOlderThanDays", overrideContextOlderThanDays);
 

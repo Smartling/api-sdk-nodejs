@@ -10,7 +10,8 @@ import SmartlingProgressTrackerApi from "../api/progress-tracker";
 import SmartlingProjectApi from "../api/project";
 import SmartlingTranslationApi from "../api/translation";
 import SmartlingTranslationRequestsApi from "../api/translation-requests";
-import { SmartlingSearchStringsApi } from "../api/strings";
+import SmartlingSearchStringsApi from "../api/strings-search";
+import SmartlingStringsApi from "../api/strings";
 import { SmartlingSettingsServiceApi } from "../api/settings-service";
 import { SmartlingLogApi } from "../api/log";
 import { BulkRequestServiceApi } from "../api/bulk-request";
@@ -192,6 +193,13 @@ describe("SmartlingApiFactory class tests.", () => {
         assertApiClient(
             SmartlingSearchStringsApi,
             apiFactory.createApiClient(SmartlingSearchStringsApi, { timeout: 100500 })
+        );
+    });
+
+    it("Instantiates strings api client", () => {
+        assertApiClient(
+            SmartlingStringsApi,
+            apiFactory.createApiClient(SmartlingStringsApi, { timeout: 100500 })
         );
     });
 

@@ -19,6 +19,8 @@ import SmartlingProgressTrackerApi from "./api/progress-tracker/index";
 import SmartlingProjectApi from "./api/project/index";
 import SmartlingTranslationApi from "./api/translation/index";
 import SmartlingTranslationRequestsApi from "./api/translation-requests/index";
+import SmartlingStringsApi from "./api/strings/index";
+import SmartlingSearchStringsApi from "./api/strings-search";
 import BaseTranslationRequestParameters from "./api/translation-requests/params/base-translation-request-parameters";
 import BaseTranslationSubmissionParameters from "./api/translation-requests/params/base-translation-submission-parameters";
 import CreateTranslationRequestParameters from "./api/translation-requests/params/create-translation-request-params";
@@ -28,7 +30,6 @@ import translationSubmissionStates from "./api/translation-requests/params/trans
 import UpdateTranslationRequestParameters from "./api/translation-requests/params/update-translation-request-params";
 import UpdateTranslationSubmissionParameters from "./api/translation-requests/params/update-translation-submission-params";
 import { BulkRequestServiceApi } from "./api/bulk-request";
-import { SmartlingSearchStringsApi, SmartlingStringsApi } from "./api/strings/index";
 
 export * from "./api/audit-log/index";
 export * from "./api/audit-log/dto/audit-log-dto";
