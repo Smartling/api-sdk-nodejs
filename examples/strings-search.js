@@ -1,4 +1,5 @@
-const SmartlingStringsApi = require("../api/strings");
+// eslint-disable-next-line import/no-unresolved
+const SmartlingSearchStringsApi = require("../api/strings-search");
 // eslint-disable-next-line import/no-unresolved
 const { SmartlingApiClientBuilder } = require("../api/builder");
 
@@ -9,7 +10,7 @@ const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
     const baseUrl = "https://api.smartling.com";
-    const smartlingStringsApi = new SmartlingApiClientBuilder()
+    const smartlingSearchStringsApi = new SmartlingApiClientBuilder()
         .setLogger(logger)
         .setBaseSmartlingApiUrl(baseUrl)
         .setClientLibMetadata("example-lib-name", "example-lib-version")
@@ -17,11 +18,11 @@ if (userId && userSecret) {
             timeout: 10000
         })
         .authWithUserIdAndUserSecret(userId, userSecret)
-        .build(SmartlingStringsApi);
+        .build(SmartlingSearchStringsApi);
 
     (async () => {
         try {
-            const result = await smartlingStringsApi.getStringsData(projectId, ["test1", "test2"]);
+            const result = await smartlingSearchStringsApi.getStringsData(projectId, ["test1", "test2"]);
 
             logger.debug(JSON.stringify(result));
         } catch (e) {
