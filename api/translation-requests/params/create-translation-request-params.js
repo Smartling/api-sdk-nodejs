@@ -7,6 +7,12 @@ class CreateTranslationRequestParameters extends BaseTranslationRequestParameter
         return this;
     }
 
+    setTranslationPackageUid(translationPackageUid) {
+        this.set("translationPackageUid", translationPackageUid);
+
+        return this;
+    }
+
     setOriginalAssetKey(originalAssetKey = []) {
         this.set("originalAssetKey", originalAssetKey);
 
