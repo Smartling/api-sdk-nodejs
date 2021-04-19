@@ -20,6 +20,7 @@ import { PublishedFilesApi } from "../api/published-files/index";
 import { SmartlingPropertyMappingsApi } from "../api/property-mappings";
 import { SmartlingTokensApi } from "../api/tokens";
 import { SmartlingContextApi } from "../api/context";
+import { SmartlingTranslationPackagesApi } from "../api/translation-package";
 
 const packageJson = require("../../package.json");
 
@@ -354,6 +355,13 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         assertApiClient(
             SmartlingContextApi,
             apiClientBuilder.build(SmartlingContextApi)
+        );
+    });
+
+    it("Instantiates translation packages api client", () => {
+        assertApiClient(
+            SmartlingTranslationPackagesApi,
+            apiClientBuilder.build(SmartlingTranslationPackagesApi)
         );
     });
 });

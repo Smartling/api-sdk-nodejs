@@ -60,6 +60,14 @@ class SmartlingJobApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/submit`
         );
     }
+
+    async getJobFileProgress(projectId, translationJobUid, params) {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/file/progress`,
+            params.export()
+        );
+    }
 }
 
 module.exports = SmartlingJobApi;

@@ -11,6 +11,7 @@ import ListJobsParameters from "./api/job/params/list-jobs-parameters";
 import ListJobFilesParameters from "./api/job/params/list-job-files-parameters";
 import JobOrderEnum from "./api/job/params/order-enum";
 import RemoveFileParameters from "./api/job/params/remove-file-parameters";
+import FileProgressParameters from "./api/job/params/file-progress-parameters";
 import SmartlingJobFacadeApi from "./api/job-facade/index";
 import CreateBatchParameters from "./api/job-facade/params/create-batch-parameters";
 import UploadFileParameters from "./api/job-facade/params/upload-file-parameters";
@@ -66,6 +67,14 @@ export * from "./api/context/dto/context-match-async-dto";
 export * from "./api/context/params/context-upload-parameters";
 export * from "./api/context/params/context-automatic-match-parameters";
 export * from "./api/context/params/context-type-enum";
+export * from "./api/translation-package/dto/translation-package-dto";
+export * from "./api/translation-package/params/create-translation-packages-parameters";
+export * from "./api/translation-package/params/search-translation-packages-parameters";
+export * from "./api/translation-package/params/update-translation-packages-parameters";
+export * from "./api/translation-package/params/order-by-enum";
+export * from "./api/translation-package/params/sort-by-enum";
+export * from "./api/translation-package/params/state-enum";
+export * from "./api/translation-package/index";
 
 export { SmartlingAuthApi };
 export { SmartlingBaseApi };
@@ -81,6 +90,7 @@ export { ListJobsParameters };
 export { ListJobFilesParameters };
 export { JobOrderEnum };
 export { RemoveFileParameters }
+export { FileProgressParameters }
 export { SmartlingJobFacadeApi };
 export { CreateBatchParameters };
 export { UploadFileParameters };

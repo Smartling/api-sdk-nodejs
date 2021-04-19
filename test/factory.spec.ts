@@ -20,6 +20,7 @@ import { SmartlingPropertyMappingsApi } from "../api/property-mappings";
 import { SmartlingTokensApi } from "../api/tokens";
 import { SmartlingLocaleAPI } from "../api/locale";
 import { SmartlingContextApi } from "../api/context";
+import { SmartlingTranslationPackagesApi } from "../api/translation-package";
 
 const packageJson = require("../../package.json");
 
@@ -271,6 +272,13 @@ describe("SmartlingApiFactory class tests.", () => {
         assertApiClient(
             SmartlingContextApi,
             apiFactory.createApiClient(SmartlingContextApi, { timeout: 100500 })
+        );
+    });
+
+    it("Instantiates translation packages api client", () => {
+        assertApiClient(
+            SmartlingTranslationPackagesApi,
+            apiFactory.createApiClient(SmartlingTranslationPackagesApi, { timeout: 100500 })
         );
     });
 });
