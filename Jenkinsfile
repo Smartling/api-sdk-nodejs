@@ -10,9 +10,9 @@ pipeline {
             }
 
             steps {
-                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm install'
-                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm test'
-                  junit 'test-results.xml'
+                  withCredentials([file(credentialsId: 'node-npmrc-file', variable: 'FILE')]) {
+                      sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` -v $FILE:/root/.npmrc node:12.16.1 cat /root/.npmrc && npm publish'
+                  }
             }
         }
 
