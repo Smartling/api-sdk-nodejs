@@ -90,8 +90,15 @@ class SmartlingAuthApi extends SmartlingBaseApi {
             return this.response.accessToken;
         } catch (e) {
             this.logger.debug(`Request failed. Got: ${e.payload}`);
+            this.logger.debug("Token refresh or authentication failed. Final attempt to retrieve access token.");
 
-            throw new SmartlingException("Failed to get access token", e.payload, e);
+            try {
+                this.response = await this.authenticate();
+
+                return this.response.accessToken;
+            } catch (error) {
+                throw new SmartlingException("Failed to get access token", error.payload, error);
+            }
         }
     }
 
