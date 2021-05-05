@@ -38,6 +38,8 @@ class SmartlingAuthApi extends SmartlingBaseApi {
         if (this.tokenExists() && this.tokenCanBeRenewed()) {
             this.resetRequestTimeStamp();
 
+            this.logger.debug(`Refresh token with: ${JSON.stringify(this.response)}`);
+
             return await this.makeRequest(
                 "post",
                 `${this.entrypoint}/authenticate/refresh`,
@@ -46,6 +48,8 @@ class SmartlingAuthApi extends SmartlingBaseApi {
                 })
             );
         }
+
+        this.logger.debug(`Can't refresh, doing re-auth with: ${JSON.stringify(this.response)}`);
 
         return await this.authenticate();
     }
@@ -90,8 +94,15 @@ class SmartlingAuthApi extends SmartlingBaseApi {
             return this.response.accessToken;
         } catch (e) {
             this.logger.debug(`Request failed. Got: ${e.payload}`);
+            this.logger.debug("Token refresh or authentication failed. Final attempt to retrieve access token.");
 
-            throw new SmartlingException("Failed to get access token", e.payload, e);
+            try {
+                this.response = await this.authenticate();
+
+                return this.response.accessToken;
+            } catch (error) {
+                throw new SmartlingException("Failed to get access token", error.payload, error);
+            }
         }
     }
 

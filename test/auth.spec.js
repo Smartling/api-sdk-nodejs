@@ -217,13 +217,32 @@ describe("Auth class tests.", () => {
             sinon.assert.calledOnce(authAuthenticateStub);
         });
 
-        it("Request failed.", async () => {
+        it("Refresh token request failed: final attempt to authenticate succeeds.", async () => {
             const error = new SmartlingException("Test exception", { foo: "bar" });
 
             authTokenExpiredStub.returns(true);
             authRefreshTokenStub.throws(error);
 
             authAuthenticateStub.returns({ accessToken: "foo" });
+
+            assert.equal(await auth.getAccessToken(), "foo");
+            assert.deepEqual(auth.response, {
+                accessToken: "foo"
+            });
+
+            sinon.assert.calledOnce(authTokenExpiredStub);
+            sinon.assert.calledOnce(authRefreshTokenStub);
+            sinon.assert.notCalled(authTokenExistsStub);
+            sinon.assert.calledOnce(authAuthenticateStub);
+        });
+
+        it("Refresh token request failed: final attempt to authenticate fails.", async () => {
+            const refreshError = new SmartlingException("Refresh failed", { foo: "bar" });
+            const authError = new SmartlingException("Auth failed", { foo: "bar" });
+
+            authTokenExpiredStub.returns(true);
+            authRefreshTokenStub.throws(refreshError);
+            authAuthenticateStub.throws(authError);
 
             try {
                 await auth.getAccessToken();
@@ -233,12 +252,12 @@ describe("Auth class tests.", () => {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Failed to get access token");
                 assert.deepEqual(e.payload, { foo: "bar" });
-                assert.equal(e.nestedException, error);
+                assert.equal(e.nestedException, authError);
             } finally {
                 sinon.assert.calledOnce(authTokenExpiredStub);
                 sinon.assert.calledOnce(authRefreshTokenStub);
                 sinon.assert.notCalled(authTokenExistsStub);
-                sinon.assert.notCalled(authAuthenticateStub);
+                sinon.assert.calledOnce(authAuthenticateStub);
             }
         });
     });
