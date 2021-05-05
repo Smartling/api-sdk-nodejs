@@ -30,6 +30,7 @@
   "dependencies": {
     "typescript": "^3.8.3",
     "@types/node": "^13.9.1",
+    "@types/mocha": "^7.0.2",
     "default-user-agent": "~1",
     "form-data": "~2",
     "merge-deep": "^3.0.2",
@@ -38,7 +39,6 @@
   },
   "devDependencies": {
     "@smartling/eslint-config-smartling": "^1.2.3",
-    "@types/mocha": "^7.0.2",
     "eslint": "^4.19.1",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-import": "^2.12.0",
