@@ -37,7 +37,7 @@ export default class SmartlingSearchStringsApi extends SmartlingBaseApi {
 
     private mapItemsToDtos(response: HTTPResponse<StringDataDto>): HTTPResponse<StringDataDto> {
         return {
-            items: (response.items || []) as Array<StringDataDto>,
+            items: response.items || [],
             totalCount: response.totalCount
         };
     }
