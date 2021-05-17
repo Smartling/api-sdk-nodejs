@@ -1,7 +1,7 @@
-// eslint-disable-next-line import/no-unresolved
-const SmartlingSearchStringsApi = require("../api/strings-search");
-// eslint-disable-next-line import/no-unresolved
-const { SmartlingApiClientBuilder } = require("../api/builder");
+import SmartlingSearchStringsApi from "../api/strings-search";
+import { SmartlingApiClientBuilder } from "../api/builder";
+import {HTTPResponse} from "../api/http/response";
+import {StringDataDto} from "../api/strings-search/dto/string-data-dto";
 
 const logger = console;
 const projectId = process.env.PROJECT_ID;
@@ -22,9 +22,9 @@ if (userId && userSecret) {
 
     (async () => {
         try {
-            const result = await smartlingSearchStringsApi.getStringsData(projectId, ["test1", "test2"]);
+            const result: HTTPResponse<StringDataDto> = await smartlingSearchStringsApi.getStringsData(projectId, ["test1", "test2"]);
 
-            logger.debug(JSON.stringify(result));
+            logger.debug(JSON.stringify(result, null, 2));
         } catch (e) {
             logger.error(e);
         }

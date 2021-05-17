@@ -45,6 +45,7 @@ export * from "./api/log/params/level-enum";
 export * from "./api/settings-service/index";
 export * from "./api/settings-service/dto/settings-dto";
 export * from "./api/settings-service/parameters/settings-payload";
+export * from "./api/strings-search/dto/string-data-dto";
 export * from "./api/published-files/index";
 export * from "./api/published-files/response";
 export * from "./api/published-files/dto/published-file-dto";
