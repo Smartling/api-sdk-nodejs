@@ -6,12 +6,11 @@ import {ContextAutomaticMatchParameters} from "./params/context-automatic-match-
 import {ContextMatchAsyncDto} from "./dto/context-match-async-dto";
 import FormData from "form-data";
 import * as fs from 'fs';
+import { CreateBindingsParameters } from "./params/create-bindings-parameters";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
-    protected readonly
-    authApi: SmartlingAuthApi;
-    protected readonly
-    entrypoint: string;
+    protected readonly authApi: SmartlingAuthApi;
+    protected readonly entrypoint: string;
 
     constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
@@ -32,6 +31,14 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/contexts/${contextUid}/match/async`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async createStringsToContextBindings(projectId: string, params: CreateBindingsParameters): Promise<boolean> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/bindings`,
             JSON.stringify(params.export())
         );
     }
