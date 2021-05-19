@@ -1,5 +1,5 @@
 export interface ContextMatchAsyncDto {
-	contentFileUri: string;
-	stringHashcodes: string[];
-	overrideContextOlderThanDays: number;
+    contentFileUri: string;
+    stringHashcodes: string[];
+    overrideContextOlderThanDays: number;
 }

@@ -2,24 +2,24 @@ import BaseParameters from "../../parameters";
 import SmartlingException from "../../exception";
 
 export class ContextAutomaticMatchParameters extends BaseParameters {
-	setFileUri(fileUri: string): ContextAutomaticMatchParameters {
-		this.set("contentFileUri", fileUri);
+    setFileUri(fileUri: string): ContextAutomaticMatchParameters {
+        this.set("contentFileUri", fileUri);
 
-		return this;
-	}
+        return this;
+    }
 
-	setStringHashcodes(stringHashcodes: string[]): ContextAutomaticMatchParameters {
-		this.set("stringHashcodes", stringHashcodes);
+    setStringHashcodes(stringHashcodes: string[]): ContextAutomaticMatchParameters {
+        this.set("stringHashcodes", stringHashcodes);
 
-		return this;
-	}
+        return this;
+    }
 
-	setOverrideContextOlderThanDays(overrideContextOlderThanDays: number): ContextAutomaticMatchParameters {
-		if (overrideContextOlderThanDays < 1) {
-			throw new SmartlingException("Override context older than days should be a positive number");
-		}
-		this.set("overrideContextOlderThanDays", overrideContextOlderThanDays);
+    setOverrideContextOlderThanDays(overrideContextOlderThanDays: number): ContextAutomaticMatchParameters {
+        if (overrideContextOlderThanDays < 1) {
+            throw new SmartlingException("Override context older than days should be a positive number");
+        }
+        this.set("overrideContextOlderThanDays", overrideContextOlderThanDays);
 
-		return this;
-	}
+        return this;
+    }
 }
