@@ -1,5 +1,5 @@
 export enum ContextTypeEnum {
-	HTML = "HTML",
-	IMAGE = "IMAGE",
-	VIDEO = "VIDEO"
+    HTML = "HTML",
+    IMAGE = "IMAGE",
+    VIDEO = "VIDEO"
 }
