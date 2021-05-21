@@ -1,6 +1,6 @@
 {
   "name": "api-sdk-nodejs",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Package for Smartling API",
   "main": "built/index.js",
   "scripts": {
@@ -28,14 +28,15 @@
     "registry": "https://artifactory-vpc.smartling.net/artifactory/api/npm/local-nodejs-connectors"
   },
   "dependencies": {
-    "typescript": "^3.8.3",
-    "@types/node": "^13.9.1",
     "@types/mocha": "^7.0.2",
+    "@types/node": "^13.9.1",
     "default-user-agent": "~1",
     "form-data": "~2",
     "merge-deep": "^3.0.2",
     "node-fetch": "~2",
-    "querystring": "^0.2.0"
+    "querystring": "^0.2.0",
+    "string-to-file-stream": "^1.3.0",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
     "@smartling/eslint-config-smartling": "^1.2.3",
