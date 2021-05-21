@@ -6,6 +6,7 @@ import {ContextAutomaticMatchParameters} from "./params/context-automatic-match-
 import {ContextMatchAsyncDto} from "./dto/context-match-async-dto";
 import FormData from "form-data";
 import * as fs from 'fs';
+import string2fileStream from "string-to-file-stream";
 import { CreateBindingsParameters } from "./params/create-bindings-parameters";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
@@ -56,10 +57,8 @@ export class SmartlingContextApi extends SmartlingBaseApi {
             const formData = new FormData();
 
             Object.keys(opts.body).forEach((key) => {
-                if (key === "file") {
-                    formData.append(key, fs.createReadStream(
-                        fs.realpathSync(opts.body[key])
-                    ));
+                if (key === "content") {
+                    formData.append(key, string2fileStream(opts.body[key]));
                 } else if (Array.isArray(opts.body[key])) {
                     opts.body[key].forEach((value) => {
                         formData.append(`${key}[]`, value);
