@@ -64,6 +64,7 @@ export * from "./api/strings/dto/source-string-dto";
 export * from "./api/strings/dto/source-string-key-dto";
 export * from "./api/context/index";
 export * from "./api/context/dto/context-dto";
+export * from "./api/context/dto/context-source-dto";
 export * from "./api/context/dto/context-match-async-dto";
 export * from "./api/context/dto/binding/binding-dto";
 export * from "./api/context/dto/binding/html-binding-dto";

@@ -8,6 +8,7 @@ import FormData from "form-data";
 import * as fs from 'fs';
 import string2fileStream from "string-to-file-stream";
 import { CreateBindingsParameters } from "./params/create-bindings-parameters";
+import { ContextSourceDto } from "./dto/context-source-dto";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
     protected readonly authApi: SmartlingAuthApi;
@@ -20,14 +21,14 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/context-api/v2/projects`;
     }
 
-    async upload(projectId: string, params: ContextUploadParameters, contextSource: string = ""): Promise<ContextDto> {
+    async upload(projectId: string, params: ContextUploadParameters, contextSource?: ContextSourceDto): Promise<ContextDto> {
         return this.mapContextItemToDto(await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/contexts`,
             params.export(),
             false,
             {
-                "X-SL-Context-Source": contextSource
+                "X-SL-Context-Source": contextSource ? `group=${contextSource.group};name=${contextSource.name};version=${contextSource.version}` : ""
             }
         ));
     }
