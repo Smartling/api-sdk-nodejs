@@ -20,11 +20,15 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/context-api/v2/projects`;
     }
 
-    async upload(projectId: string, params: ContextUploadParameters): Promise<ContextDto> {
+    async upload(projectId: string, params: ContextUploadParameters, contextSource: string = ""): Promise<ContextDto> {
         return this.mapContextItemToDto(await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/contexts`,
-            params.export()
+            params.export(),
+            false,
+            {
+                "X-SL-Context-Source": contextSource
+            }
         ));
     }
 
