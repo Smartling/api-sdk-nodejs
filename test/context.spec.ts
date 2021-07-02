@@ -5,6 +5,8 @@ import { SmartlingContextApi } from "../api/context";
 import { ContextAutomaticMatchParameters } from "../api/context/params/context-automatic-match-parameters";
 import { CreateBindingsParameters } from "../api/context/params/create-bindings-parameters";
 import { HtmlBindingDto } from "../api/context/dto/binding/html-binding-dto";
+import { ListParameters } from "../api/context/params/list-parameters";
+import { ContextTypeEnum } from "../api/context/params/context-type-enum";
 
 const {loggerMock, authMock, responseMock} = require("./mock");
 
@@ -158,6 +160,49 @@ describe("SmartlingContextApi class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "post"
+                }
+            );
+        });
+
+        it("Should list contexts by project", async () => {
+            const listParams = new ListParameters();
+
+            listParams
+                .setNameFilter("nameFilter")
+                .setOffset("offset")
+                .setType(ContextTypeEnum.HTML);
+
+            await contextApi.listContexts(projectId, listParams);
+
+            sinon.assert.calledOnce(contextServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/testProjectId/contexts?nameFilter=nameFilter&offset=offset&type=HTML`,
+                {
+                    headers: {
+                        "Authorization": "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Should delete context by context uid", async () => {
+            await contextApi.delete(projectId, "context_uid");
+
+            sinon.assert.calledOnce(contextServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/testProjectId/contexts/context_uid`,
+                {
+                    headers: {
+                        "Authorization": "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
                 }
             );
         });

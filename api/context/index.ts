@@ -9,6 +9,8 @@ import * as fs from 'fs';
 import string2fileStream from "string-to-file-stream";
 import { CreateBindingsParameters } from "./params/create-bindings-parameters";
 import { ContextSourceDto } from "./dto/context-source-dto";
+import { ContextHttpResponse } from "./context-http-response";
+import { ListParameters } from "./params/list-parameters";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
     protected readonly authApi: SmartlingAuthApi;
@@ -33,6 +35,23 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         ));
     }
 
+    async delete(projectId: string, contextUid: string): Promise<boolean> {
+        return await this.makeRequest(
+            "delete",
+            `${this.entrypoint}/${projectId}/contexts/${contextUid}`
+        )
+    }
+
+    async listContexts(projectId: string, params: ListParameters): Promise<ContextHttpResponse<ContextDto>> {
+        return this.mapContextItemsToDtos(
+            await this.makeRequest(
+                "get",
+                `${this.entrypoint}/${projectId}/contexts`,
+                params.export()
+            )
+        );
+    }
+
     async runAutomaticMatch(projectId: string, contextUid: string, params: ContextAutomaticMatchParameters): Promise<ContextMatchAsyncDto> {
         return await this.makeRequest(
             "post",
@@ -49,6 +68,18 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
+    protected mapContextItemsToDtos(response: ContextHttpResponse<ContextDto>): ContextHttpResponse<ContextDto> {
+        const retrievedItems = response.items || [];
+        const items: Array<ContextDto> = retrievedItems.map(item => {
+            return this.mapContextItemToDto(item);
+        });
+
+        return {
+            items,
+            offset: response.offset
+        };
+    }
+
     protected mapContextItemToDto(contextDtoResponse: any): ContextDto {
         if (contextDtoResponse["created"]) {
             contextDtoResponse["created"] = new Date(contextDtoResponse["created"]);
@@ -59,6 +90,10 @@ export class SmartlingContextApi extends SmartlingBaseApi {
 
     alterRequestData(uri, opts) {
         if (uri.match(/context-api\/v2\/projects\/.*\/contexts$/g)) {
+            if (!opts.body) {
+                return opts;
+            }
+
             const formData = new FormData();
 
             Object.keys(opts.body).forEach((key) => {
