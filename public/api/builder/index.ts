@@ -1,6 +1,6 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
-import { Logger } from "../factory/logger";
+import { Logger } from "../logger";
 const packageJson = require("../../package.json");
 
 export class SmartlingApiClientBuilder {

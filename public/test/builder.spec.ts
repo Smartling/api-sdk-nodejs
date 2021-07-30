@@ -1,26 +1,14 @@
 import sinon from "sinon";
 import assert from "assert";
 import { SmartlingApiClientBuilder } from "../api/builder";
-import { SmartlingAuditLogApi } from "../api/audit-log";
 import SmartlingBaseApi from "../api/base";
 import SmartlingAuthApi from "../api/auth";
 import SmartlingFileApi from "../api/file";
 import SmartlingJobApi from "../api/job";
 import SmartlingJobFacadeApi from "../api/job-facade";
-import SmartlingProgressTrackerApi from "../api/progress-tracker";
 import SmartlingProjectApi from "../api/project";
-import SmartlingTranslationApi from "../api/translation";
-import SmartlingTranslationRequestsApi from "../api/translation-requests";
-import SmartlingSearchStringsApi from "../api/strings-search";
 import SmartlingStringsApi from "../api/strings";
-import { SmartlingSettingsServiceApi } from "../api/settings-service";
-import { SmartlingLogApi } from "../api/log";
-import { BulkRequestServiceApi } from "../api/bulk-request";
-import { PublishedFilesApi } from "../api/published-files/index";
-import { SmartlingPropertyMappingsApi } from "../api/property-mappings";
-import { SmartlingTokensApi } from "../api/tokens";
 import { SmartlingContextApi } from "../api/context";
-import { SmartlingTranslationPackagesApi } from "../api/translation-package";
 
 const packageJson = require("../../package.json");
 
@@ -124,7 +112,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
                 error: () => {}
             });
 
-        const apiClient = apiClientBuilder.build(SmartlingAuditLogApi);
+        const apiClient = apiClientBuilder.build(SmartlingJobApi);
 
         assert.equal(
             apiClient["clientLibId"],
@@ -177,7 +165,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
             .authWithAuthApiClient(authApiClient)
             .setBaseSmartlingApiUrl("test_base_url");
 
-        const apiClient = apiClientBuilder.build(SmartlingAuditLogApi);
+        const apiClient = apiClientBuilder.build(SmartlingJobApi);
 
         assert.equal(
             apiClient["clientLibId"],
@@ -220,7 +208,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
             .authWithUserIdAndUserSecret("test_user_id", "test_user_secret")
             .setBaseSmartlingApiUrl("test_base_url");
 
-        const apiClient = apiClientBuilder.build(SmartlingAuditLogApi);
+        const apiClient = apiClientBuilder.build(SmartlingJobApi);
 
         assert.equal(
             typeof apiClient["logger"].debug === "function",
@@ -235,13 +223,6 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         assert.equal(
             typeof apiClient["logger"].error === "function",
             true
-        );
-    });
-
-    it("Instantiates audit log api client", () => {
-        assertApiClient(
-            SmartlingAuditLogApi,
-            apiClientBuilder.build(SmartlingAuditLogApi)
         );
     });
 
@@ -266,24 +247,10 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
     });
 
-    it("Instantiates progress tracker api client", () => {
-        assertApiClient(
-            SmartlingProgressTrackerApi,
-            apiClientBuilder.build(SmartlingProgressTrackerApi)
-        );
-    });
-
     it("Instantiates project api client", () => {
         assertApiClient(
             SmartlingProjectApi,
             apiClientBuilder.build(SmartlingProjectApi)
-        );
-    });
-
-    it("Instantiates search strings api client", () => {
-        assertApiClient(
-            SmartlingSearchStringsApi,
-            apiClientBuilder.build(SmartlingSearchStringsApi)
         );
     });
 
@@ -294,74 +261,10 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
     });
 
-    it("Instantiates translation api client", () => {
-        assertApiClient(
-            SmartlingTranslationApi,
-            apiClientBuilder.build(SmartlingTranslationApi)
-        );
-    });
-
-    it("Instantiates translation requests api client", () => {
-        assertApiClient(
-            SmartlingTranslationRequestsApi,
-            apiClientBuilder.build(SmartlingTranslationRequestsApi)
-        );
-    });
-
-    it("Instantiates settings service api client", () => {
-        assertApiClient(
-            SmartlingSettingsServiceApi,
-            apiClientBuilder.build(SmartlingSettingsServiceApi)
-        );
-    });
-
-    it("Instantiates log service api client", () => {
-        assertApiClient(
-            SmartlingLogApi,
-            apiClientBuilder.build(SmartlingLogApi),
-            false
-        );
-    });
-
-    it("Instantiates bulk request service api client", () => {
-        assertApiClient(
-            BulkRequestServiceApi,
-            apiClientBuilder.build(BulkRequestServiceApi)
-        );
-    });
-
-    it("Instantiates published files api client", () => {
-        assertApiClient(
-            PublishedFilesApi,
-            apiClientBuilder.build(PublishedFilesApi)
-        );
-    });
-
-    it("Instantiates property mappings api client", () => {
-        assertApiClient(
-            SmartlingPropertyMappingsApi,
-            apiClientBuilder.build(SmartlingPropertyMappingsApi)
-        );
-    });
-
-    it("Instantiates tokens api client", () => {
-        assertApiClient(
-            SmartlingTokensApi,
-            apiClientBuilder.build(SmartlingTokensApi)
-        );
-    });
-
     it("Instantiates context api client", () => {
         assertApiClient(
             SmartlingContextApi,
             apiClientBuilder.build(SmartlingContextApi)
-        );
-    });
-
-    it("Instantiates translation packages api client", () => {
-        assertApiClient(
-            SmartlingTranslationPackagesApi,
-            apiClientBuilder.build(SmartlingTranslationPackagesApi)
         );
     });
 });
