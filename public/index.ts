@@ -21,7 +21,6 @@ import SmartlingStringsApi from "./api/strings/index";
 
 export * from "./api/builder/index";
 export * from "./api/http/response";
-export * from "./api/auth/access-token-provider";
 export * from "./api/strings/params/fetch-source-strings-parameters";
 export * from "./api/strings/dto/source-string-dto";
 export * from "./api/strings/dto/source-string-key-dto";
