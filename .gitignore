@@ -1,6 +1,12 @@
-built/
-coverage/
-node_modules/
-.nyc_output/
+public/built/
+public/coverage/
+public/node_modules/
+public/.nyc_output/
+public/test-results.xml
+private/built/
+private/coverage/
+private/node_modules/
+private/.nyc_output/
+private/test-results.xml
 .idea/
-test-results.xml
+
