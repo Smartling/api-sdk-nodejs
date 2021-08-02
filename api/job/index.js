@@ -54,13 +54,6 @@ class SmartlingJobApi extends SmartlingBaseApi {
         );
     }
 
-    async submitJob(projectId, translationJobUid) {
-        return await this.makeRequest(
-            "post",
-            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/submit`
-        );
-    }
-
     async getJobFileProgress(projectId, translationJobUid, params) {
         return await this.makeRequest(
             "get",
