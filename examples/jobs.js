@@ -1,9 +1,9 @@
-const SmartlingJobApi = require("../api/job");
-const ListJobsParameters = require("../api/job/params/list-jobs-parameters");
-const ListJobFilesParameters = require("../api/job/params/list-job-files-parameters");
-const CreateJobParameters = require("../api/job/params/create-job-parameters");
-const RemoveFileParameters = require("../api/job/params/remove-file-parameters");
-const JobStatuses = require("../api/job/params/job-statuses");
+const SmartlingJobsApi = require("../api/jobs");
+const ListJobsParameters = require("../api/jobs/params/list-jobs-parameters");
+const ListJobFilesParameters = require("../api/jobs/params/list-job-files-parameters");
+const CreateJobParameters = require("../api/jobs/params/create-job-parameters");
+const RemoveFileParameters = require("../api/jobs/params/remove-file-parameters");
+const JobStatuses = require("../api/jobs/params/job-statuses");
 // eslint-disable-next-line import/no-unresolved
 const { SmartlingApiClientBuilder } = require("../api/builder");
 
@@ -14,7 +14,7 @@ const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
     const baseUrl = "https://api.smartling.com";
-    const smartlingJobApi = new SmartlingApiClientBuilder()
+    const smartlingJobsApi = new SmartlingApiClientBuilder()
         .setLogger(logger)
         .setBaseSmartlingApiUrl(baseUrl)
         .setClientLibMetadata("example-lib-name", "example-lib-version")
@@ -22,7 +22,7 @@ if (userId && userSecret) {
             timeout: 10000
         })
         .authWithUserIdAndUserSecret(userId, userSecret)
-        .build(SmartlingJobApi);
+        .build(SmartlingJobsApi);
 
     (async () => {
         try {
@@ -32,7 +32,7 @@ if (userId && userSecret) {
 
             removeFileParameters.setFileUri("fileUri.xml");
 
-            await smartlingJobApi.removeFileFromJob(projectId, "jobUid", removeFileParameters);
+            await smartlingJobsApi.removeFileFromJob(projectId, "jobUid", removeFileParameters);
 
             logger.debug("-------- Create job ---------");
 
@@ -43,13 +43,13 @@ if (userId && userSecret) {
                 .setDescription("Job api-sdk-nodejs test description")
                 .setDueDate(new Date("2037-12-17T03:24:00"));
 
-            const createJobResponse = await smartlingJobApi.createJob(projectId, createJobParams);
+            const createJobResponse = await smartlingJobsApi.createJob(projectId, createJobParams);
 
             logger.debug(JSON.stringify(createJobResponse, null, 2));
 
             logger.debug("-------- Get job ---------");
 
-            const getJobResponse = await smartlingJobApi
+            const getJobResponse = await smartlingJobsApi
                 .getJob(projectId, createJobResponse.translationJobUid);
 
             logger.debug(JSON.stringify(getJobResponse, null, 2));
@@ -62,7 +62,7 @@ if (userId && userSecret) {
                 .setLimit(500)
                 .setOffset(0);
 
-            const getJobFilesResponse = await smartlingJobApi
+            const getJobFilesResponse = await smartlingJobsApi
                 .getJobFiles(
                     projectId,
                     createJobResponse.translationJobUid,
@@ -84,7 +84,7 @@ if (userId && userSecret) {
                     JobStatuses.CANCELLED
                 ]);
 
-            const listJobsResponse = await smartlingJobApi.listJobs(projectId, listJobsParams);
+            const listJobsResponse = await smartlingJobsApi.listJobs(projectId, listJobsParams);
 
             logger.debug(JSON.stringify(listJobsResponse, null, 2));
         } catch (e) {

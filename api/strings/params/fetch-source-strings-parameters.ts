@@ -2,33 +2,33 @@ import BaseParameters from "../../parameters";
 import SmartlingException from "../../exception";
 
 export class FetchSourceStringsParameters extends BaseParameters {
-	setHashCodes(hashCodes: string[]): FetchSourceStringsParameters {
-		this.set("hashcodes", hashCodes);
+    setHashCodes(hashCodes: string[]): FetchSourceStringsParameters {
+        this.set("hashcodes", hashCodes);
 
-		return this;
-	}
+        return this;
+    }
 
-	setFileUri(fileUri: string): FetchSourceStringsParameters {
-		this.set("fileUri", fileUri);
+    setFileUri(fileUri: string): FetchSourceStringsParameters {
+        this.set("fileUri", fileUri);
 
-		return this;
-	}
+        return this;
+    }
 
-	setLimit(limit: number): FetchSourceStringsParameters {
-		if (limit < 0) {
-			throw new SmartlingException("Limit parameter cannot be a negative number");
-		}
-		this.set("limit", limit);
+    setLimit(limit: number): FetchSourceStringsParameters {
+        if (limit < 0) {
+            throw new SmartlingException("Limit parameter cannot be a negative number");
+        }
+        this.set("limit", limit);
 
-		return this;
-	}
+        return this;
+    }
 
-	setOffset(offset: number): FetchSourceStringsParameters {
-		if (offset < 0) {
-			throw new SmartlingException("offset parameter cannot be a negative number");
-		}
-		this.set("offset", offset);
+    setOffset(offset: number): FetchSourceStringsParameters {
+        if (offset < 0) {
+            throw new SmartlingException("offset parameter cannot be a negative number");
+        }
+        this.set("offset", offset);
 
-		return this;
-	}
+        return this;
+    }
 }

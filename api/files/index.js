@@ -1,7 +1,7 @@
 const SmartlingBaseApi = require("../base");
 const FormData = require("form-data");
 
-class SmartlingFileApi extends SmartlingBaseApi {
+class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(authApi, logger, smartlingApiBaseUrl) {
         super(logger);
         this.authApi = authApi;
@@ -43,7 +43,7 @@ class SmartlingFileApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/file/delete`,
             form,
             false,
-            SmartlingFileApi.fixContentTypeHeaderCase(form)
+            SmartlingFilesApi.fixContentTypeHeaderCase(form)
         );
     }
 
@@ -63,7 +63,7 @@ class SmartlingFileApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/file`,
             formData,
             false,
-            SmartlingFileApi.fixContentTypeHeaderCase(formData),
+            SmartlingFilesApi.fixContentTypeHeaderCase(formData),
         );
     }
 
@@ -77,4 +77,4 @@ class SmartlingFileApi extends SmartlingBaseApi {
     }
 }
 
-module.exports = SmartlingFileApi;
+module.exports = SmartlingFilesApi;

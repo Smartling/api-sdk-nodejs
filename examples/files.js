@@ -1,6 +1,6 @@
-const SmartlingFileApi = require("../api/file");
-const RetrievalTypes = require("../api/file/params/retrieval-types");
-const DownloadFileParameters = require("../api/file/params/download-file-parameters");
+const SmartlingFilesApi = require("../api/files");
+const RetrievalTypes = require("../api/files/params/retrieval-types");
+const DownloadFileParameters = require("../api/files/params/download-file-parameters");
 // eslint-disable-next-line import/no-unresolved
 const { SmartlingApiClientBuilder } = require("../api/builder");
 
@@ -11,7 +11,7 @@ const userSecret = process.env.USER_SECRET;
 
 if (userId && userSecret) {
     const baseUrl = "https://api.smartling.com";
-    const smartlingFileApi = new SmartlingApiClientBuilder()
+    const smartlingFilesApi = new SmartlingApiClientBuilder()
         .setLogger(logger)
         .setBaseSmartlingApiUrl(baseUrl)
         .setClientLibMetadata("example-lib-name", "example-lib-version")
@@ -19,17 +19,17 @@ if (userId && userSecret) {
             timeout: 10000
         })
         .authWithUserIdAndUserSecret(userId, userSecret)
-        .build(SmartlingFileApi);
+        .build(SmartlingFilesApi);
 
     (async () => {
         const fileUri = "test";
 
         try {
-            let result = await smartlingFileApi.getStatusForAllLocales(projectId, fileUri);
+            let result = await smartlingFilesApi.getStatusForAllLocales(projectId, fileUri);
             logger.debug("-------- Get status for all locales ---------");
             logger.debug(JSON.stringify(result));
 
-            result = await smartlingFileApi.getLastModified(projectId, fileUri);
+            result = await smartlingFilesApi.getLastModified(projectId, fileUri);
             logger.debug("-------- Get last modified for all locales ---------");
             logger.debug(JSON.stringify(result));
 
@@ -37,11 +37,11 @@ if (userId && userSecret) {
 
             downloadFileParams.setRetrievalType(RetrievalTypes.pseudo);
 
-            result = await smartlingFileApi.downloadFile(projectId, fileUri, "fr-FR", downloadFileParams);
+            result = await smartlingFilesApi.downloadFile(projectId, fileUri, "fr-FR", downloadFileParams);
             logger.debug("-------- Download file ---------");
             logger.debug(result);
 
-            await smartlingFileApi.deleteFile(projectId, fileUri);
+            await smartlingFilesApi.deleteFile(projectId, fileUri);
             logger.debug("-------- File deleted ---------");
         } catch (e) {
             logger.error(e);

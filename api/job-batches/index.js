@@ -12,7 +12,7 @@ const FormData = require("form-data");
  ]
  */
 
-class SmartlingJobFacadeApi extends SmartlingBaseApi {
+class SmartlingJobBatchesApi extends SmartlingBaseApi {
     constructor(authApi, logger, smartlingApiBaseUrl) {
         super(logger);
         this.authApi = authApi;
@@ -78,4 +78,4 @@ class SmartlingJobFacadeApi extends SmartlingBaseApi {
     }
 }
 
-module.exports = SmartlingJobFacadeApi;
+module.exports = SmartlingJobBatchesApi;

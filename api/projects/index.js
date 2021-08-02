@@ -1,6 +1,6 @@
 const SmartlingBaseApi = require("../base");
 
-class SmartlingProjectApi extends SmartlingBaseApi {
+class SmartlingProjectsApi extends SmartlingBaseApi {
     constructor(authApi, logger, smartlingApiBaseUrl) {
         super(logger);
         this.authApi = authApi;
@@ -15,4 +15,4 @@ class SmartlingProjectApi extends SmartlingBaseApi {
     }
 }
 
-module.exports = SmartlingProjectApi;
+module.exports = SmartlingProjectsApi;

@@ -1,10 +1,10 @@
 require("mocha");
 const sinon = require("sinon");
 const assert = require("assert");
-const ListJobsParameters = require("../api/job/params/list-jobs-parameters");
-const FileProgressParameters = require("../api/job/params/file-progress-parameters");
-const SmartlingJobApi = require("../api/job/index");
-const JobOrderEnum = require("../api/job/params/order-enum");
+const ListJobsParameters = require("../api/jobs/params/list-jobs-parameters");
+const FileProgressParameters = require("../api/jobs/params/file-progress-parameters");
+const SmartlingJobApi = require("../api/jobs/index");
+const JobOrderEnum = require("../api/jobs/params/order-enum");
 const { loggerMock, authMock, responseMock } = require("./mock");
 
 const projectId = "testProjectId";

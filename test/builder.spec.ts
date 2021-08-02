@@ -3,10 +3,10 @@ import assert from "assert";
 import { SmartlingApiClientBuilder } from "../api/builder";
 import SmartlingBaseApi from "../api/base";
 import SmartlingAuthApi from "../api/auth";
-import SmartlingFileApi from "../api/file";
-import SmartlingJobApi from "../api/job";
-import SmartlingJobFacadeApi from "../api/job-facade";
-import SmartlingProjectApi from "../api/project";
+import SmartlingFilesApi from "../api/files";
+import SmartlingJobApi from "../api/jobs";
+import SmartlingJobBatchesApi from "../api/job-batches";
+import SmartlingProjectsApi from "../api/projects";
 import SmartlingStringsApi from "../api/strings";
 import { SmartlingContextApi } from "../api/context";
 
@@ -226,10 +226,10 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
     });
 
-    it("Instantiates file api client", () => {
+    it("Instantiates files api client", () => {
         assertApiClient(
-            SmartlingFileApi,
-            apiClientBuilder.build(SmartlingFileApi)
+            SmartlingFilesApi,
+            apiClientBuilder.build(SmartlingFilesApi)
         );
     });
 
@@ -240,17 +240,17 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
     });
 
-    it("Instantiates jobs facade api client", () => {
+    it("Instantiates job batches api client", () => {
         assertApiClient(
-            SmartlingJobFacadeApi,
-            apiClientBuilder.build(SmartlingJobFacadeApi)
+            SmartlingJobBatchesApi,
+            apiClientBuilder.build(SmartlingJobBatchesApi)
         );
     });
 
-    it("Instantiates project api client", () => {
+    it("Instantiates projects api client", () => {
         assertApiClient(
-            SmartlingProjectApi,
-            apiClientBuilder.build(SmartlingProjectApi)
+            SmartlingProjectsApi,
+            apiClientBuilder.build(SmartlingProjectsApi)
         );
     });
 

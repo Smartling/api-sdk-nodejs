@@ -1,9 +1,9 @@
 import SmartlingAuthApi from "../auth";
 import SmartlingBaseApi from "../base";
-import {ContextUploadParameters} from "./params/context-upload-parameters"
-import {ContextDto} from "./dto/context-dto";
-import {ContextAutomaticMatchParameters} from "./params/context-automatic-match-parameters";
-import {ContextMatchAsyncDto} from "./dto/context-match-async-dto";
+import { ContextUploadParameters } from "./params/context-upload-parameters"
+import { ContextDto } from "./dto/context-dto";
+import { ContextAutomaticMatchParameters } from "./params/context-automatic-match-parameters";
+import { ContextMatchAsyncDto } from "./dto/context-match-async-dto";
 import FormData from "form-data";
 import * as fs from 'fs';
 import string2fileStream from "string-to-file-stream";
