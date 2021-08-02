@@ -1,6 +1,6 @@
-const BaseParameters = require("../../parameters/index");
+import { BaseParameters } from "../../parameters";
 
-class ListJobFilesParameters extends BaseParameters {
+export class ListJobFilesParameters extends BaseParameters {
     setLimit(limit) {
         if (limit > 0) {
             this.set("limit", limit);
@@ -17,5 +17,3 @@ class ListJobFilesParameters extends BaseParameters {
         return this;
     }
 }
-
-module.exports = ListJobFilesParameters;

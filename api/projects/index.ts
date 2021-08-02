@@ -1,7 +1,8 @@
-const SmartlingBaseApi = require("../base");
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
 
-class SmartlingProjectsApi extends SmartlingBaseApi {
-    constructor(authApi, logger, smartlingApiBaseUrl) {
+export class SmartlingProjectsApi extends SmartlingBaseApi {
+    constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/projects-api/v2/projects`;
@@ -14,5 +15,3 @@ class SmartlingProjectsApi extends SmartlingBaseApi {
         );
     }
 }
-
-module.exports = SmartlingProjectsApi;

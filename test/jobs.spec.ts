@@ -1,16 +1,17 @@
 import assert from "assert";
 import sinon from "sinon";
-import ListJobsParameters from "../api/jobs/params/list-jobs-parameters";
-import FileProgressParameters from "../api/jobs/params/file-progress-parameters";
-import SmartlingJobsApi from "../api/jobs/index";
-import JobOrderEnum from "../api/jobs/params/order-enum";
 import { loggerMock, authMock, responseMock } from "./mock";
+import { Order } from "../api/jobs/params/order";
+import { ListJobsParameters } from "../api/jobs/params/list-jobs-parameters";
+import { SmartlingJobsApi } from "../api/jobs/index";
+import { FileProgressParameters } from "../api/jobs/params/file-progress-parameters";
+import { SmartlingAuthApi } from "../api/auth/index";
 
 const projectId = "testProjectId";
 const jobUid = "testJobUid";
 const fileUri = "testFileUri.json";
 const sortByFieldName = "name";
-const bodyParams = { sortBy: sortByFieldName, sortDirection: JobOrderEnum.ASC };
+const bodyParams = { sortBy: sortByFieldName, sortDirection: Order.ASC };
 
 describe("SmartlingJobAPI class tests.", () => {
     let jobApi;
@@ -20,9 +21,9 @@ describe("SmartlingJobAPI class tests.", () => {
     let jobParameters;
 
     beforeEach(() => {
-        jobParameters = new ListJobsParameters().setSort(sortByFieldName, JobOrderEnum.ASC);
+        jobParameters = new ListJobsParameters().setSort(sortByFieldName, Order.ASC);
 
-        jobApi = new SmartlingJobsApi(authMock, loggerMock, "https://test.com");
+        jobApi = new SmartlingJobsApi(authMock as any, loggerMock, "https://test.com");
         jobServiceApiFetchStub = sinon.stub(jobApi, "fetch");
         jobServiceApiUaStub = sinon.stub(jobApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");

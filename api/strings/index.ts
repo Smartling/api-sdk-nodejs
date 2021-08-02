@@ -1,13 +1,10 @@
-import SmartlingAuthApi from "../auth";
-import SmartlingBaseApi from "../base";
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
 import { FetchSourceStringsParameters } from "./params/fetch-source-strings-parameters";
 import { HTTPResponse } from "../http/response";
 import { SourceStringDto } from "./dto/source-string-dto";
 
-export default class SmartlingStringsApi extends SmartlingBaseApi {
-    private readonly authApi: SmartlingAuthApi;
-    private readonly entrypoint: string;
-
+export class SmartlingStringsApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;

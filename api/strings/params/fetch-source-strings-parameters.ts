@@ -1,5 +1,5 @@
-import BaseParameters from "../../parameters";
-import SmartlingException from "../../exception";
+import { BaseParameters } from "../../parameters";
+import { SmartlingException } from "../../exception";
 
 export class FetchSourceStringsParameters extends BaseParameters {
     setHashCodes(hashCodes: string[]): FetchSourceStringsParameters {

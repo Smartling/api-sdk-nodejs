@@ -1,5 +1,5 @@
 import assert from "assert";
-import SmartlingException from "../api/exception";
+import { SmartlingException } from "../api/exception";
 
 describe("Base class tests.", () => {
     it("Cast to string", () => {

@@ -1,6 +1,6 @@
-const BaseParameters = require("../../parameters/index");
+import { BaseParameters } from "../../parameters/index";
 
-class UploadFileParameters extends BaseParameters {
+export class UploadBatchFileParameters extends BaseParameters {
     setClientLibId(clientLibId, version) {
         this.set("smartling.client_lib_id", JSON.stringify({
             client: clientLibId,
@@ -50,5 +50,3 @@ class UploadFileParameters extends BaseParameters {
         return this;
     }
 }
-
-module.exports = UploadFileParameters;

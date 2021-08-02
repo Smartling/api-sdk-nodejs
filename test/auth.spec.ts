@@ -1,8 +1,8 @@
 import sinon from "sinon";
 import assert from "assert";
-import SmartlingAuthApi from "../api/auth";
+import { SmartlingAuthApi } from "../api/auth";
 import { loggerMock, responseMock } from "./mock";
-import SmartlingException from "../api/exception";
+import { SmartlingException } from "../api/exception";
 
 describe("Auth class tests.", () => {
     let auth;

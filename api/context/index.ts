@@ -1,5 +1,5 @@
-import SmartlingAuthApi from "../auth";
-import SmartlingBaseApi from "../base";
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
 import { ContextUploadParameters } from "./params/context-upload-parameters"
 import { ContextDto } from "./dto/context-dto";
 import { ContextAutomaticMatchParameters } from "./params/context-automatic-match-parameters";
@@ -13,9 +13,6 @@ import { ContextHttpResponse } from "./context-http-response";
 import { ListParameters } from "./params/list-parameters";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
-    protected readonly authApi: SmartlingAuthApi;
-    protected readonly entrypoint: string;
-
     constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
 

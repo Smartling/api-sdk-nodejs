@@ -1,6 +1,6 @@
-const BaseParameters = require("../../parameters/index");
+import { BaseParameters } from "../../parameters/index";
 
-class CreateBatchParameters extends BaseParameters {
+export class CreateBatchParameters extends BaseParameters {
     setTranslationJobUid(uid) {
         this.set("translationJobUid", uid);
 
@@ -13,5 +13,3 @@ class CreateBatchParameters extends BaseParameters {
         return this;
     }
 }
-
-module.exports = CreateBatchParameters;

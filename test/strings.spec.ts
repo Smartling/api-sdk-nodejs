@@ -1,10 +1,9 @@
 import "mocha"
 import sinon from "sinon";
 import assert from "assert";
-import SmartlingStringsApi from "../api/strings";
+import { SmartlingStringsApi } from "../api/strings";
 import { FetchSourceStringsParameters } from "../api/strings/params/fetch-source-strings-parameters";
-
-const { loggerMock, authMock, responseMock } = require("./mock");
+import { loggerMock, authMock, responseMock } from "./mock";
 
 const projectId = "testProjectId";
 const fileUri = "testStringsFileUri";
@@ -30,7 +29,7 @@ describe("SmartlingStringsApi class tests.", () => {
             .setLimit(limit)
             .setOffset(offset);
 
-        stringsApi = new SmartlingStringsApi(authMock, loggerMock, "https://test.com");
+        stringsApi = new SmartlingStringsApi(authMock as any, loggerMock, "https://test.com");
         stringsServiceApiFetchStub = sinon.stub(stringsApi, "fetch");
         stringsServiceApiUaStub = sinon.stub(stringsApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");

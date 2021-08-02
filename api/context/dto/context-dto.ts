@@ -1,8 +1,8 @@
-import { ContextTypeEnum } from "../params/context-type-enum";
+import { ContextType } from "../params/context-type";
 
 export interface ContextDto {
     name: string;
-    contextType: ContextTypeEnum;
+    contextType: ContextType;
     created: Date;
     contextUid: string;
 }

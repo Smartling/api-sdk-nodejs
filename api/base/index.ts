@@ -1,8 +1,11 @@
-const SmartlingException = require("../exception");
-const fetch = require("node-fetch");
-const querystring = require("querystring");
-const ua = require("default-user-agent");
-const merge = require("merge-deep");
+import { Logger } from "../logger";
+import { SmartlingException } from "../exception";
+import * as fetch from "node-fetch";
+import * as querystring from "querystring";
+import ua from "default-user-agent";
+import merge from "merge-deep";
+import { SmartlingAuthApi } from "../auth/index";
+
 const packageJson = require("../../package.json");
 
 /*
@@ -17,9 +20,18 @@ const packageJson = require("../../package.json");
  ]
  */
 
+export class SmartlingBaseApi {
+    protected authApi: SmartlingAuthApi = undefined;
+    protected entrypoint: string;
+    protected defaultClientLibId: string;
+    protected defaultClientVersion: string;
+    protected clientLibId: string;
+    protected clientLibVersion: string;
+    protected response: any;
+    protected logger: Logger;
+    protected options: any;
 
-class SmartlingBaseApi {
-    constructor(logger) {
+    constructor(logger: Logger) {
         this.defaultClientLibId = packageJson.name;
         this.defaultClientVersion = packageJson.version;
         this.clientLibId = this.defaultClientLibId;
@@ -80,7 +92,7 @@ class SmartlingBaseApi {
         return merge(defaultHeaders, headers);
     }
 
-    async makeRequest(verb, uri, payload, returnRawResponseBody = false, headers = {}) {
+    async makeRequest(verb, uri, payload = null, returnRawResponseBody = false, headers = {}) {
         const opts = merge({
             method: verb,
             headers: await this.getDefaultHeaders(headers)
@@ -141,5 +153,3 @@ class SmartlingBaseApi {
         }
     }
 }
-
-module.exports = SmartlingBaseApi;

@@ -1,4 +1,4 @@
-import BaseParameters from "../../parameters";
+import { BaseParameters } from "../../parameters";
 import FormData from "form-data"
 
 export class ContextUploadParameters extends BaseParameters {

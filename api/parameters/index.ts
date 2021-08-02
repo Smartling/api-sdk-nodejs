@@ -1,4 +1,8 @@
-class BaseParameters {
+export class BaseParameters {
+    protected parameters: {
+        [index: string]: any
+    };
+
     constructor(parameters = {}) {
         this.parameters = parameters;
     }
@@ -11,5 +15,3 @@ class BaseParameters {
         return this.parameters;
     }
 }
-
-module.exports = BaseParameters;

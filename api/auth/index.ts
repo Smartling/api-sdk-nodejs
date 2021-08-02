@@ -1,5 +1,6 @@
-const SmartlingBaseApi = require("../base");
-const SmartlingException = require("../exception");
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingException } from "../exception";
+import { Logger } from "../logger";
 
 /*
     eslint class-methods-use-this: [
@@ -11,8 +12,13 @@ const SmartlingException = require("../exception");
     ]
  */
 
-class SmartlingAuthApi extends SmartlingBaseApi {
-    constructor(userIdentifier, tokenSecret, logger, smartlingApiBaseUrl) {
+export class SmartlingAuthApi extends SmartlingBaseApi {
+    private ttlCorrectionSec: number;
+    private userIdentifier: string;
+    private tokenSecret: string;
+    private requestTimestamp: number;
+
+    constructor(userIdentifier: string, tokenSecret: string, logger: Logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.ttlCorrectionSec = 10;
         this.userIdentifier = userIdentifier;
@@ -135,5 +141,3 @@ class SmartlingAuthApi extends SmartlingBaseApi {
         return Math.floor(Date.now() / 1000);
     }
 }
-
-module.exports = SmartlingAuthApi;

@@ -1,7 +1,7 @@
-const BaseParameters = require("../../parameters/index");
-const SmartlingException = require("../../exception");
+import { BaseParameters } from "../../parameters";
+import { SmartlingException } from "../../exception";
 
-class CreateJobParameters extends BaseParameters {
+export class CreateJobParameters extends BaseParameters {
     setName(jobName) {
         if (jobName.length >= 170) {
             throw new SmartlingException("Job name should be less than 170 characters.");
@@ -36,5 +36,3 @@ class CreateJobParameters extends BaseParameters {
         return this;
     }
 }
-
-module.exports = CreateJobParameters;

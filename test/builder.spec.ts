@@ -1,14 +1,14 @@
 import sinon from "sinon";
 import assert from "assert";
 import { SmartlingApiClientBuilder } from "../api/builder";
-import SmartlingBaseApi from "../api/base";
-import SmartlingAuthApi from "../api/auth";
-import SmartlingFilesApi from "../api/files";
-import SmartlingJobApi from "../api/jobs";
-import SmartlingJobBatchesApi from "../api/job-batches";
-import SmartlingProjectsApi from "../api/projects";
-import SmartlingStringsApi from "../api/strings";
+import { SmartlingFilesApi } from "../api/files";
+import { SmartlingJobsApi } from "../api/jobs";
+import { SmartlingJobBatchesApi } from "../api/job-batches";
+import { SmartlingProjectsApi } from "../api/projects";
+import { SmartlingStringsApi } from "../api/strings";
 import { SmartlingContextApi } from "../api/context";
+import { SmartlingBaseApi } from "../api/base/index";
+import { SmartlingAuthApi } from "../api/auth/index";
 
 const packageJson = require("../../package.json");
 
@@ -57,27 +57,27 @@ function assertApiClient(Type: any, apiClient: SmartlingBaseApi, assertAuthClien
 
     if (assertAuthClient === true) {
         assert.equal(
-            apiClient["authApi"].userIdentifier,
+            apiClient["authApi"]["userIdentifier"],
             "test_user_id"
         );
 
         assert.equal(
-            apiClient["authApi"].tokenSecret,
+            apiClient["authApi"]["tokenSecret"],
             "test_user_secret"
         );
 
         assert.equal(
-            apiClient["authApi"].entrypoint,
+            apiClient["authApi"]["entrypoint"],
             "test_base_url/auth-api/v2"
         );
 
         assert.equal(
-            apiClient["authApi"].clientLibId,
+            apiClient["authApi"]["clientLibId"],
             "example-lib-name"
         );
 
         assert.equal(
-            apiClient["authApi"].clientLibVersion,
+            apiClient["authApi"]["clientLibVersion"],
             "example-lib-version"
         );
     }
@@ -112,7 +112,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
                 error: () => {}
             });
 
-        const apiClient = apiClientBuilder.build(SmartlingJobApi);
+        const apiClient = apiClientBuilder.build(SmartlingJobsApi);
 
         assert.equal(
             apiClient["clientLibId"],
@@ -125,12 +125,12 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
 
         assert.equal(
-            apiClient["authApi"].clientLibId,
+            apiClient["authApi"]["clientLibId"],
             packageJson.name
         );
 
         assert.equal(
-            apiClient["authApi"].clientLibVersion,
+            apiClient["authApi"]["clientLibVersion"],
             packageJson.version
         );
     });
@@ -165,7 +165,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
             .authWithAuthApiClient(authApiClient)
             .setBaseSmartlingApiUrl("test_base_url");
 
-        const apiClient = apiClientBuilder.build(SmartlingJobApi);
+        const apiClient = apiClientBuilder.build(SmartlingJobsApi);
 
         assert.equal(
             apiClient["clientLibId"],
@@ -178,27 +178,27 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
 
         assert.equal(
-            apiClient["authApi"].userIdentifier,
+            apiClient["authApi"]["userIdentifier"],
             "foo"
         );
 
         assert.equal(
-            apiClient["authApi"].tokenSecret,
+            apiClient["authApi"]["tokenSecret"],
             "bar"
         );
 
         assert.equal(
-            apiClient["authApi"].entrypoint,
+            apiClient["authApi"]["entrypoint"],
             "baz/auth-api/v2"
         );
 
         assert.equal(
-            apiClient["authApi"].clientLibId,
+            apiClient["authApi"]["clientLibId"],
             packageJson.name
         );
 
         assert.equal(
-            apiClient["authApi"].clientLibVersion,
+            apiClient["authApi"]["clientLibVersion"],
             packageJson.version
         );
     });
@@ -208,7 +208,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
             .authWithUserIdAndUserSecret("test_user_id", "test_user_secret")
             .setBaseSmartlingApiUrl("test_base_url");
 
-        const apiClient = apiClientBuilder.build(SmartlingJobApi);
+        const apiClient = apiClientBuilder.build(SmartlingJobsApi);
 
         assert.equal(
             typeof apiClient["logger"].debug === "function",
@@ -235,8 +235,8 @@ describe("SmartlingApiClientBuilder class tests.", () => {
 
     it("Instantiates jobs api client", () => {
         assertApiClient(
-            SmartlingJobApi,
-            apiClientBuilder.build(SmartlingJobApi)
+            SmartlingJobsApi,
+            apiClientBuilder.build(SmartlingJobsApi)
         );
     });
 

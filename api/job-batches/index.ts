@@ -1,6 +1,7 @@
-const SmartlingBaseApi = require("../base");
-const fs = require("fs");
-const FormData = require("form-data");
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
+import * as fs from "fs";
+import * as formData from "form-data";
 
 /*
  eslint class-methods-use-this: [
@@ -12,8 +13,8 @@ const FormData = require("form-data");
  ]
  */
 
-class SmartlingJobBatchesApi extends SmartlingBaseApi {
-    constructor(authApi, logger, smartlingApiBaseUrl) {
+export class SmartlingJobBatchesApi extends SmartlingBaseApi {
+    constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/jobs-batch-api/v1/projects`;
@@ -21,7 +22,7 @@ class SmartlingJobBatchesApi extends SmartlingBaseApi {
 
     alterRequestData(uri, opts) {
         if (uri.match(/jobs-batch-api\/.*\/projects\/.*\/batches\/.*\/file$/g)) {
-            const formData = new FormData();
+            const formData: any = new FormData();
 
             Object.keys(opts.body).forEach((key) => {
                 if (key === "file") {
@@ -77,5 +78,3 @@ class SmartlingJobBatchesApi extends SmartlingBaseApi {
         );
     }
 }
-
-module.exports = SmartlingJobBatchesApi;

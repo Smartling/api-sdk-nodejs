@@ -6,9 +6,9 @@ import { ContextAutomaticMatchParameters } from "../api/context/params/context-a
 import { CreateBindingsParameters } from "../api/context/params/create-bindings-parameters";
 import { HtmlBindingDto } from "../api/context/dto/binding/html-binding-dto";
 import { ListParameters } from "../api/context/params/list-parameters";
-import { ContextTypeEnum } from "../api/context/params/context-type-enum";
+import { ContextType } from "../api/context/params/context-type";
 
-const {loggerMock, authMock, responseMock} = require("./mock");
+import { loggerMock, authMock, responseMock } from "./mock";
 
 const projectId = "testProjectId";
 const contextUid = "testContextUid";
@@ -35,7 +35,7 @@ describe("SmartlingContextApi class tests.", () => {
             .setFileUri(fileName)
             .setOverrideContextOlderThanDays(1);
 
-        contextApi = new SmartlingContextApi(authMock, loggerMock, "https://test.com");
+        contextApi = new SmartlingContextApi(authMock as any, loggerMock, "https://test.com");
         contextServiceApiFetchStub = sinon.stub(contextApi, "fetch");
         contextServiceApiUaStub = sinon.stub(contextApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -170,7 +170,7 @@ describe("SmartlingContextApi class tests.", () => {
             listParams
                 .setNameFilter("nameFilter")
                 .setOffset("offset")
-                .setType(ContextTypeEnum.HTML);
+                .setType(ContextType.HTML);
 
             await contextApi.listContexts(projectId, listParams);
 

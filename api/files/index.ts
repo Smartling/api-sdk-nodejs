@@ -1,8 +1,9 @@
-const SmartlingBaseApi = require("../base");
-const FormData = require("form-data");
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
+import * as formData from "form-data";
 
-class SmartlingFilesApi extends SmartlingBaseApi {
-    constructor(authApi, logger, smartlingApiBaseUrl) {
+export class SmartlingFilesApi extends SmartlingBaseApi {
+    constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/files-api/v2/projects`;
@@ -76,5 +77,3 @@ class SmartlingFilesApi extends SmartlingBaseApi {
         return headers;
     }
 }
-
-module.exports = SmartlingFilesApi;

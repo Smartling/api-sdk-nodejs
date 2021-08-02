@@ -1,6 +1,6 @@
-const BaseParameters = require("../../parameters/index");
+import { BaseParameters } from "../../parameters/index";
 
-class UploadFileParameters extends BaseParameters {
+export class UploadFileParameters extends BaseParameters {
     setDirective(key, value) {
         this.set(`smartling.${key}`, value);
 
@@ -22,5 +22,3 @@ class UploadFileParameters extends BaseParameters {
         return this;
     }
 }
-
-module.exports = UploadFileParameters;
