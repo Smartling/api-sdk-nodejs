@@ -1,5 +1,5 @@
-const assert = require("assert");
-const SmartlingException = require("../api/exception");
+import assert from "assert";
+import SmartlingException from "../api/exception";
 
 describe("Base class tests.", () => {
     it("Cast to string", () => {

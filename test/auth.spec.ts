@@ -1,8 +1,8 @@
-const assert = require("assert");
-const sinon = require("sinon");
-const Auth = require("../api/auth");
-const { loggerMock, responseMock } = require("./mock");
-const SmartlingException = require("../api/exception");
+import sinon from "sinon";
+import assert from "assert";
+import SmartlingAuthApi from "../api/auth";
+import { loggerMock, responseMock } from "./mock";
+import SmartlingException from "../api/exception";
 
 describe("Auth class tests.", () => {
     let auth;
@@ -10,7 +10,7 @@ describe("Auth class tests.", () => {
     let authResetRequestTimeStampSpy;
 
     beforeEach(() => {
-        auth = new Auth("test_user_id", "test_user_secret", loggerMock, "https://api.smartling.com");
+        auth = new SmartlingAuthApi("test_user_id", "test_user_secret", loggerMock, "https://api.smartling.com");
 
         authMakeRequestStub = sinon.stub(auth, "makeRequest");
         authResetRequestTimeStampSpy = sinon.spy(auth, "resetRequestTimeStamp");

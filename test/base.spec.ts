@@ -1,7 +1,7 @@
-const assert = require("assert");
-const sinon = require("sinon");
-const Base = require("../api/base");
-const { loggerMock, authMock, responseMock } = require("./mock");
+import assert from "assert";
+import sinon from "sinon";
+import SmartlingBaseApi from "../api/base";
+import { loggerMock, responseMock, authMock } from "./mock";
 // eslint-disable-next-line import/no-unresolved
 const packageJson = require("../../package.json");
 
@@ -11,7 +11,7 @@ describe("Base class tests.", () => {
         let baseUaStub;
 
         beforeEach(() => {
-            base = new Base(loggerMock);
+            base = new SmartlingBaseApi(loggerMock);
             baseUaStub = sinon.stub(base, "ua");
             baseUaStub.returns("test_user_agent");
         });
@@ -73,7 +73,7 @@ describe("Base class tests.", () => {
         let responseMockJsonStub;
 
         beforeEach(() => {
-            base = new Base(loggerMock);
+            base = new SmartlingBaseApi(loggerMock);
             base.authApi = authMock;
 
             baseFetchStub = sinon.stub(base, "fetch");

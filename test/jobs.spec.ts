@@ -1,11 +1,10 @@
-require("mocha");
-const sinon = require("sinon");
-const assert = require("assert");
-const ListJobsParameters = require("../api/jobs/params/list-jobs-parameters");
-const FileProgressParameters = require("../api/jobs/params/file-progress-parameters");
-const SmartlingJobApi = require("../api/jobs/index");
-const JobOrderEnum = require("../api/jobs/params/order-enum");
-const { loggerMock, authMock, responseMock } = require("./mock");
+import assert from "assert";
+import sinon from "sinon";
+import ListJobsParameters from "../api/jobs/params/list-jobs-parameters";
+import FileProgressParameters from "../api/jobs/params/file-progress-parameters";
+import SmartlingJobsApi from "../api/jobs/index";
+import JobOrderEnum from "../api/jobs/params/order-enum";
+import { loggerMock, authMock, responseMock } from "./mock";
 
 const projectId = "testProjectId";
 const jobUid = "testJobUid";
@@ -23,7 +22,7 @@ describe("SmartlingJobAPI class tests.", () => {
     beforeEach(() => {
         jobParameters = new ListJobsParameters().setSort(sortByFieldName, JobOrderEnum.ASC);
 
-        jobApi = new SmartlingJobApi(authMock, loggerMock, "https://test.com");
+        jobApi = new SmartlingJobsApi(authMock, loggerMock, "https://test.com");
         jobServiceApiFetchStub = sinon.stub(jobApi, "fetch");
         jobServiceApiUaStub = sinon.stub(jobApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");

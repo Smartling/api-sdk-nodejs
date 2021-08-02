@@ -1,24 +1,19 @@
-const loggerMock = {
+export const loggerMock = {
     debug: () => {},
     warn: () => {},
     error: () => {},
     info: () => {}
 };
 
-const authMock = {
+export const authMock = {
     getAccessToken: () => "test_access_token",
     getTokenType: () => "test_token_type",
     resetToken: () => {}
 };
 
-const responseMock = {
+export const responseMock = {
     status: 200,
     text: () => {},
-    json: async () => {}
-};
-
-module.exports = {
-    loggerMock,
-    authMock,
-    responseMock
+    json: async () => {},
+    headers: {}
 };
