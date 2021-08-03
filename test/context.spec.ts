@@ -8,6 +8,7 @@ import { ListParameters } from "../api/context/params/list-parameters";
 import { ContextType } from "../api/context/params/context-type";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { ContextUploadParameters } from "../api/context/params/context-upload-parameters";
+import { SmartlingAuthApi } from "../api/auth/index";
 
 describe("SmartlingContextApi class tests.", () => {
     const projectId = "testProjectId";
@@ -32,7 +33,7 @@ describe("SmartlingContextApi class tests.", () => {
             .setFileUri(fileName)
             .setOverrideContextOlderThanDays(1);
 
-        contextApi = new SmartlingContextApi(authMock as any, loggerMock, "https://test.com");
+        contextApi = new SmartlingContextApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
         contextServiceApiFetchStub = sinon.stub(contextApi, "fetch");
         contextServiceApiUaStub = sinon.stub(contextApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -91,7 +92,9 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should run automatic matching", async () => {
-            await contextApi.runAutomaticMatch(projectId, contextUid, contextAutomaticMatchParameters);
+            await contextApi.runAutomaticMatch(
+                projectId, contextUid, contextAutomaticMatchParameters
+            );
 
             sinon.assert.calledOnce(contextServiceApiFetchStub);
             sinon.assert.calledWithExactly(
@@ -100,7 +103,7 @@ describe("SmartlingContextApi class tests.", () => {
                 {
                     body: JSON.stringify(expectedAutomaticMatchParams),
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },
@@ -138,10 +141,10 @@ describe("SmartlingContextApi class tests.", () => {
                 `https://test.com/context-api/v2/projects/${projectId}/bindings`,
                 {
                     body: JSON.stringify({
-                        bindings: [ htmlBinding1, htmlBinding2 ]
+                        bindings: [htmlBinding1, htmlBinding2]
                     }),
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },
@@ -163,10 +166,10 @@ describe("SmartlingContextApi class tests.", () => {
             sinon.assert.calledOnce(contextServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
-                `https://test.com/context-api/v2/projects/testProjectId/contexts?nameFilter=nameFilter&offset=offset&type=HTML`,
+                `https://test.com/context-api/v2/projects/${projectId}/contexts?nameFilter=nameFilter&offset=offset&type=HTML`,
                 {
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },
@@ -181,10 +184,10 @@ describe("SmartlingContextApi class tests.", () => {
             sinon.assert.calledOnce(contextServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
-                `https://test.com/context-api/v2/projects/testProjectId/contexts/context_uid`,
+                `https://test.com/context-api/v2/projects/${projectId}/contexts/context_uid`,
                 {
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },

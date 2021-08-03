@@ -1,4 +1,6 @@
-export interface SourceStringKeyDto {
+interface SourceStringKeyDto {
     fileUri: string;
     key: string;
 }
+
+export { SourceStringKeyDto };

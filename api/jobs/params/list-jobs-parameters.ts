@@ -3,7 +3,7 @@ import { SmartlingException } from "../../exception";
 import { Order } from "./order";
 
 export class ListJobsParameters extends BaseParameters {
-    setName(jobName: string) {
+    setName(jobName: string): ListJobsParameters {
         if (jobName.length >= 170) {
             throw new SmartlingException("Job name should be less than 170 characters.");
         }
@@ -13,7 +13,7 @@ export class ListJobsParameters extends BaseParameters {
         return this;
     }
 
-    setLimit(limit: number) {
+    setLimit(limit: number): ListJobsParameters {
         if (limit > 0) {
             this.set("limit", limit);
         }
@@ -21,7 +21,7 @@ export class ListJobsParameters extends BaseParameters {
         return this;
     }
 
-    setOffset(offset: number) {
+    setOffset(offset: number): ListJobsParameters {
         if (offset > 0) {
             this.set("offset", offset);
         }
@@ -29,13 +29,13 @@ export class ListJobsParameters extends BaseParameters {
         return this;
     }
 
-    setStatuses(statuses: string | Array<string>) {
+    setStatuses(statuses: string | Array<string>): ListJobsParameters {
         this.set("translationJobStatus", statuses);
 
         return this;
     }
 
-    setSort(field: string, order: Order) {
+    setSort(field: string, order: Order): ListJobsParameters {
         this.set("sortBy", field);
         this.set("sortDirection", order);
 

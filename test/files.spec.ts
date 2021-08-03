@@ -5,6 +5,7 @@ import { loggerMock, authMock, responseMock } from "./mock";
 import { RetrievalType } from "../api/files/params/retrieval-type";
 import { DownloadFileParameters } from "../api/files/params/download-file-parameters";
 import { UploadFileParameters } from "../api/files/params/upload-file-parameters";
+import { SmartlingAuthApi } from "../api/auth/index";
 
 describe("SmartlingStringsApi class tests.", () => {
     const projectId = "testProjectId";
@@ -15,7 +16,7 @@ describe("SmartlingStringsApi class tests.", () => {
     let responseMockJsonStub;
 
     beforeEach(() => {
-        filesApi = new SmartlingFilesApi(authMock as any, loggerMock, "https://test.com");
+        filesApi = new SmartlingFilesApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
         filesApiFetchStub = sinon.stub(filesApi, "fetch");
         filesApiUaStub = sinon.stub(filesApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -43,7 +44,7 @@ describe("SmartlingStringsApi class tests.", () => {
                 `https://test.com/files-api/v2/projects/${projectId}/file/status?fileUri=testFileUri`,
                 {
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },
@@ -61,7 +62,7 @@ describe("SmartlingStringsApi class tests.", () => {
                 `https://test.com/files-api/v2/projects/${projectId}/file/last-modified?fileUri=testFileUri`,
                 {
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },
@@ -86,7 +87,7 @@ describe("SmartlingStringsApi class tests.", () => {
                 `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&debugMode=1&fileUri=testFileUri`,
                 {
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },

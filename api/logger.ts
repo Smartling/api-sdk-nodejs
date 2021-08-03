@@ -1,6 +1,8 @@
-export interface Logger {
+interface Logger {
     debug,
     warn,
     error,
-    [index: string]: any
+    [index: string]: unknown
 }
+
+export { Logger };

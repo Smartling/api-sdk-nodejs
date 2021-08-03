@@ -1,4 +1,10 @@
-import sinon from "sinon";
+/* eslint-disable dot-notation */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty-function */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/no-unresolved */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import assert from "assert";
 import { SmartlingApiClientBuilder } from "../api/builder";
 import { SmartlingFilesApi } from "../api/files";
@@ -12,7 +18,7 @@ import { SmartlingAuthApi } from "../api/auth";
 
 const packageJson = require("../../package.json");
 
-function assertApiClient(Type: any, apiClient: SmartlingBaseApi, assertAuthClient: boolean = true) {
+function assertApiClient(Type: any, apiClient: SmartlingBaseApi, assertAuthClient = true) {
     assert.equal(apiClient instanceof SmartlingBaseApi, true);
     assert.equal(apiClient instanceof Type, true);
 
@@ -84,10 +90,10 @@ function assertApiClient(Type: any, apiClient: SmartlingBaseApi, assertAuthClien
 }
 
 describe("SmartlingApiClientBuilder class tests.", () => {
-    let apiClientBuilder: SmartlingApiClientBuilder;
+    let apiClientsBuilder: SmartlingApiClientBuilder;
 
     beforeEach(() => {
-        apiClientBuilder = new SmartlingApiClientBuilder()
+        apiClientsBuilder = new SmartlingApiClientBuilder()
             .setLogger({
                 debug: () => {},
                 warn: () => {},
@@ -229,42 +235,42 @@ describe("SmartlingApiClientBuilder class tests.", () => {
     it("Instantiates files api client", () => {
         assertApiClient(
             SmartlingFilesApi,
-            apiClientBuilder.build(SmartlingFilesApi)
+            apiClientsBuilder.build(SmartlingFilesApi)
         );
     });
 
     it("Instantiates jobs api client", () => {
         assertApiClient(
             SmartlingJobsApi,
-            apiClientBuilder.build(SmartlingJobsApi)
+            apiClientsBuilder.build(SmartlingJobsApi)
         );
     });
 
     it("Instantiates job batches api client", () => {
         assertApiClient(
             SmartlingJobBatchesApi,
-            apiClientBuilder.build(SmartlingJobBatchesApi)
+            apiClientsBuilder.build(SmartlingJobBatchesApi)
         );
     });
 
     it("Instantiates projects api client", () => {
         assertApiClient(
             SmartlingProjectsApi,
-            apiClientBuilder.build(SmartlingProjectsApi)
+            apiClientsBuilder.build(SmartlingProjectsApi)
         );
     });
 
     it("Instantiates strings api client", () => {
         assertApiClient(
             SmartlingStringsApi,
-            apiClientBuilder.build(SmartlingStringsApi)
+            apiClientsBuilder.build(SmartlingStringsApi)
         );
     });
 
     it("Instantiates context api client", () => {
         assertApiClient(
             SmartlingContextApi,
-            apiClientBuilder.build(SmartlingContextApi)
+            apiClientsBuilder.build(SmartlingContextApi)
         );
     });
 });

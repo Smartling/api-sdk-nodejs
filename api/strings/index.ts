@@ -12,15 +12,19 @@ export class SmartlingStringsApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/strings-api/v2/projects`;
     }
 
-    async getSourceStrings(projectId: string, params: FetchSourceStringsParameters): Promise<HTTPResponse<SourceStringDto>> {
-        return this.mapItemsToDtos(await this.makeRequest(
+    async getSourceStrings(
+        projectId: string, params: FetchSourceStringsParameters
+    ): Promise<HTTPResponse<SourceStringDto>> {
+        return SmartlingStringsApi.mapItemsToDtos(await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/source-strings`,
             params.export()
         ));
     }
 
-    private mapItemsToDtos(response: HTTPResponse<SourceStringDto>): HTTPResponse<SourceStringDto> {
+    private static mapItemsToDtos(
+        response: HTTPResponse<SourceStringDto>
+    ): HTTPResponse<SourceStringDto> {
         const retrievedItems = response.items || [];
         const items: SourceStringDto[] = retrievedItems;
 

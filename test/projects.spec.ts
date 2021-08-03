@@ -1,7 +1,7 @@
 import sinon from "sinon";
-import assert from "assert";
 import { SmartlingProjectsApi } from "../api/projects";
 import { loggerMock, authMock, responseMock } from "./mock";
+import { SmartlingAuthApi } from "../api/auth/index";
 
 describe("SmartlingStringsApi class tests.", () => {
     const projectId = "testProjectId";
@@ -11,7 +11,7 @@ describe("SmartlingStringsApi class tests.", () => {
     let responseMockJsonStub;
 
     beforeEach(() => {
-        projectsApi = new SmartlingProjectsApi(authMock as any, loggerMock, "https://test.com");
+        projectsApi = new SmartlingProjectsApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
         projectsApiFetchStub = sinon.stub(projectsApi, "fetch");
         projectsApiUaStub = sinon.stub(projectsApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -39,7 +39,7 @@ describe("SmartlingStringsApi class tests.", () => {
                 `https://test.com/projects-api/v2/projects/${projectId}`,
                 {
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },

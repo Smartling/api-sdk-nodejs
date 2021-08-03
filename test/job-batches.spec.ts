@@ -1,27 +1,20 @@
-import assert from "assert";
 import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingJobBatchesApi } from "../api/job-batches";
-import { FileProgressParameters } from "../api/jobs/params/file-progress-parameters";
 import { SmartlingAuthApi } from "../api/auth";
-import { CreateJobParameters } from "../api/jobs/params/create-job-parameters";
-import { ListJobFilesParameters } from "../api/jobs/params/list-job-files-parameters";
-import { JobStatus } from "../api/jobs/params/job-status";
-import { RemoveFileParameters } from "../api/jobs/params/remove-file-parameters";
 import { CreateBatchParameters } from "../api/job-batches/params/create-batch-parameters";
 import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batch-file-parameters";
 
 describe("SmartlingJobAPI class tests.", () => {
     const projectId = "testProjectId";
     const jobUid = "testJobUid";
-    const fileUri = "testFileUri.json";
     let jobBatchesApi;
     let jobBatchesApiFetchStub;
     let jobServiceApiUaStub;
     let responseMockJsonStub;
 
     beforeEach(() => {
-        jobBatchesApi = new SmartlingJobBatchesApi(authMock as any, loggerMock, "https://test.com");
+        jobBatchesApi = new SmartlingJobBatchesApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
         jobBatchesApiFetchStub = sinon.stub(jobBatchesApi, "fetch");
         jobServiceApiUaStub = sinon.stub(jobBatchesApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -54,7 +47,7 @@ describe("SmartlingJobAPI class tests.", () => {
                 jobBatchesApiFetchStub,
                 `https://test.com/job-batches-api/v1/projects/${projectId}/batches`,
                 {
-                    body: '{"translationJobUid":"testJobUid","authorize":true}',
+                    body: "{\"translationJobUid\":\"testJobUid\",\"authorize\":true}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -90,7 +83,7 @@ describe("SmartlingJobAPI class tests.", () => {
                         fileUri: "test-file-uri",
                         fileType: "xml",
                         "smartling.foo": "bar",
-                        localeIdsToAuthorize: [ "fr-FR", "de-DE" ],
+                        localeIdsToAuthorize: ["fr-FR", "de-DE"],
                         callbackUrl: "callbackUrl",
                         "smartling.client_lib_id": "{\"client\":\"clientLibId\",\"version\":\"clientLibVersion\"}"
                     }),

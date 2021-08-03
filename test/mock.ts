@@ -1,19 +1,22 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty-function */
+
 export const loggerMock = {
-    debug: () => {},
-    warn: () => {},
-    error: () => {},
-    info: () => {}
+    debug: (): void => {},
+    warn: (): void => {},
+    error: (): void => {},
+    info: (): void => {}
 };
 
 export const authMock = {
-    getAccessToken: () => "test_access_token",
-    getTokenType: () => "test_token_type",
-    resetToken: () => {}
+    getAccessToken: (): string => "test_access_token",
+    getTokenType: (): string => "test_token_type",
+    resetToken: (): void => {}
 };
 
 export const responseMock = {
     status: 200,
-    text: () => {},
-    json: async () => {},
+    text: (): void => {},
+    json: async (): Promise<void> => {},
     headers: {}
 };

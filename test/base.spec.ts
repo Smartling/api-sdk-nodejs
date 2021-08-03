@@ -2,7 +2,7 @@ import assert from "assert";
 import sinon from "sinon";
 import { SmartlingBaseApi } from "../api/base";
 import { loggerMock, responseMock, authMock } from "./mock";
-// eslint-disable-next-line import/no-unresolved
+// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires
 const packageJson = require("../../package.json");
 
 describe("Base class tests.", () => {

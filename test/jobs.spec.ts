@@ -1,4 +1,3 @@
-import assert from "assert";
 import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { Order } from "../api/jobs/params/order";
@@ -22,7 +21,7 @@ describe("SmartlingJobAPI class tests.", () => {
     let responseMockJsonStub;
 
     beforeEach(() => {
-        jobApi = new SmartlingJobsApi(authMock as any, loggerMock, "https://test.com");
+        jobApi = new SmartlingJobsApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
         jobServiceApiFetchStub = sinon.stub(jobApi, "fetch");
         jobServiceApiUaStub = sinon.stub(jobApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -57,7 +56,7 @@ describe("SmartlingJobAPI class tests.", () => {
                 jobServiceApiFetchStub,
                 `https://test.com/jobs-api/v3/projects/${projectId}/jobs`,
                 {
-                    body: '{"jobName":"Test job","description":"Test job description","dueDate":"2100-12-31T22:00:00.000Z"}',
+                    body: "{\"jobName\":\"Test job\",\"description\":\"Test job description\",\"dueDate\":\"2100-12-31T22:00:00.000Z\"}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -69,8 +68,6 @@ describe("SmartlingJobAPI class tests.", () => {
         });
 
         it("Get job", async () => {
-            const jobUid = "testJobUid";
-
             await jobApi.getJob(projectId, jobUid);
 
             sinon.assert.calledOnce(jobServiceApiFetchStub);
@@ -89,7 +86,6 @@ describe("SmartlingJobAPI class tests.", () => {
         });
 
         it("Get job files", async () => {
-            const jobUid = "testJobUid";
             const params = new ListJobFilesParameters();
 
             params

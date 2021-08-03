@@ -1,5 +1,5 @@
 class SmartlingException extends Error {
-    protected payload: object;
+    protected payload: Record<string, unknown>;
     protected nestedException: Error;
 
     constructor(message: string, payload: any = {}, e: Error = null) {

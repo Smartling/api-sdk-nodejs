@@ -1,8 +1,8 @@
 import sinon from "sinon";
-import assert from "assert";
 import { SmartlingStringsApi } from "../api/strings";
 import { FetchSourceStringsParameters } from "../api/strings/params/fetch-source-strings-parameters";
 import { loggerMock, authMock, responseMock } from "./mock";
+import { SmartlingAuthApi } from "../api/auth/index";
 
 describe("SmartlingStringsApi class tests.", () => {
     const projectId = "testProjectId";
@@ -10,7 +10,7 @@ describe("SmartlingStringsApi class tests.", () => {
     const limit = 25;
     const offset = 0;
     const hashCodes = ["testStringHashCode1", "testStringHashCode2"];
-    const hashCodesParams = hashCodes.map(hashCode => `hashcodes=${hashCode}`).join('&');
+    const hashCodesParams = hashCodes.map(hashCode => `hashcodes=${hashCode}`).join("&");
     const expectedFetchSourceStringsParams = `${hashCodesParams}&fileUri=${fileUri}&limit=${limit}&offset=${offset}`;
     let stringsApi: SmartlingStringsApi;
     let fetchSourceStringsParameters: FetchSourceStringsParameters;
@@ -26,7 +26,7 @@ describe("SmartlingStringsApi class tests.", () => {
             .setLimit(limit)
             .setOffset(offset);
 
-        stringsApi = new SmartlingStringsApi(authMock as any, loggerMock, "https://test.com");
+        stringsApi = new SmartlingStringsApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
         stringsServiceApiFetchStub = sinon.stub(stringsApi, "fetch");
         stringsServiceApiUaStub = sinon.stub(stringsApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -54,7 +54,7 @@ describe("SmartlingStringsApi class tests.", () => {
                 `https://test.com/strings-api/v2/projects/${projectId}/source-strings?${expectedFetchSourceStringsParams}`,
                 {
                     headers: {
-                        "Authorization": "test_token_type test_access_token",
+                        Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },

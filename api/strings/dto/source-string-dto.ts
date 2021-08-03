@@ -1,6 +1,6 @@
 import { SourceStringKeyDto } from "./source-string-key-dto";
 
-export interface SourceStringDto {
+interface SourceStringDto {
     hashcode: string;
     keys: SourceStringKeyDto[];
     parsedStringText: string;
@@ -8,3 +8,5 @@ export interface SourceStringDto {
     stringVariant: string;
     maxLength: number;
 }
+
+export { SourceStringDto };

@@ -9,7 +9,7 @@ export class SmartlingApiClientBuilder {
     private userId: string = null;
     private userSecret: string = null;
     private baseSmartlingApiUrl: string;
-    private httpClientOptions: object = {};
+    private httpClientOptions: Record<string, unknown> = {};
     private clientLibId: string = packageJson.name;
     private clientLibVersion: string = packageJson.version;
     private logger: Logger = {
@@ -30,7 +30,7 @@ export class SmartlingApiClientBuilder {
         return this;
     }
 
-    public setHttpClientConfiguration(httpClientOptions: object): SmartlingApiClientBuilder {
+    public setHttpClientConfiguration(httpClientOptions: Record<string, unknown>): SmartlingApiClientBuilder {
         this.httpClientOptions = httpClientOptions;
 
         return this;

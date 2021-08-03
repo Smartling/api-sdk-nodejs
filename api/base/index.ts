@@ -61,7 +61,7 @@ export class SmartlingBaseApi {
         SmartlingBaseApi.clientLibVersion = value;
     }
 
-    async fetch(uri: string, options: object) {
+    async fetch(uri: string, options: Record<string, unknown>) {
         return await fetch(uri, options);
     }
 
@@ -69,11 +69,11 @@ export class SmartlingBaseApi {
         return ua(clientId, clientVersion);
     }
 
-    alterRequestData(uri: string, opts: object) {
+    alterRequestData(uri: string, opts: Record<string, unknown>) {
         return opts;
     }
 
-    async getDefaultHeaders(headers: object = {}) {
+    async getDefaultHeaders(headers: Record<string, unknown> = {}) {
         let defaultHeaders = {};
 
         /* eslint-disable-next-line no-prototype-builtins */
@@ -92,7 +92,7 @@ export class SmartlingBaseApi {
         return merge(defaultHeaders, headers);
     }
 
-    async makeRequest(verb: string, uri: string, payload: any = null, returnRawResponseBody: boolean = false, headers: object = {}) {
+    async makeRequest(verb: string, uri: string, payload: any = null, returnRawResponseBody: boolean = false, headers: Record<string, unknown> = {}) {
         const opts = merge({
             method: verb,
             headers: await this.getDefaultHeaders(headers)

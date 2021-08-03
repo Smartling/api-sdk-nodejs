@@ -1,17 +1,18 @@
-export class BaseParameters {
-    protected parameters: {
-        [index: string]: any
-    };
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-    constructor(parameters: object = {}) {
+export class BaseParameters {
+    protected parameters: Record<string, any>;
+
+    constructor(parameters: Record<string, any> = {}) {
         this.parameters = parameters;
     }
 
-    set(key: string, value: any) {
+    set(key: string, value: any): void {
         this.parameters[key] = value;
     }
 
-    export() {
+    export(): Record<string, any> {
         return this.parameters;
     }
 }

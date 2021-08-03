@@ -14,7 +14,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/jobs-api/v3/projects`;
     }
 
-    async createJob(projectId: string, params: CreateJobParameters) {
+    async createJob(projectId: string, params: CreateJobParameters): Promise<boolean> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs`,
@@ -29,7 +29,9 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         );
     }
 
-    async getJobFiles(projectId: string, translationJobUid: string, params: ListJobFilesParameters) {
+    async getJobFiles(
+        projectId: string, translationJobUid: string, params: ListJobFilesParameters
+    ) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/files`,
@@ -45,6 +47,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async searchJobs(projectId: string, params) {
         return await this.makeRequest(
             "post",
@@ -53,7 +56,9 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         );
     }
 
-    async removeFileFromJob(projectId: string, translationJobUid: string, params: RemoveFileParameters) {
+    async removeFileFromJob(
+        projectId: string, translationJobUid: string, params: RemoveFileParameters
+    ): Promise<boolean> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/file/remove`,
@@ -61,7 +66,9 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         );
     }
 
-    async getJobFileProgress(projectId: string, translationJobUid: string, params: FileProgressParameters) {
+    async getJobFileProgress(
+        projectId: string, translationJobUid: string, params: FileProgressParameters
+    ) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/file/progress`,
