@@ -54,56 +54,6 @@ describe("SmartlingContextApi class tests.", () => {
         contextServiceApiUaStub.restore();
     });
 
-    describe("Params", () => {
-        it("Run automatic match parameters", () => {
-            assert.deepEqual(
-                expectedAutomaticMatchParams,
-                contextAutomaticMatchParameters.export()
-            );
-        });
-
-        it("Create strings to context bindings parameters", () => {
-            const createBindingsParams: CreateBindingsParameters = new CreateBindingsParameters();
-            const htmlBinding1: HtmlBindingDto = {
-                contextUid: "1",
-                stringHashcode: "1",
-                selector: {
-                    anchors: ["1"]
-                }
-            };
-            const htmlBinding2: HtmlBindingDto = {
-                contextUid: "1",
-                stringHashcode: "2",
-                selector: {
-                    anchors: ["2"]
-                }
-            };
-
-            createBindingsParams
-                .addBinding(htmlBinding1)
-                .addBinding(htmlBinding2);
-
-            assert.deepEqual(
-                {
-                    bindings: [{
-                        contextUid: "1",
-                        stringHashcode: "1",
-                        selector: {
-                            anchors: ["1"]
-                        }
-                    }, {
-                        contextUid: "1",
-                        stringHashcode: "2",
-                        selector: {
-                            anchors: ["2"]
-                        }
-                    }]
-                },
-                createBindingsParams.export()
-            );
-        });
-    });
-
     describe("Methods", () => {
         it("Should upload context", async () => {
             const params = new ContextUploadParameters();

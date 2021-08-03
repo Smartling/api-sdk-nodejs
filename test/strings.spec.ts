@@ -47,20 +47,6 @@ describe("SmartlingStringsApi class tests.", () => {
         stringsServiceApiUaStub.restore();
     });
 
-    describe("Params", () => {
-        it("Fetch source strings parameters", () => {
-            assert.deepEqual(
-                {
-                    fileUri: fileUri,
-                    hashcodes: hashCodes,
-                    limit: limit,
-                    offset: offset
-                },
-                fetchSourceStringsParameters.export()
-            );
-        });
-    });
-
     describe("Methods", () => {
         it("Fetch source strings", async () => {
             await stringsApi.getSourceStrings(projectId, fetchSourceStringsParameters);

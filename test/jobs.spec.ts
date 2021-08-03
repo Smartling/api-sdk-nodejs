@@ -41,15 +41,6 @@ describe("SmartlingJobAPI class tests.", () => {
         jobServiceApiUaStub.restore();
     });
 
-    describe("Params", () => {
-        it("Create locale parameters", () => {
-            assert.deepEqual(
-                bodyParams,
-                jobParameters.export()
-            );
-        });
-    });
-
     describe("Methods", () => {
         it("Should search for jobs", async () => {
             await jobApi.searchJobs(projectId, jobParameters);
