@@ -23,9 +23,9 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/job-batches-api/v1/projects`;
     }
 
-    alterRequestData(uri: string, opts: any) {
+    alterRequestData(uri: string, opts: Record<string, unknown>) {
         if (uri.match(/jobs-batch-api\/.*\/projects\/.*\/batches\/.*\/file$/g)) {
-            const formData: any = new FormData();
+            const formData = new FormData();
 
             Object.keys(opts.body).forEach((key) => {
                 if (key === "file") {

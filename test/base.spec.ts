@@ -547,7 +547,11 @@ describe("Base class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Request for https://test.com failed");
-                assert.deepEqual(e.payload, "{\"statusCode\":400,\"errorResponse\":{\"response\":{\"code\":\"VALIDATION_ERROR\",\"errors\":[]}},\"requestId\":\"test-request-id\"}");
+                assert.deepEqual(e.payload, {
+                    statusCode: 400,
+                    errorResponse: { response: { code: "VALIDATION_ERROR", errors: [] } },
+                    requestId: "test-request-id"
+                });
                 assert.equal(e.nestedException, null);
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
@@ -607,7 +611,7 @@ describe("Base class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Couldn't parse response json");
-                assert.deepEqual(e.payload, "{\"statusCode\":200,\"errorResponse\":\"error\",\"requestId\":\"test-request-id\"}");
+                assert.deepEqual(e.payload, { statusCode: 200, errorResponse: "error", requestId: "test-request-id" });
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 

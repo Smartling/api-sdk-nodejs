@@ -28,7 +28,9 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    async downloadFile(projectId: string, fileUri: string, locale: string, params: DownloadFileParameters) {
+    async downloadFile(
+        projectId: string, fileUri: string, locale: string, params: DownloadFileParameters
+    ) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
@@ -67,7 +69,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/file`,
             formData,
             false,
-            SmartlingFilesApi.fixContentTypeHeaderCase(formData),
+            SmartlingFilesApi.fixContentTypeHeaderCase(formData)
         );
     }
 

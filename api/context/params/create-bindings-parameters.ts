@@ -9,7 +9,7 @@ export class CreateBindingsParameters extends BaseParameters {
     }
 
     addBinding<T extends BindingDto>(binding: T): CreateBindingsParameters {
-        this.parameters.bindings.push(binding);
+        this.parameters.bindings = this.parameters.bindings.concat(binding);
 
         return this;
     }
