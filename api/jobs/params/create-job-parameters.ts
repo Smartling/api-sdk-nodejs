@@ -2,7 +2,7 @@ import { BaseParameters } from "../../parameters";
 import { SmartlingException } from "../../exception";
 
 export class CreateJobParameters extends BaseParameters {
-    setName(jobName) {
+    setName(jobName: string) {
         if (jobName.length >= 170) {
             throw new SmartlingException("Job name should be less than 170 characters.");
         }
@@ -12,7 +12,7 @@ export class CreateJobParameters extends BaseParameters {
         return this;
     }
 
-    setDescription(description) {
+    setDescription(description: string) {
         if (description.length >= 2000) {
             throw new SmartlingException("Job description should be less than 2000 characters.");
         }
@@ -22,7 +22,7 @@ export class CreateJobParameters extends BaseParameters {
         return this;
     }
 
-    setDueDate(dueDate) {
+    setDueDate(dueDate: Date) {
         if (Object.prototype.toString.call(dueDate) !== "[object Date]") {
             throw new SmartlingException("Due date must be an instance of Date");
         }

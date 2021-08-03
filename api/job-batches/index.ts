@@ -1,7 +1,10 @@
-import { SmartlingBaseApi } from "../base";
-import { SmartlingAuthApi } from "../auth";
 import * as fs from "fs";
 import FormData from "form-data";
+import { SmartlingBaseApi } from "../base";
+import { SmartlingAuthApi } from "../auth";
+import { Logger } from "../logger";
+import { CreateBatchParameters } from "./params/create-batch-parameters";
+import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters";
 
 /*
  eslint class-methods-use-this: [
@@ -14,13 +17,13 @@ import FormData from "form-data";
  */
 
 export class SmartlingJobBatchesApi extends SmartlingBaseApi {
-    constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
+    constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/job-batches-api/v1/projects`;
     }
 
-    alterRequestData(uri, opts) {
+    alterRequestData(uri: string, opts: any) {
         if (uri.match(/jobs-batch-api\/.*\/projects\/.*\/batches\/.*\/file$/g)) {
             const formData: any = new FormData();
 
@@ -45,7 +48,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         return opts;
     }
 
-    async createBatch(projectId, params) {
+    async createBatch(projectId: string, params: CreateBatchParameters) {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches`,
@@ -53,7 +56,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         );
     }
 
-    async uploadBatchFile(projectId, batchUid, params) {
+    async uploadBatchFile(projectId: string, batchUid: string, params: UploadBatchFileParameters) {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}/file`,
@@ -61,7 +64,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         );
     }
 
-    async executeBatch(projectId, batchUid) {
+    async executeBatch(projectId: string, batchUid: string) {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}`,
@@ -71,7 +74,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         );
     }
 
-    async getBatchStatus(projectId, batchUid) {
+    async getBatchStatus(projectId: string, batchUid: string) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/batches/${batchUid}`

@@ -2,7 +2,7 @@ class SmartlingException extends Error {
     protected payload: object;
     protected nestedException: Error;
 
-    constructor(message, payload = {}, e = null) {
+    constructor(message: string, payload: any = {}, e: Error = null) {
         super(message);
         this.payload = payload;
         this.nestedException = e;

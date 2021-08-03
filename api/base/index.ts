@@ -1,9 +1,9 @@
-import { Logger } from "../logger";
-import { SmartlingException } from "../exception";
+import merge from "merge-deep";
+import ua from "default-user-agent";
 import * as fetch from "node-fetch";
 import * as querystring from "querystring";
-import ua from "default-user-agent";
-import merge from "merge-deep";
+import { Logger } from "../logger";
+import { SmartlingException } from "../exception";
 import { SmartlingAuthApi } from "../auth";
 
 const packageJson = require("../../package.json");
@@ -49,7 +49,7 @@ export class SmartlingBaseApi {
         return SmartlingBaseApi.clientLibId;
     }
 
-    static set clientLibId(value) {
+    static set clientLibId(value: string) {
         SmartlingBaseApi.clientLibId = value;
     }
 
@@ -57,23 +57,23 @@ export class SmartlingBaseApi {
         return SmartlingBaseApi.clientLibVersion;
     }
 
-    static set clientLibVersion(value) {
+    static set clientLibVersion(value: string) {
         SmartlingBaseApi.clientLibVersion = value;
     }
 
-    async fetch(uri, options) {
+    async fetch(uri: string, options: object) {
         return await fetch(uri, options);
     }
 
-    ua(clientId, clientVersion) {
+    ua(clientId: string, clientVersion: string) {
         return ua(clientId, clientVersion);
     }
 
-    alterRequestData(uri, opts) {
+    alterRequestData(uri: string, opts: object) {
         return opts;
     }
 
-    async getDefaultHeaders(headers = {}) {
+    async getDefaultHeaders(headers: object = {}) {
         let defaultHeaders = {};
 
         /* eslint-disable-next-line no-prototype-builtins */
@@ -92,7 +92,7 @@ export class SmartlingBaseApi {
         return merge(defaultHeaders, headers);
     }
 
-    async makeRequest(verb, uri, payload = null, returnRawResponseBody = false, headers = {}) {
+    async makeRequest(verb: string, uri: string, payload: any = null, returnRawResponseBody: boolean = false, headers: object = {}) {
         const opts = merge({
             method: verb,
             headers: await this.getDefaultHeaders(headers)

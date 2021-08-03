@@ -1,15 +1,18 @@
+import FormData from "form-data";
 import { SmartlingBaseApi } from "../base";
 import { SmartlingAuthApi } from "../auth";
-import FormData from "form-data";
+import { Logger } from "../logger";
+import { DownloadFileParameters } from "./params/download-file-parameters";
+import { UploadFileParameters } from "./params/upload-file-parameters";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
-    constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
+    constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/files-api/v2/projects`;
     }
 
-    async getStatusForAllLocales(projectId, fileUri) {
+    async getStatusForAllLocales(projectId: string, fileUri: string) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/file/status`,
@@ -17,7 +20,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    async getLastModified(projectId, fileUri) {
+    async getLastModified(projectId: string, fileUri: string) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/file/last-modified`,
@@ -25,7 +28,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    async downloadFile(projectId, fileUri, locale, params) {
+    async downloadFile(projectId: string, fileUri: string, locale: string, params: DownloadFileParameters) {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
@@ -34,7 +37,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    async deleteFile(projectId, fileUri) {
+    async deleteFile(projectId: string, fileUri: string) {
         const form = new FormData();
 
         form.append("fileUri", fileUri);
@@ -48,7 +51,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    async uploadFile(projectId, parameters) {
+    async uploadFile(projectId: string, parameters: UploadFileParameters) {
         const formData = new FormData();
         const exported = parameters.export();
         Object.keys(exported).forEach((key) => {
@@ -68,7 +71,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    static fixContentTypeHeaderCase(form) {
+    static fixContentTypeHeaderCase(form: FormData) {
         const headers = form.getHeaders();
 
         headers["Content-Type"] = headers["content-type"];

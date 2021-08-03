@@ -3,11 +3,11 @@ export class BaseParameters {
         [index: string]: any
     };
 
-    constructor(parameters = {}) {
+    constructor(parameters: object = {}) {
         this.parameters = parameters;
     }
 
-    set(key, value) {
+    set(key: string, value: any) {
         this.parameters[key] = value;
     }
 

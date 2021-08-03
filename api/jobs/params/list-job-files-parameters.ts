@@ -1,7 +1,7 @@
 import { BaseParameters } from "../../parameters";
 
 export class ListJobFilesParameters extends BaseParameters {
-    setLimit(limit) {
+    setLimit(limit: number) {
         if (limit > 0) {
             this.set("limit", limit);
         }
@@ -9,7 +9,7 @@ export class ListJobFilesParameters extends BaseParameters {
         return this;
     }
 
-    setOffset(offset) {
+    setOffset(offset: number) {
         if (offset > 0) {
             this.set("offset", offset);
         }

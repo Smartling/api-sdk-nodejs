@@ -1,19 +1,20 @@
+import string2fileStream from "string-to-file-stream";
+import FormData from "form-data";
+import * as fs from 'fs';
 import { SmartlingBaseApi } from "../base";
 import { SmartlingAuthApi } from "../auth";
 import { ContextUploadParameters } from "./params/context-upload-parameters"
 import { ContextDto } from "./dto/context-dto";
 import { ContextAutomaticMatchParameters } from "./params/context-automatic-match-parameters";
 import { ContextMatchAsyncDto } from "./dto/context-match-async-dto";
-import FormData from "form-data";
-import * as fs from 'fs';
-import string2fileStream from "string-to-file-stream";
 import { CreateBindingsParameters } from "./params/create-bindings-parameters";
 import { ContextSourceDto } from "./dto/context-source-dto";
 import { ContextHttpResponse } from "./context-http-response";
 import { ListParameters } from "./params/list-parameters";
+import { Logger } from "../logger";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
-    constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
+    constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
         super(logger);
 
         this.authApi = authApi;
@@ -85,7 +86,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         return contextDtoResponse as ContextDto;
     }
 
-    alterRequestData(uri, opts) {
+    alterRequestData(uri: string, opts) {
         if (uri.match(/context-api\/v2\/projects\/.*\/contexts$/g)) {
             if (!opts.body) {
                 return opts;
