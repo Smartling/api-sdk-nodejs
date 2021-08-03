@@ -25,7 +25,7 @@ export class FetchSourceStringsParameters extends BaseParameters {
 
     setOffset(offset: number): FetchSourceStringsParameters {
         if (offset < 0) {
-            throw new SmartlingException("offset parameter cannot be a negative number");
+            throw new SmartlingException("Offset parameter cannot be a negative number");
         }
         this.set("offset", offset);
 

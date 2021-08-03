@@ -9,6 +9,7 @@ import { ListParameters } from "../api/context/params/list-parameters";
 import { ContextType } from "../api/context/params/context-type";
 
 import { loggerMock, authMock, responseMock } from "./mock";
+import {ContextUploadParameters} from "../api/context/params/context-upload-parameters";
 
 const projectId = "testProjectId";
 const contextUid = "testContextUid";
@@ -104,6 +105,45 @@ describe("SmartlingContextApi class tests.", () => {
     });
 
     describe("Methods", () => {
+        it("Should upload context", async () => {
+            const params = new ContextUploadParameters();
+
+            params
+                .setName("contextName")
+                .setContent("contextContent");
+
+            await contextApi.upload(projectId, params, {
+                group: "testGroup",
+                name: "testName",
+                version: "testVersion"
+            });
+
+            assert.equal(
+                contextServiceApiFetchStub.getCall(0).args[0],
+                `https://test.com/context-api/v2/projects/${projectId}/contexts`
+            );
+
+            assert.equal(
+                contextServiceApiFetchStub.getCall(0).args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                contextServiceApiFetchStub.getCall(0).args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            assert.equal(
+                contextServiceApiFetchStub.getCall(0).args[1].headers["User-Agent"],
+                "test_user_agent"
+            );
+
+            assert.equal(
+                contextServiceApiFetchStub.getCall(0).args[1].headers["X-SL-Context-Source"],
+                "group=testGroup;name=testName;version=testVersion"
+            );
+        });
+
         it("Should run automatic matching", async () => {
             await contextApi.runAutomaticMatch(projectId, contextUid, contextAutomaticMatchParameters);
 
