@@ -1,5 +1,5 @@
-import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
+import { SmartlingBaseApi } from "../base";
+import { SmartlingAuthApi } from "../auth";
 import { ContextUploadParameters } from "./params/context-upload-parameters"
 import { ContextDto } from "./dto/context-dto";
 import { ContextAutomaticMatchParameters } from "./params/context-automatic-match-parameters";

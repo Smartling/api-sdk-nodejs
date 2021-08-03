@@ -1,5 +1,5 @@
-import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
+import { SmartlingBaseApi } from "../base";
+import { SmartlingAuthApi } from "../auth";
 
 export class SmartlingProjectsApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {

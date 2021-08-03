@@ -7,8 +7,8 @@ import { SmartlingJobBatchesApi } from "../api/job-batches";
 import { SmartlingProjectsApi } from "../api/projects";
 import { SmartlingStringsApi } from "../api/strings";
 import { SmartlingContextApi } from "../api/context";
-import { SmartlingBaseApi } from "../api/base/index";
-import { SmartlingAuthApi } from "../api/auth/index";
+import { SmartlingBaseApi } from "../api/base";
+import { SmartlingAuthApi } from "../api/auth";
 
 const packageJson = require("../../package.json");
 

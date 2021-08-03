@@ -1,6 +1,6 @@
 import { Logger } from "../logger";
-import { SmartlingAuthApi } from "../auth/index";
-import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth";
+import { SmartlingBaseApi } from "../base";
 
 const packageJson = require("../../package.json");
 

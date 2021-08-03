@@ -1,5 +1,5 @@
 export enum RetrievalType {
-    PUBLISHED = "retrievalTypes",
+    PUBLISHED = "published",
     PENDING = "pending",
     PSEUDO = "pseudo"
 }

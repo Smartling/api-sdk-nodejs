@@ -1,4 +1,3 @@
-import "mocha"
 import sinon from "sinon";
 import assert from "assert";
 import { SmartlingContextApi } from "../api/context";
@@ -7,22 +6,19 @@ import { CreateBindingsParameters } from "../api/context/params/create-bindings-
 import { HtmlBindingDto } from "../api/context/dto/binding/html-binding-dto";
 import { ListParameters } from "../api/context/params/list-parameters";
 import { ContextType } from "../api/context/params/context-type";
-
 import { loggerMock, authMock, responseMock } from "./mock";
-import {ContextUploadParameters} from "../api/context/params/context-upload-parameters";
-
-const projectId = "testProjectId";
-const contextUid = "testContextUid";
-const fileName = "testContextFileName";
-
-const stringHashCodes = ["testStringHashCode1", "testStringHashCode2"];
-const expectedAutomaticMatchParams = {
-    stringHashcodes: stringHashCodes,
-    contentFileUri: fileName,
-    overrideContextOlderThanDays: 1
-};
+import { ContextUploadParameters } from "../api/context/params/context-upload-parameters";
 
 describe("SmartlingContextApi class tests.", () => {
+    const projectId = "testProjectId";
+    const contextUid = "testContextUid";
+    const fileName = "testContextFileName";
+    const stringHashCodes = ["testStringHashCode1", "testStringHashCode2"];
+    const expectedAutomaticMatchParams = {
+        stringHashcodes: stringHashCodes,
+        contentFileUri: fileName,
+        overrideContextOlderThanDays: 1
+    };
     let contextApi: SmartlingContextApi;
     let contextAutomaticMatchParameters: ContextAutomaticMatchParameters;
     let contextServiceApiFetchStub;

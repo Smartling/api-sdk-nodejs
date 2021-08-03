@@ -4,7 +4,7 @@ import * as fetch from "node-fetch";
 import * as querystring from "querystring";
 import ua from "default-user-agent";
 import merge from "merge-deep";
-import { SmartlingAuthApi } from "../auth/index";
+import { SmartlingAuthApi } from "../auth";
 
 const packageJson = require("../../package.json");
 

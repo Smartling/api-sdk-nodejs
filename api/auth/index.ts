@@ -1,4 +1,4 @@
-import { SmartlingBaseApi } from "../base/index";
+import { SmartlingBaseApi } from "../base";
 import { SmartlingException } from "../exception";
 import { Logger } from "../logger";
 

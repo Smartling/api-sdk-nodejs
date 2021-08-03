@@ -3,15 +3,8 @@ import assert from "assert";
 import { SmartlingProjectsApi } from "../api/projects";
 import { loggerMock, authMock, responseMock } from "./mock";
 
-const projectId = "testProjectId";
-const fileUri = "testStringsFileUri";
-const limit = 25;
-const offset = 0;
-
-const hashCodes = ["testStringHashCode1", "testStringHashCode2"];
-const hashCodesParams = hashCodes.map(hashCode => `hashcodes=${hashCode}`).join('&')
-
 describe("SmartlingStringsApi class tests.", () => {
+    const projectId = "testProjectId";
     let projectsApi: SmartlingProjectsApi;
     let projectsApiFetchStub;
     let projectsApiUaStub;

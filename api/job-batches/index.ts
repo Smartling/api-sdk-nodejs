@@ -1,7 +1,7 @@
-import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
+import { SmartlingBaseApi } from "../base";
+import { SmartlingAuthApi } from "../auth";
 import * as fs from "fs";
-import * as formData from "form-data";
+import FormData from "form-data";
 
 /*
  eslint class-methods-use-this: [
@@ -17,7 +17,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
-        this.entrypoint = `${smartlingApiBaseUrl}/jobs-batch-api/v1/projects`;
+        this.entrypoint = `${smartlingApiBaseUrl}/job-batches-api/v1/projects`;
     }
 
     alterRequestData(uri, opts) {
@@ -57,7 +57,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}/file`,
-            params.export()
+            JSON.stringify(params.export())
         );
     }
 

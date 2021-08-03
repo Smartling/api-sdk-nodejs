@@ -2,7 +2,7 @@ module.exports = {
     extends: [
         "@smartling/eslint-config-smartling"
     ],
-    "rules": {
+    rules: {
         "no-return-await": "off"
     }
 };

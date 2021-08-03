@@ -1,6 +1,6 @@
-import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
-import * as formData from "form-data";
+import { SmartlingBaseApi } from "../base";
+import { SmartlingAuthApi } from "../auth";
+import FormData from "form-data";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger, smartlingApiBaseUrl: string) {

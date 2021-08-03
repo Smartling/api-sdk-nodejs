@@ -1,5 +1,5 @@
-import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
+import { SmartlingBaseApi } from "../base";
+import { SmartlingAuthApi } from "../auth";
 import { FetchSourceStringsParameters } from "./params/fetch-source-strings-parameters";
 import { HTTPResponse } from "../http/response";
 import { SourceStringDto } from "./dto/source-string-dto";

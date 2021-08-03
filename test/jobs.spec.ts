@@ -3,26 +3,25 @@ import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { Order } from "../api/jobs/params/order";
 import { ListJobsParameters } from "../api/jobs/params/list-jobs-parameters";
-import { SmartlingJobsApi } from "../api/jobs/index";
+import { SmartlingJobsApi } from "../api/jobs";
 import { FileProgressParameters } from "../api/jobs/params/file-progress-parameters";
-import { SmartlingAuthApi } from "../api/auth/index";
-
-const projectId = "testProjectId";
-const jobUid = "testJobUid";
-const fileUri = "testFileUri.json";
-const sortByFieldName = "name";
-const bodyParams = { sortBy: sortByFieldName, sortDirection: Order.ASC };
+import { SmartlingAuthApi } from "../api/auth";
+import { CreateJobParameters } from "../api/jobs/params/create-job-parameters";
+import { ListJobFilesParameters } from "../api/jobs/params/list-job-files-parameters";
+import { JobStatus } from "../api/jobs/params/job-status";
+import { RemoveFileParameters } from "../api/jobs/params/remove-file-parameters";
 
 describe("SmartlingJobAPI class tests.", () => {
+    const projectId = "testProjectId";
+    const jobUid = "testJobUid";
+    const fileUri = "testFileUri.json";
+    const sortByFieldName = "name";
     let jobApi;
     let jobServiceApiFetchStub;
     let jobServiceApiUaStub;
     let responseMockJsonStub;
-    let jobParameters;
 
     beforeEach(() => {
-        jobParameters = new ListJobsParameters().setSort(sortByFieldName, Order.ASC);
-
         jobApi = new SmartlingJobsApi(authMock as any, loggerMock, "https://test.com");
         jobServiceApiFetchStub = sinon.stub(jobApi, "fetch");
         jobServiceApiUaStub = sinon.stub(jobApi, "ua");
@@ -42,15 +41,23 @@ describe("SmartlingJobAPI class tests.", () => {
     });
 
     describe("Methods", () => {
-        it("Should search for jobs", async () => {
-            await jobApi.searchJobs(projectId, jobParameters);
+        it("Create job", async () => {
+            const params = new CreateJobParameters();
+
+            params
+                .setName("Test job")
+                .setDescription("Test job description")
+                .setDueDate(new Date("2100-12-31T22:00:00.000Z"));
+
+
+            await jobApi.createJob(projectId, params);
 
             sinon.assert.calledOnce(jobServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 jobServiceApiFetchStub,
-                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/search`,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs`,
                 {
-                    body: bodyParams,
+                    body: '{"jobName":"Test job","description":"Test job description","dueDate":"2100-12-31T22:00:00.000Z"}',
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -61,10 +68,82 @@ describe("SmartlingJobAPI class tests.", () => {
             );
         });
 
-        it("Should get job file progress", async () => {
-            const fileProgressParameters = new FileProgressParameters();
-            fileProgressParameters.setFileUri(fileUri);
-            await jobApi.getJobFileProgress(projectId, jobUid, fileProgressParameters);
+        it("Get job", async () => {
+            const jobUid = "testJobUid";
+
+            await jobApi.getJob(projectId, jobUid);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get job files", async () => {
+            const jobUid = "testJobUid";
+            const params = new ListJobFilesParameters();
+
+            params
+                .setOffset(10)
+                .setLimit(100);
+
+            await jobApi.getJobFiles(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/files?offset=10&limit=100`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("List jobs", async () => {
+            const params = new ListJobsParameters()
+                .setName("testName")
+                .setStatuses(JobStatus.AWAITING_AUTHORIZATION)
+                .setSort(sortByFieldName, Order.ASC)
+                .setLimit(100)
+                .setOffset(10);
+
+            await jobApi.listJobs(projectId, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs?jobName=testName&translationJobStatus=AWAITING_AUTHORIZATION&sortBy=name&sortDirection=ASC&limit=100&offset=10`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get job file progress", async () => {
+            const params = new FileProgressParameters();
+
+            params.setFileUri(fileUri);
+
+            await jobApi.getJobFileProgress(projectId, jobUid, params);
 
             sinon.assert.calledOnce(jobServiceApiFetchStub);
             sinon.assert.calledWithExactly(
@@ -77,6 +156,29 @@ describe("SmartlingJobAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "get"
+                }
+            );
+        });
+
+        it("Remove file from job", async () => {
+            const params = new RemoveFileParameters();
+
+            params.setFileUri(fileUri);
+
+            await jobApi.removeFileFromJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/file/remove`,
+                {
+                    body: "{\"fileUri\":\"testFileUri.json\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
                 }
             );
         });

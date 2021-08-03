@@ -1,20 +1,17 @@
-import "mocha"
 import sinon from "sinon";
 import assert from "assert";
 import { SmartlingStringsApi } from "../api/strings";
 import { FetchSourceStringsParameters } from "../api/strings/params/fetch-source-strings-parameters";
 import { loggerMock, authMock, responseMock } from "./mock";
 
-const projectId = "testProjectId";
-const fileUri = "testStringsFileUri";
-const limit = 25;
-const offset = 0;
-
-const hashCodes = ["testStringHashCode1", "testStringHashCode2"];
-const hashCodesParams = hashCodes.map(hashCode => `hashcodes=${hashCode}`).join('&')
-const expectedFetchSourceStringsParams = `${hashCodesParams}&fileUri=${fileUri}&limit=${limit}&offset=${offset}`;
-
 describe("SmartlingStringsApi class tests.", () => {
+    const projectId = "testProjectId";
+    const fileUri = "testStringsFileUri";
+    const limit = 25;
+    const offset = 0;
+    const hashCodes = ["testStringHashCode1", "testStringHashCode2"];
+    const hashCodesParams = hashCodes.map(hashCode => `hashcodes=${hashCode}`).join('&');
+    const expectedFetchSourceStringsParams = `${hashCodesParams}&fileUri=${fileUri}&limit=${limit}&offset=${offset}`;
     let stringsApi: SmartlingStringsApi;
     let fetchSourceStringsParameters: FetchSourceStringsParameters;
     let stringsServiceApiFetchStub;
