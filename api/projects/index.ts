@@ -1,5 +1,5 @@
-import { SmartlingBaseApi } from "../base";
-import { SmartlingAuthApi } from "../auth";
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
 import { Logger } from "../logger";
 import { ProjectDto } from "./dto/project-dto";
 

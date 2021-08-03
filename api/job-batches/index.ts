@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import FormData from "form-data";
-import { SmartlingBaseApi } from "../base";
-import { SmartlingAuthApi } from "../auth";
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
 import { Logger } from "../logger";
 import { CreateBatchParameters } from "./params/create-batch-parameters";
 import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters";

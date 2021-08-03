@@ -1,4 +1,4 @@
-import { BaseParameters } from "../../parameters";
+import { BaseParameters } from "../../parameters/index";
 import { BindingDto } from "../dto/binding/binding-dto";
 
 export class CreateBindingsParameters extends BaseParameters {

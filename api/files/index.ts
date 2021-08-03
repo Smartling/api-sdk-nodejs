@@ -1,6 +1,6 @@
 import FormData from "form-data";
-import { SmartlingBaseApi } from "../base";
-import { SmartlingAuthApi } from "../auth";
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
 import { Logger } from "../logger";
 import { DownloadFileParameters } from "./params/download-file-parameters";
 import { UploadFileParameters } from "./params/upload-file-parameters";

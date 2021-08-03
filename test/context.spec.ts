@@ -1,6 +1,6 @@
 import sinon from "sinon";
 import assert from "assert";
-import { SmartlingContextApi } from "../api/context";
+import { SmartlingContextApi } from "../api/context/index";
 import { ContextAutomaticMatchParameters } from "../api/context/params/context-automatic-match-parameters";
 import { CreateBindingsParameters } from "../api/context/params/create-bindings-parameters";
 import { HtmlBindingDto } from "../api/context/dto/binding/html-binding-dto";

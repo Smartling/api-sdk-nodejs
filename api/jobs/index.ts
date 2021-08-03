@@ -1,5 +1,5 @@
-import { SmartlingBaseApi } from "../base";
-import { SmartlingAuthApi } from "../auth";
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingAuthApi } from "../auth/index";
 import { Logger } from "../logger";
 import { CreateJobParameters } from "./params/create-job-parameters";
 import { ListJobFilesParameters } from "./params/list-job-files-parameters";

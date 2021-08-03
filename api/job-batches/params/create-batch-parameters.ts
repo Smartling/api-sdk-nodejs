@@ -1,4 +1,4 @@
-import { BaseParameters } from "../../parameters";
+import { BaseParameters } from "../../parameters/index";
 
 export class CreateBatchParameters extends BaseParameters {
     setTranslationJobUid(uid: string) {

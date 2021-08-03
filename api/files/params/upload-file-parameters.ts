@@ -1,4 +1,4 @@
-import { BaseParameters } from "../../parameters";
+import { BaseParameters } from "../../parameters/index";
 
 export class UploadFileParameters extends BaseParameters {
     setDirective(key: string, value: string) {

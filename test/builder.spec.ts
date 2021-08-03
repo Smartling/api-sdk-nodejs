@@ -6,15 +6,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import assert from "assert";
-import { SmartlingApiClientBuilder } from "../api/builder";
-import { SmartlingFilesApi } from "../api/files";
-import { SmartlingJobsApi } from "../api/jobs";
-import { SmartlingJobBatchesApi } from "../api/job-batches";
-import { SmartlingProjectsApi } from "../api/projects";
-import { SmartlingStringsApi } from "../api/strings";
-import { SmartlingContextApi } from "../api/context";
-import { SmartlingBaseApi } from "../api/base";
-import { SmartlingAuthApi } from "../api/auth";
+import { SmartlingApiClientBuilder } from "../api/builder/index";
+import { SmartlingFilesApi } from "../api/files/index";
+import { SmartlingJobsApi } from "../api/jobs/index";
+import { SmartlingJobBatchesApi } from "../api/job-batches/index";
+import { SmartlingProjectsApi } from "../api/projects/index";
+import { SmartlingStringsApi } from "../api/strings/index";
+import { SmartlingContextApi } from "../api/context/index";
+import { SmartlingBaseApi } from "../api/base/index";
+import { SmartlingAuthApi } from "../api/auth/index";
 
 const packageJson = require("../../package.json");
 

@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { SmartlingStringsApi } from "../api/strings";
+import { SmartlingStringsApi } from "../api/strings/index";
 import { FetchSourceStringsParameters } from "../api/strings/params/fetch-source-strings-parameters";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAuthApi } from "../api/auth/index";

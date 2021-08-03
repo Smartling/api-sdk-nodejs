@@ -32,6 +32,8 @@ export * from "./api/jobs/params/order";
 export * from "./api/jobs/params/remove-file-parameters";
 export * from "./api/parameters/index";
 export * from "./api/projects/index";
+export * from "./api/projects/dto/project-dto";
+export * from "./api/projects/dto/locale-dto";
 export * from "./api/strings/index";
 export * from "./api/strings/dto/source-string-dto";
 export * from "./api/strings/dto/source-string-key-dto";

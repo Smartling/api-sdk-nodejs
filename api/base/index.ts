@@ -3,8 +3,8 @@ import ua from "default-user-agent";
 import * as fetch from "node-fetch";
 import * as querystring from "querystring";
 import { Logger } from "../logger";
-import { SmartlingException } from "../exception";
-import { SmartlingAuthApi } from "../auth";
+import { SmartlingException } from "../exception/index";
+import { SmartlingAuthApi } from "../auth/index";
 
 const packageJson = require("../../package.json");
 

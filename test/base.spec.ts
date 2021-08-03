@@ -1,6 +1,6 @@
 import assert from "assert";
 import sinon from "sinon";
-import { SmartlingBaseApi } from "../api/base";
+import { SmartlingBaseApi } from "../api/base/index";
 import { loggerMock, responseMock, authMock } from "./mock";
 // eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires
 const packageJson = require("../../package.json");

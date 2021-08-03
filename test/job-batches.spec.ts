@@ -1,7 +1,7 @@
 import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
-import { SmartlingJobBatchesApi } from "../api/job-batches";
-import { SmartlingAuthApi } from "../api/auth";
+import { SmartlingJobBatchesApi } from "../api/job-batches/index";
+import { SmartlingAuthApi } from "../api/auth/index";
 import { CreateBatchParameters } from "../api/job-batches/params/create-batch-parameters";
 import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batch-file-parameters";
 

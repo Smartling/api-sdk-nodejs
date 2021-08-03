@@ -1,4 +1,4 @@
-import { BaseParameters } from "../../parameters";
+import { BaseParameters } from "../../parameters/index";
 
 export class UploadBatchFileParameters extends BaseParameters {
     setClientLibId(clientLibId: string, version: string) {

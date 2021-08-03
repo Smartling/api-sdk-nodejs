@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { SmartlingProjectsApi } from "../api/projects";
+import { SmartlingProjectsApi } from "../api/projects/index";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAuthApi } from "../api/auth/index";
 

@@ -1,4 +1,4 @@
-import { BaseParameters } from "../../parameters";
+import { BaseParameters } from "../../parameters/index";
 
 export class ListJobFilesParameters extends BaseParameters {
     setLimit(limit: number): BaseParameters {

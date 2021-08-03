@@ -1,6 +1,6 @@
 import sinon from "sinon";
 import assert from "assert";
-import { SmartlingFilesApi } from "../api/files";
+import { SmartlingFilesApi } from "../api/files/index";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { RetrievalType } from "../api/files/params/retrieval-type";
 import { DownloadFileParameters } from "../api/files/params/download-file-parameters";

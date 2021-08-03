@@ -1,5 +1,5 @@
-import { SmartlingBaseApi } from "../base";
-import { SmartlingException } from "../exception";
+import { SmartlingBaseApi } from "../base/index";
+import { SmartlingException } from "../exception/index";
 import { Logger } from "../logger";
 
 /*
