@@ -6,7 +6,7 @@
   "scripts": {
     "build:dev": "rm -rf built && tsc --p tsconfig.dev.json && cp -R package.json built",
     "build": "rm -rf built && tsc && cp -R package.json built",
-    "pretest": "eslint .",
+    "pretest": "eslint . --ext .ts",
     "test": "npm run build:dev && nyc mocha --reporter mocha-junit-reporter --recursive built/test/**/*.spec.js",
     "test:dev": "npm run build:dev && nyc mocha --recursive built/test/**/*.spec.js"
   },
@@ -37,6 +37,8 @@
   },
   "devDependencies": {
     "@smartling/eslint-config-smartling": "^1.2.3",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
     "eslint": "^7.31.0",
     "mocha": "^9.0.3",
     "mocha-junit-reporter": "^2.0.0",
