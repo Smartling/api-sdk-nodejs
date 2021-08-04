@@ -23,10 +23,6 @@ export class CreateJobParameters extends BaseParameters {
     }
 
     setDueDate(dueDate: Date): CreateJobParameters {
-        if (Object.prototype.toString.call(dueDate) !== "[object Date]") {
-            throw new SmartlingException("Due date must be an instance of Date");
-        }
-
         if (dueDate.getTime() < (new Date()).getTime()) {
             throw new SmartlingException("Job Due Date cannot be in the past.");
         }
