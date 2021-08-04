@@ -5,8 +5,10 @@ import { SmartlingAuthApi } from "../auth/index";
 import { Logger } from "../logger";
 import { CreateBatchParameters } from "./params/create-batch-parameters";
 import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters";
+import { BatchStatusDto } from "./dto/batch-status-dto";
+import { BatchDto } from "./dto/batch-dto";
 
-export class SmartlingJobBatchesApi extends SmartlingBaseApi {
+export class SmartlingJobBatchesV1Api extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
@@ -39,7 +41,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         return opts;
     }
 
-    async createBatch(projectId: string, params: CreateBatchParameters) {
+    async createBatch(projectId: string, params: CreateBatchParameters): Promise<BatchDto> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches`,
@@ -47,7 +49,9 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         );
     }
 
-    async uploadBatchFile(projectId: string, batchUid: string, params: UploadBatchFileParameters) {
+    async uploadBatchFile(
+        projectId: string, batchUid: string, params: UploadBatchFileParameters
+    ): Promise<boolean> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}/file`,
@@ -55,7 +59,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         );
     }
 
-    async executeBatch(projectId: string, batchUid: string) {
+    async executeBatch(projectId: string, batchUid: string): Promise<boolean> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}`,
@@ -65,7 +69,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         );
     }
 
-    async getBatchStatus(projectId: string, batchUid: string) {
+    async getBatchStatus(projectId: string, batchUid: string): Promise<BatchStatusDto> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/batches/${batchUid}`

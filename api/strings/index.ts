@@ -15,22 +15,10 @@ export class SmartlingStringsApi extends SmartlingBaseApi {
     async getSourceStrings(
         projectId: string, params: FetchSourceStringsParameters
     ): Promise<HTTPResponse<SourceStringDto>> {
-        return SmartlingStringsApi.mapItemsToDtos(await this.makeRequest(
+        return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/source-strings`,
             params.export()
-        ));
-    }
-
-    private static mapItemsToDtos(
-        response: HTTPResponse<SourceStringDto>
-    ): HTTPResponse<SourceStringDto> {
-        const retrievedItems = response.items || [];
-        const items: SourceStringDto[] = retrievedItems;
-
-        return {
-            items,
-            totalCount: response.totalCount
-        };
+        );
     }
 }

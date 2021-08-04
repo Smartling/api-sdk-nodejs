@@ -6,6 +6,12 @@ import { ListJobFilesParameters } from "./params/list-job-files-parameters";
 import { ListJobsParameters } from "./params/list-jobs-parameters";
 import { RemoveFileParameters } from "./params/remove-file-parameters";
 import { FileProgressParameters } from "./params/file-progress-parameters";
+import { JobDto } from "./dto/job-dto";
+import { JobDetailsDto } from "./dto/job-details-dto";
+import { HTTPResponse } from "../http/response";
+import { FullSourceFileDto } from "./dto/full-source-file-dto";
+import { BaseJobDto } from "./dto/base-job-dto";
+import { FileProgressDto } from "./dto/file-progress-dto";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
@@ -14,7 +20,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/jobs-api/v3/projects`;
     }
 
-    async createJob(projectId: string, params: CreateJobParameters): Promise<boolean> {
+    async createJob(projectId: string, params: CreateJobParameters): Promise<JobDto> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs`,
@@ -22,7 +28,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         );
     }
 
-    async getJob(projectId: string, translationJobUid: string) {
+    async getJob(projectId: string, translationJobUid: string): Promise<JobDetailsDto> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}`
@@ -31,7 +37,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async getJobFiles(
         projectId: string, translationJobUid: string, params: ListJobFilesParameters
-    ) {
+    ): Promise<HTTPResponse<FullSourceFileDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/files`,
@@ -39,7 +45,9 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         );
     }
 
-    async listJobs(projectId: string, params: ListJobsParameters) {
+    async listJobs(
+        projectId: string, params: ListJobsParameters
+    ): Promise<HTTPResponse<BaseJobDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs`,
@@ -68,7 +76,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async getJobFileProgress(
         projectId: string, translationJobUid: string, params: FileProgressParameters
-    ) {
+    ): Promise<FileProgressDto> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/file/progress`,

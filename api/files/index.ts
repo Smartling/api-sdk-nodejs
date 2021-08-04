@@ -4,6 +4,10 @@ import { SmartlingAuthApi } from "../auth/index";
 import { Logger } from "../logger";
 import { DownloadFileParameters } from "./params/download-file-parameters";
 import { UploadFileParameters } from "./params/upload-file-parameters";
+import { FileStatusForAllLocalesDto } from "./dto/file-status-for-all-locales-dto";
+import { HTTPResponse } from "../http/response";
+import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
+import { UploadedFileDto } from "./dto/uploaded-file-dto";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
@@ -12,7 +16,9 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/files-api/v2/projects`;
     }
 
-    async getStatusForAllLocales(projectId: string, fileUri: string) {
+    async getStatusForAllLocales(
+        projectId: string, fileUri: string
+    ): Promise<FileStatusForAllLocalesDto> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/file/status`,
@@ -20,7 +26,9 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    async getLastModified(projectId: string, fileUri: string) {
+    async getLastModified(
+        projectId: string, fileUri: string
+    ): Promise<HTTPResponse<LastModifiedForLocale>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/file/last-modified`,
@@ -30,7 +38,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
 
     async downloadFile(
         projectId: string, fileUri: string, locale: string, params: DownloadFileParameters
-    ) {
+    ): Promise<string> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
@@ -39,7 +47,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    async deleteFile(projectId: string, fileUri: string) {
+    async deleteFile(projectId: string, fileUri: string): Promise<boolean> {
         const form = new FormData();
 
         form.append("fileUri", fileUri);
@@ -53,7 +61,9 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    async uploadFile(projectId: string, parameters: UploadFileParameters) {
+    async uploadFile(
+        projectId: string, parameters: UploadFileParameters
+    ): Promise<UploadedFileDto> {
         const formData = new FormData();
         const exported = parameters.export();
         Object.keys(exported).forEach((key) => {

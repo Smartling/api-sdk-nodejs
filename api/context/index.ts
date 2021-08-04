@@ -11,7 +11,6 @@ import { ContextSourceDto } from "./dto/context-source-dto";
 import { ContextHttpResponse } from "./context-http-response";
 import { ListParameters } from "./params/list-parameters";
 import { Logger } from "../logger";
-import { RawContextDto } from "./dto/raw-context-dto";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
@@ -24,7 +23,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
     async upload(
         projectId: string, params: ContextUploadParameters, contextSource?: ContextSourceDto
     ): Promise<ContextDto> {
-        return this.mapRawContextItemToDto(await this.makeRequest(
+        return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/contexts`,
             params.export(),
@@ -32,7 +31,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
             {
                 "X-SL-Context-Source": contextSource ? `group=${contextSource.group};name=${contextSource.name};version=${contextSource.version}` : ""
             }
-        ));
+        );
     }
 
     async delete(projectId: string, contextUid: string): Promise<boolean> {
@@ -45,12 +44,10 @@ export class SmartlingContextApi extends SmartlingBaseApi {
     async listContexts(
         projectId: string, params: ListParameters
     ): Promise<ContextHttpResponse<ContextDto>> {
-        return this.mapRawContextItemsToDtos(
-            await this.makeRequest(
-                "get",
-                `${this.entrypoint}/${projectId}/contexts`,
-                params.export()
-            )
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/contexts`,
+            params.export()
         );
     }
 
@@ -72,30 +69,6 @@ export class SmartlingContextApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/bindings`,
             JSON.stringify(params.export())
         );
-    }
-
-    protected mapRawContextItemsToDtos(
-        response: ContextHttpResponse<RawContextDto>
-    ): ContextHttpResponse<ContextDto> {
-        const retrievedItems: Array<RawContextDto> = response.items || [];
-        const items: Array<ContextDto> = retrievedItems.map(
-            item => this.mapRawContextItemToDto(item)
-        );
-
-        return {
-            items,
-            offset: response.offset
-        };
-    }
-
-    /* eslint-disable-next-line class-methods-use-this */
-    protected mapRawContextItemToDto(rawContextDto: RawContextDto): ContextDto {
-        return {
-            contextUid: rawContextDto.contextUid,
-            name: rawContextDto.name,
-            contextType: rawContextDto.contextType,
-            created: new Date(rawContextDto.created)
-        };
     }
 
     /* eslint-disable-next-line class-methods-use-this */

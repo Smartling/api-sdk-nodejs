@@ -1,7 +1,8 @@
 import merge from "merge-deep";
 import ua from "default-user-agent";
+import FormData from "form-data";
 import * as fetch from "node-fetch";
-import * as querystring from "querystring";
+import { ParsedUrlQueryInput, stringify } from "querystring";
 import { Logger } from "../logger";
 import { SmartlingException } from "../exception/index";
 import { SmartlingAuthApi } from "../auth/index";
@@ -49,7 +50,7 @@ export class SmartlingBaseApi {
     }
 
     /* eslint-disable-next-line class-methods-use-this */
-    async fetch(uri: string, options: Record<string, unknown>) {
+    async fetch(uri: string, options: Record<string, unknown>): Promise<Response> {
         return await fetch(uri, options);
     }
 
@@ -87,10 +88,11 @@ export class SmartlingBaseApi {
     async makeRequest(
         verb: string,
         uri: string,
-        payload: any = null,
+        payload: Record<string, unknown> | string | FormData = null,
         returnRawResponseBody = false,
         headers: Record<string, unknown> = {}
-    ) {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    ): Promise<any> {
         const opts = merge({
             method: verb,
             headers: await this.getDefaultHeaders(headers)
@@ -101,7 +103,7 @@ export class SmartlingBaseApi {
         } else if (payload) {
             // Package node-fetch doesn't support query parameters.
             // Let's add them manually.
-            uri = `${uri}?${querystring.stringify(payload)}`;
+            uri = `${uri}?${stringify(payload as unknown as ParsedUrlQueryInput)}`;
         }
 
         let response = await this.fetch(uri, this.alterRequestData(uri, opts));

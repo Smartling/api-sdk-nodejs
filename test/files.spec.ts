@@ -6,6 +6,7 @@ import { RetrievalType } from "../api/files/params/retrieval-type";
 import { DownloadFileParameters } from "../api/files/params/download-file-parameters";
 import { UploadFileParameters } from "../api/files/params/upload-file-parameters";
 import { SmartlingAuthApi } from "../api/auth/index";
+import { FileType } from "../api/files/params/file-type";
 
 describe("SmartlingStringsApi class tests.", () => {
     const projectId = "testProjectId";
@@ -138,7 +139,7 @@ describe("SmartlingStringsApi class tests.", () => {
             params
                 .setFile("./test/file")
                 .setFileUri("test-file-uri")
-                .setFileType("xml")
+                .setFileType(FileType.XML)
                 .setDirective("foo", "bar");
 
             await filesApi.uploadFile(projectId, params);

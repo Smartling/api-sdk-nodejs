@@ -1,4 +1,5 @@
 import { BaseParameters } from "../../parameters/index";
+import { FileType } from "./file-type";
 
 export class UploadFileParameters extends BaseParameters {
     setDirective(key: string, value: string): UploadFileParameters {
@@ -12,7 +13,7 @@ export class UploadFileParameters extends BaseParameters {
         return this;
     }
 
-    setFileType(fileType: string): UploadFileParameters {
+    setFileType(fileType: FileType): UploadFileParameters {
         this.set("fileType", fileType);
         return this;
     }

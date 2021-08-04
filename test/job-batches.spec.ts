@@ -1,9 +1,10 @@
 import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
-import { SmartlingJobBatchesApi } from "../api/job-batches/index";
+import { SmartlingJobBatchesV1Api } from "../api/job-batches/index";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { CreateBatchParameters } from "../api/job-batches/params/create-batch-parameters";
 import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batch-file-parameters";
+import { FileType } from "../api/files/params/file-type";
 
 describe("SmartlingJobAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -14,7 +15,7 @@ describe("SmartlingJobAPI class tests.", () => {
     let responseMockJsonStub;
 
     beforeEach(() => {
-        jobBatchesApi = new SmartlingJobBatchesApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
+        jobBatchesApi = new SmartlingJobBatchesV1Api(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
         jobBatchesApiFetchStub = sinon.stub(jobBatchesApi, "fetch");
         jobServiceApiUaStub = sinon.stub(jobBatchesApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -65,7 +66,7 @@ describe("SmartlingJobAPI class tests.", () => {
             params
                 .setFile("./test/file")
                 .setFileUri("test-file-uri")
-                .setFileType("xml")
+                .setFileType(FileType.XML)
                 .setDirective("foo", "bar")
                 .setLocalesToApprove(["fr-FR", "de-DE"])
                 .setCallbackUrl("callbackUrl")
