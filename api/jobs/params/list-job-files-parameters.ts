@@ -10,7 +10,7 @@ export class ListJobFilesParameters extends BaseParameters {
     }
 
     setOffset(offset: number): ListJobFilesParameters {
-        if (offset > 0) {
+        if (offset >= 0) {
             this.set("offset", offset);
         }
 

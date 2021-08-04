@@ -22,7 +22,7 @@ export class ListJobsParameters extends BaseParameters {
     }
 
     setOffset(offset: number): ListJobsParameters {
-        if (offset > 0) {
+        if (offset >= 0) {
             this.set("offset", offset);
         }
 
