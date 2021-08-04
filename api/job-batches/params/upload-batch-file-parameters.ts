@@ -1,7 +1,7 @@
 import { BaseParameters } from "../../parameters/index";
 
 export class UploadBatchFileParameters extends BaseParameters {
-    setClientLibId(clientLibId: string, version: string) {
+    setClientLibId(clientLibId: string, version: string): UploadBatchFileParameters {
         this.set("smartling.client_lib_id", JSON.stringify({
             client: clientLibId,
             version
@@ -10,37 +10,37 @@ export class UploadBatchFileParameters extends BaseParameters {
         return this;
     }
 
-    setCallbackUrl(callbackUrl: string) {
+    setCallbackUrl(callbackUrl: string): UploadBatchFileParameters {
         this.set("callbackUrl", callbackUrl);
 
         return this;
     }
 
-    setLocalesToApprove(localesToApprove: Array<string>) {
+    setLocalesToApprove(localesToApprove: Array<string>): UploadBatchFileParameters {
         this.set("localeIdsToAuthorize", localesToApprove);
 
         return this;
     }
 
-    setFile(filePath: string) {
+    setFile(filePath: string): UploadBatchFileParameters {
         this.set("file", filePath);
 
         return this;
     }
 
-    setFileUri(fileUri: string) {
+    setFileUri(fileUri: string): UploadBatchFileParameters {
         this.set("fileUri", fileUri);
 
         return this;
     }
 
-    setFileType(fileType: string) {
+    setFileType(fileType: string): UploadBatchFileParameters {
         this.set("fileType", fileType);
 
         return this;
     }
 
-    setDirective(key: string, value: string) {
+    setDirective(key: string, value: string): UploadBatchFileParameters {
         this.set(`smartling.${key}`, value);
 
         return this;

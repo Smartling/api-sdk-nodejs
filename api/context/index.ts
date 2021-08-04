@@ -1,9 +1,8 @@
 import string2fileStream from "string-to-file-stream";
 import FormData from "form-data";
-import * as fs from 'fs';
 import { SmartlingBaseApi } from "../base/index";
 import { SmartlingAuthApi } from "../auth/index";
-import { ContextUploadParameters } from "./params/context-upload-parameters"
+import { ContextUploadParameters } from "./params/context-upload-parameters";
 import { ContextDto } from "./dto/context-dto";
 import { ContextAutomaticMatchParameters } from "./params/context-automatic-match-parameters";
 import { ContextMatchAsyncDto } from "./dto/context-match-async-dto";
@@ -12,6 +11,7 @@ import { ContextSourceDto } from "./dto/context-source-dto";
 import { ContextHttpResponse } from "./context-http-response";
 import { ListParameters } from "./params/list-parameters";
 import { Logger } from "../logger";
+import { RawContextDto } from "./dto/raw-context-dto";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
@@ -21,8 +21,10 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/context-api/v2/projects`;
     }
 
-    async upload(projectId: string, params: ContextUploadParameters, contextSource?: ContextSourceDto): Promise<ContextDto> {
-        return this.mapContextItemToDto(await this.makeRequest(
+    async upload(
+        projectId: string, params: ContextUploadParameters, contextSource?: ContextSourceDto
+    ): Promise<ContextDto> {
+        return this.mapRawContextItemToDto(await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/contexts`,
             params.export(),
@@ -37,11 +39,13 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "delete",
             `${this.entrypoint}/${projectId}/contexts/${contextUid}`
-        )
+        );
     }
 
-    async listContexts(projectId: string, params: ListParameters): Promise<ContextHttpResponse<ContextDto>> {
-        return this.mapContextItemsToDtos(
+    async listContexts(
+        projectId: string, params: ListParameters
+    ): Promise<ContextHttpResponse<ContextDto>> {
+        return this.mapRawContextItemsToDtos(
             await this.makeRequest(
                 "get",
                 `${this.entrypoint}/${projectId}/contexts`,
@@ -50,7 +54,9 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
-    async runAutomaticMatch(projectId: string, contextUid: string, params: ContextAutomaticMatchParameters): Promise<ContextMatchAsyncDto> {
+    async runAutomaticMatch(
+        projectId: string, contextUid: string, params: ContextAutomaticMatchParameters
+    ): Promise<ContextMatchAsyncDto> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/contexts/${contextUid}/match/async`,
@@ -58,7 +64,9 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
-    async createStringsToContextBindings(projectId: string, params: CreateBindingsParameters): Promise<boolean> {
+    async createStringsToContextBindings(
+        projectId: string, params: CreateBindingsParameters
+    ): Promise<boolean> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/bindings`,
@@ -66,11 +74,13 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
-    protected mapContextItemsToDtos(response: ContextHttpResponse<ContextDto>): ContextHttpResponse<ContextDto> {
-        const retrievedItems = response.items || [];
-        const items: Array<ContextDto> = retrievedItems.map(item => {
-            return this.mapContextItemToDto(item);
-        });
+    protected mapRawContextItemsToDtos(
+        response: ContextHttpResponse<RawContextDto>
+    ): ContextHttpResponse<ContextDto> {
+        const retrievedItems: Array<RawContextDto> = response.items || [];
+        const items: Array<ContextDto> = retrievedItems.map(
+            item => this.mapRawContextItemToDto(item)
+        );
 
         return {
             items,
@@ -78,15 +88,18 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         };
     }
 
-    protected mapContextItemToDto(contextDtoResponse: any): ContextDto {
-        if (contextDtoResponse["created"]) {
-            contextDtoResponse["created"] = new Date(contextDtoResponse["created"]);
-        }
-
-        return contextDtoResponse as ContextDto;
+    /* eslint-disable-next-line class-methods-use-this */
+    protected mapRawContextItemToDto(rawContextDto: RawContextDto): ContextDto {
+        return {
+            contextUid: rawContextDto.contextUid,
+            name: rawContextDto.name,
+            contextType: rawContextDto.contextType,
+            created: new Date(rawContextDto.created)
+        };
     }
 
-    alterRequestData(uri: string, opts) {
+    /* eslint-disable-next-line class-methods-use-this */
+    alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
         if (uri.match(/context-api\/v2\/projects\/.*\/contexts$/g)) {
             if (!opts.body) {
                 return opts;

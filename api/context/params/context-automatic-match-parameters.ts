@@ -14,7 +14,9 @@ export class ContextAutomaticMatchParameters extends BaseParameters {
         return this;
     }
 
-    setOverrideContextOlderThanDays(overrideContextOlderThanDays: number): ContextAutomaticMatchParameters {
+    setOverrideContextOlderThanDays(
+        overrideContextOlderThanDays: number
+    ): ContextAutomaticMatchParameters {
         if (overrideContextOlderThanDays < 1) {
             throw new SmartlingException("Override context older than days should be a positive number");
         }

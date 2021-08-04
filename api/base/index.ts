@@ -6,19 +6,8 @@ import { Logger } from "../logger";
 import { SmartlingException } from "../exception/index";
 import { SmartlingAuthApi } from "../auth/index";
 
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const packageJson = require("../../package.json");
-
-/*
- eslint class-methods-use-this: [
-     "error", {
-         "exceptMethods": [
-            "fetch",
-            "ua",
-            "alterRequestData"
-         ]
-     }
- ]
- */
 
 export class SmartlingBaseApi {
     protected authApi: SmartlingAuthApi = undefined;
@@ -27,53 +16,56 @@ export class SmartlingBaseApi {
     protected defaultClientVersion: string;
     protected clientLibId: string;
     protected clientLibVersion: string;
-    protected response: any;
     protected logger: Logger;
-    protected options: any;
+    protected options: Record<string, unknown>;
 
     constructor(logger: Logger) {
         this.defaultClientLibId = packageJson.name;
         this.defaultClientVersion = packageJson.version;
         this.clientLibId = this.defaultClientLibId;
         this.clientLibVersion = this.defaultClientVersion;
-        this.response = {};
         this.logger = logger;
         this.options = {};
     }
 
-    setOptions(options) {
+    setOptions(options: Record<string, unknown>): void {
         this.options = options;
     }
 
-    static get clientLibId() {
-        return SmartlingBaseApi.clientLibId;
+    public getClientLibId(): string {
+        return this.clientLibId;
     }
 
-    static set clientLibId(value: string) {
-        SmartlingBaseApi.clientLibId = value;
+    public setClientLibId(clientLibId: string): void {
+        this.clientLibId = clientLibId;
     }
 
-    static get clientLibVersion() {
-        return SmartlingBaseApi.clientLibVersion;
+    public getClientLibVersion(): string {
+        return this.clientLibVersion;
     }
 
-    static set clientLibVersion(value: string) {
-        SmartlingBaseApi.clientLibVersion = value;
+    public setClientLibVersion(clientLibVersion: string): void {
+        this.clientLibVersion = clientLibVersion;
     }
 
+    /* eslint-disable-next-line class-methods-use-this */
     async fetch(uri: string, options: Record<string, unknown>) {
         return await fetch(uri, options);
     }
 
-    ua(clientId: string, clientVersion: string) {
+    /* eslint-disable-next-line class-methods-use-this */
+    ua(clientId: string, clientVersion: string): string {
         return ua(clientId, clientVersion);
     }
 
-    alterRequestData(uri: string, opts: Record<string, unknown>) {
+    /* eslint-disable-next-line class-methods-use-this */
+    alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
         return opts;
     }
 
-    async getDefaultHeaders(headers: Record<string, unknown> = {}) {
+    async getDefaultHeaders(
+        headers: Record<string, unknown> = {}
+    ): Promise<Record<string, unknown>> {
         let defaultHeaders = {};
 
         /* eslint-disable-next-line no-prototype-builtins */
@@ -92,7 +84,13 @@ export class SmartlingBaseApi {
         return merge(defaultHeaders, headers);
     }
 
-    async makeRequest(verb: string, uri: string, payload: any = null, returnRawResponseBody: boolean = false, headers: Record<string, unknown> = {}) {
+    async makeRequest(
+        verb: string,
+        uri: string,
+        payload: any = null,
+        returnRawResponseBody = false,
+        headers: Record<string, unknown> = {}
+    ) {
         const opts = merge({
             method: verb,
             headers: await this.getDefaultHeaders(headers)

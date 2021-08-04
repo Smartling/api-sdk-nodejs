@@ -6,16 +6,6 @@ import { Logger } from "../logger";
 import { CreateBatchParameters } from "./params/create-batch-parameters";
 import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters";
 
-/*
- eslint class-methods-use-this: [
-     "error", {
-         "exceptMethods": [
-             "alterRequestData"
-         ]
-     }
- ]
- */
-
 export class SmartlingJobBatchesApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
         super(logger);
@@ -23,7 +13,8 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/job-batches-api/v1/projects`;
     }
 
-    alterRequestData(uri: string, opts: Record<string, unknown>) {
+    /* eslint-disable-next-line class-methods-use-this */
+    alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
         if (uri.match(/jobs-batch-api\/.*\/projects\/.*\/batches\/.*\/file$/g)) {
             const formData = new FormData();
 

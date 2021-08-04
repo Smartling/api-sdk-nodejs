@@ -140,7 +140,7 @@ describe("Auth class tests.", () => {
         auth.resetToken();
 
         assert.equal(auth.requestTimestamp, 0);
-        assert.deepEqual(auth.response, {});
+        assert.deepEqual(auth.response, null);
     });
 
     describe("Method getAccessToken.", () => {
@@ -166,6 +166,8 @@ describe("Auth class tests.", () => {
         it("Token is not expired and does exist.", async () => {
             authTokenExpiredStub.returns(false);
             authTokenExistsStub.returns(true);
+
+            auth.response = { accessToken: "foo" };
 
             await auth.getAccessToken();
 

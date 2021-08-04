@@ -1,10 +1,10 @@
 import { ContextType } from "../params/context-type";
 
-interface ContextDto {
+interface RawContextDto {
     name: string;
     contextType: ContextType;
-    created: Date;
+    created: string;
     contextUid: string;
 }
 
-export { ContextDto };
+export { RawContextDto };

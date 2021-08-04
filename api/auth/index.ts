@@ -1,33 +1,27 @@
 import { SmartlingBaseApi } from "../base/index";
 import { SmartlingException } from "../exception/index";
 import { Logger } from "../logger";
-
-/*
-    eslint class-methods-use-this: [
-        "error", {
-            "exceptMethods": [
-                "time"
-            ]
-        }
-    ]
- */
+import { AccessTokenDto } from "./dto/access-token-dto";
 
 export class SmartlingAuthApi extends SmartlingBaseApi {
     private ttlCorrectionSec: number;
     private userIdentifier: string;
     private tokenSecret: string;
     private requestTimestamp: number;
+    private response: AccessTokenDto;
 
-    constructor(userIdentifier: string, tokenSecret: string, logger: Logger, smartlingApiBaseUrl: string) {
+    constructor(
+        userIdentifier: string, tokenSecret: string, logger: Logger, smartlingApiBaseUrl: string
+    ) {
         super(logger);
         this.ttlCorrectionSec = 10;
         this.userIdentifier = userIdentifier;
         this.tokenSecret = tokenSecret;
         this.entrypoint = `${smartlingApiBaseUrl}/auth-api/v2`;
-        this.requestTimestamp = 0;
+        this.resetToken();
     }
 
-    async authenticate() {
+    async authenticate(): Promise<AccessTokenDto> {
         this.resetRequestTimeStamp();
 
         return await this.makeRequest(
@@ -40,7 +34,7 @@ export class SmartlingAuthApi extends SmartlingBaseApi {
         );
     }
 
-    async refreshToken() {
+    async refreshToken(): Promise<AccessTokenDto> {
         if (this.tokenExists() && this.tokenCanBeRenewed()) {
             this.resetRequestTimeStamp();
 
@@ -60,30 +54,38 @@ export class SmartlingAuthApi extends SmartlingBaseApi {
         return await this.authenticate();
     }
 
-    resetRequestTimeStamp() {
+    resetRequestTimeStamp(): void {
         this.requestTimestamp = this.time();
     }
 
-    tokenExists() {
+    tokenExists(): boolean {
         /* eslint-disable-next-line no-prototype-builtins */
-        return this.response && this.response.hasOwnProperty("accessToken");
+        return this.response !== null && this.response.hasOwnProperty("accessToken");
     }
 
-    tokenExpired() {
+    tokenExpired(): boolean {
+        if (!this.tokenExists()) {
+            return false;
+        }
+
         const tokenExpirationTime = (this.requestTimestamp + this.response.expiresIn)
             - this.ttlCorrectionSec;
 
-        return this.tokenExists() && this.time() > tokenExpirationTime;
+        return this.time() > tokenExpirationTime;
     }
 
-    tokenCanBeRenewed() {
+    tokenCanBeRenewed(): boolean {
+        if (!this.tokenExists()) {
+            return false;
+        }
+
         const refreshTokenExpirationTime = (this.requestTimestamp + this.response.refreshExpiresIn)
             - this.ttlCorrectionSec;
 
-        return this.tokenExists() && this.time() < refreshTokenExpirationTime;
+        return this.time() < refreshTokenExpirationTime;
     }
 
-    async getAccessToken() {
+    async getAccessToken(): Promise<string> {
         try {
             if (this.tokenExpired()) {
                 this.logger.debug("Token expired. Refreshing...");
@@ -112,7 +114,7 @@ export class SmartlingAuthApi extends SmartlingBaseApi {
         }
     }
 
-    async getTokenType() {
+    async getTokenType(): Promise<string> {
         try {
             if (!this.tokenExists()) {
                 this.logger.debug("Requested tokenType but no successful authenticate response received yet. Authenticating...");
@@ -128,16 +130,13 @@ export class SmartlingAuthApi extends SmartlingBaseApi {
         }
     }
 
-    resetToken() {
+    resetToken(): void {
         this.requestTimestamp = 0;
-        this.response = {};
+        this.response = null;
     }
 
-    /**
-     * Returns current timestamp
-     * @returns {number}
-     */
-    time() {
+    /* eslint-disable-next-line class-methods-use-this */
+    time(): number {
         return Math.floor(Date.now() / 1000);
     }
 }

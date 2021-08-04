@@ -73,7 +73,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
-    static fixContentTypeHeaderCase(form: FormData) {
+    static fixContentTypeHeaderCase(form: FormData): Record<string, unknown> {
         const headers = form.getHeaders();
 
         headers["Content-Type"] = headers["content-type"];
