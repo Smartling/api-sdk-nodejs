@@ -1,4 +1,5 @@
 import { BaseParameters } from "../../parameters/index";
+import { FileType } from "../../files/params/file-type";
 
 export class UploadBatchFileParameters extends BaseParameters {
     setClientLibId(clientLibId: string, version: string): UploadBatchFileParameters {
@@ -34,7 +35,7 @@ export class UploadBatchFileParameters extends BaseParameters {
         return this;
     }
 
-    setFileType(fileType: string): UploadBatchFileParameters {
+    setFileType(fileType: FileType): UploadBatchFileParameters {
         this.set("fileType", fileType);
 
         return this;

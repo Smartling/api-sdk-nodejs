@@ -1,21 +1,24 @@
 import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
-import { SmartlingJobBatchesV1Api } from "../api/job-batches/index";
+import { SmartlingJobBatchesApi } from "../api/job-batches/index";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { CreateBatchParameters } from "../api/job-batches/params/create-batch-parameters";
 import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batch-file-parameters";
 import { FileType } from "../api/files/params/file-type";
+import { ProcessBatchActionParameters } from "../api/job-batches/params/process-batch-action-parameters";
+import { BatchAction } from "../api/job-batches/params/batch-action";
 
 describe("SmartlingJobAPI class tests.", () => {
     const projectId = "testProjectId";
     const jobUid = "testJobUid";
+    const batchUid = "testBatchUid";
     let jobBatchesApi;
     let jobBatchesApiFetchStub;
     let jobServiceApiUaStub;
     let responseMockJsonStub;
 
     beforeEach(() => {
-        jobBatchesApi = new SmartlingJobBatchesV1Api(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
+        jobBatchesApi = new SmartlingJobBatchesApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
         jobBatchesApiFetchStub = sinon.stub(jobBatchesApi, "fetch");
         jobServiceApiUaStub = sinon.stub(jobBatchesApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
@@ -39,16 +42,20 @@ describe("SmartlingJobAPI class tests.", () => {
 
             params
                 .setTranslationJobUid(jobUid)
-                .setAuthorize(true);
+                .setAuthorize(true)
+                .addFileUri("test_file_uri_1")
+                .addFileUri("test_file_uri_2")
+                .addLocaleWorkflows("fr", "wf1")
+                .addLocaleWorkflows("de", "wf2");
 
             await jobBatchesApi.createBatch(projectId, params);
 
             sinon.assert.calledOnce(jobBatchesApiFetchStub);
             sinon.assert.calledWithExactly(
                 jobBatchesApiFetchStub,
-                `https://test.com/job-batches-api/v1/projects/${projectId}/batches`,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches`,
                 {
-                    body: "{\"translationJobUid\":\"testJobUid\",\"authorize\":true}",
+                    body: "{\"fileUris\":[\"test_file_uri_1\",\"test_file_uri_2\"],\"localeWorkflows\":[{\"targetLocaleId\":\"fr\",\"workflowUid\":\"wf1\"},{\"targetLocaleId\":\"de\",\"workflowUid\":\"wf2\"}],\"translationJobUid\":\"testJobUid\",\"authorize\":true}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -59,8 +66,33 @@ describe("SmartlingJobAPI class tests.", () => {
             );
         });
 
+        it("Process batch action", async () => {
+            const params = new ProcessBatchActionParameters();
+
+            params
+                .setAction(BatchAction.CANCEL_FILE)
+                .setFileUri("test_file_uri")
+                .setReason("test reason");
+
+            await jobBatchesApi.processBatchAction(projectId, batchUid, params);
+
+            sinon.assert.calledOnce(jobBatchesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobBatchesApiFetchStub,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}`,
+                {
+                    body: "{\"action\":\"CANCEL_FILE\",\"fileUri\":\"test_file_uri\",\"reason\":\"test reason\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
+                }
+            );
+        });
+
         it("Upload batch file", async () => {
-            const batchUid = "testBatchUid";
             const params = new UploadBatchFileParameters();
 
             params
@@ -77,7 +109,7 @@ describe("SmartlingJobAPI class tests.", () => {
             sinon.assert.calledOnce(jobBatchesApiFetchStub);
             sinon.assert.calledWithExactly(
                 jobBatchesApiFetchStub,
-                `https://test.com/job-batches-api/v1/projects/${projectId}/batches/${batchUid}/file`,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}/file`,
                 {
                     body: JSON.stringify({
                         file: "./test/file",
@@ -98,36 +130,13 @@ describe("SmartlingJobAPI class tests.", () => {
             );
         });
 
-        it("Execute batch", async () => {
-            const batchUid = "testBatchUid";
-
-            await jobBatchesApi.executeBatch(projectId, batchUid);
-
-            sinon.assert.calledOnce(jobBatchesApiFetchStub);
-            sinon.assert.calledWithExactly(
-                jobBatchesApiFetchStub,
-                `https://test.com/job-batches-api/v1/projects/${projectId}/batches/${batchUid}`,
-                {
-                    body: "{\"action\":\"execute\"}",
-                    headers: {
-                        Authorization: "test_token_type test_access_token",
-                        "Content-Type": "application/json",
-                        "User-Agent": "test_user_agent"
-                    },
-                    method: "post"
-                }
-            );
-        });
-
         it("Get batch status", async () => {
-            const batchUid = "testBatchUid";
-
             await jobBatchesApi.getBatchStatus(projectId, batchUid);
 
             sinon.assert.calledOnce(jobBatchesApiFetchStub);
             sinon.assert.calledWithExactly(
                 jobBatchesApiFetchStub,
-                `https://test.com/job-batches-api/v1/projects/${projectId}/batches/${batchUid}`,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}`,
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",

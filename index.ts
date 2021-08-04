@@ -23,6 +23,8 @@ export * from "./api/http/response";
 export * from "./api/job-batches/index";
 export * from "./api/job-batches/params/create-batch-parameters";
 export * from "./api/job-batches/params/upload-batch-file-parameters";
+export * from "./api/job-batches/params/process-batch-action-parameters";
+export * from "./api/job-batches/params/batch-action";
 export * from "./api/job-batches/params/batch-status";
 export * from "./api/job-batches/params/batch-item-status";
 export * from "./api/jobs/index";

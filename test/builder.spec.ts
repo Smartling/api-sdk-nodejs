@@ -9,7 +9,7 @@ import assert from "assert";
 import { SmartlingApiClientBuilder } from "../api/builder/index";
 import { SmartlingFilesApi } from "../api/files/index";
 import { SmartlingJobsApi } from "../api/jobs/index";
-import { SmartlingJobBatchesV1Api } from "../api/job-batches/index";
+import { SmartlingJobBatchesApi } from "../api/job-batches/index";
 import { SmartlingProjectsApi } from "../api/projects/index";
 import { SmartlingStringsApi } from "../api/strings/index";
 import { SmartlingContextApi } from "../api/context/index";
@@ -248,8 +248,8 @@ describe("SmartlingApiClientBuilder class tests.", () => {
 
     it("Instantiates job batches api client", () => {
         assertApiClient(
-            SmartlingJobBatchesV1Api,
-            apiClientsBuilder.build(SmartlingJobBatchesV1Api)
+            SmartlingJobBatchesApi,
+            apiClientsBuilder.build(SmartlingJobBatchesApi)
         );
     });
 

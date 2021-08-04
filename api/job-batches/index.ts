@@ -7,12 +7,13 @@ import { CreateBatchParameters } from "./params/create-batch-parameters";
 import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters";
 import { BatchStatusDto } from "./dto/batch-status-dto";
 import { BatchDto } from "./dto/batch-dto";
+import { ProcessBatchActionParameters } from "./params/process-batch-action-parameters";
 
-export class SmartlingJobBatchesV1Api extends SmartlingBaseApi {
+export class SmartlingJobBatchesApi extends SmartlingBaseApi {
     constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
         super(logger);
         this.authApi = authApi;
-        this.entrypoint = `${smartlingApiBaseUrl}/job-batches-api/v1/projects`;
+        this.entrypoint = `${smartlingApiBaseUrl}/job-batches-api/v2/projects`;
     }
 
     /* eslint-disable-next-line class-methods-use-this */
@@ -49,6 +50,16 @@ export class SmartlingJobBatchesV1Api extends SmartlingBaseApi {
         );
     }
 
+    async processBatchAction(
+        projectId: string, batchUid: string, params: ProcessBatchActionParameters
+    ): Promise<BatchDto> {
+        return await this.makeRequest(
+            "put",
+            `${this.entrypoint}/${projectId}/batches/${batchUid}`,
+            JSON.stringify(params.export())
+        );
+    }
+
     async uploadBatchFile(
         projectId: string, batchUid: string, params: UploadBatchFileParameters
     ): Promise<boolean> {
@@ -56,16 +67,6 @@ export class SmartlingJobBatchesV1Api extends SmartlingBaseApi {
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}/file`,
             JSON.stringify(params.export())
-        );
-    }
-
-    async executeBatch(projectId: string, batchUid: string): Promise<boolean> {
-        return await this.makeRequest(
-            "post",
-            `${this.entrypoint}/${projectId}/batches/${batchUid}`,
-            JSON.stringify({
-                action: "execute"
-            })
         );
     }
 
