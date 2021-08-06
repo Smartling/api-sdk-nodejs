@@ -5,8 +5,6 @@ import { SmartlingAuthApi } from "../api/auth/index";
 import { CreateBatchParameters } from "../api/job-batches/params/create-batch-parameters";
 import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batch-file-parameters";
 import { FileType } from "../api/files/params/file-type";
-import { ProcessBatchActionParameters } from "../api/job-batches/params/process-batch-action-parameters";
-import { BatchAction } from "../api/job-batches/params/batch-action";
 import { CancelBatchFileParameters } from "../api/job-batches/params/cancel-batch-file-parameters";
 import { RegisterBatchFileParameters } from "../api/job-batches/params/register-batch-file-parameters";
 

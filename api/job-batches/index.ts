@@ -7,7 +7,6 @@ import { CreateBatchParameters } from "./params/create-batch-parameters";
 import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters";
 import { BatchStatusDto } from "./dto/batch-status-dto";
 import { BatchDto } from "./dto/batch-dto";
-import { ProcessBatchActionParameters } from "./params/process-batch-action-parameters";
 import { CancelBatchFileParameters } from "./params/cancel-batch-file-parameters";
 import { RegisterBatchFileParameters } from "./params/register-batch-file-parameters";
 
