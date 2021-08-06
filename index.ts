@@ -19,7 +19,7 @@ export * from "./api/files/params/download-file-parameters";
 export * from "./api/files/params/retrieval-type";
 export * from "./api/files/params/file-type";
 export * from "./api/files/params/upload-file-parameters";
-export * from "./api/http/response";
+export * from "./api/http/smartling-list-response";
 export * from "./api/job-batches/index";
 export * from "./api/job-batches/params/create-batch-parameters";
 export * from "./api/job-batches/params/upload-batch-file-parameters";

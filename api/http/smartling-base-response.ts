@@ -1,0 +1,3 @@
+interface SmartlingBaseResponse {}
+
+export { SmartlingBaseResponse };

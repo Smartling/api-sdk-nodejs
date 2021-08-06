@@ -5,7 +5,7 @@ import { Logger } from "../logger";
 import { DownloadFileParameters } from "./params/download-file-parameters";
 import { UploadFileParameters } from "./params/upload-file-parameters";
 import { FileStatusForAllLocalesDto } from "./dto/file-status-for-all-locales-dto";
-import { HTTPResponse } from "../http/response";
+import { SmartlingListResponse } from "../http/smartling-list-response";
 import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
 
@@ -28,7 +28,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
 
     async getLastModified(
         projectId: string, fileUri: string
-    ): Promise<HTTPResponse<LastModifiedForLocale>> {
+    ): Promise<SmartlingListResponse<LastModifiedForLocale>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/file/last-modified`,

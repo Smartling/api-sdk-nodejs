@@ -1,7 +1,7 @@
 import { SmartlingBaseApi } from "../base/index";
 import { SmartlingAuthApi } from "../auth/index";
 import { FetchSourceStringsParameters } from "./params/fetch-source-strings-parameters";
-import { HTTPResponse } from "../http/response";
+import { SmartlingListResponse } from "../http/smartling-list-response";
 import { SourceStringDto } from "./dto/source-string-dto";
 import { Logger } from "../logger";
 
@@ -14,7 +14,7 @@ export class SmartlingStringsApi extends SmartlingBaseApi {
 
     async getSourceStrings(
         projectId: string, params: FetchSourceStringsParameters
-    ): Promise<HTTPResponse<SourceStringDto>> {
+    ): Promise<SmartlingListResponse<SourceStringDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/source-strings`,

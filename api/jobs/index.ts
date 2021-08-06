@@ -8,7 +8,7 @@ import { RemoveFileParameters } from "./params/remove-file-parameters";
 import { FileProgressParameters } from "./params/file-progress-parameters";
 import { JobDto } from "./dto/job-dto";
 import { JobDetailsDto } from "./dto/job-details-dto";
-import { HTTPResponse } from "../http/response";
+import { SmartlingListResponse } from "../http/smartling-list-response";
 import { FullSourceFileDto } from "./dto/full-source-file-dto";
 import { BaseJobDto } from "./dto/base-job-dto";
 import { FileProgressDto } from "./dto/file-progress-dto";
@@ -37,7 +37,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async getJobFiles(
         projectId: string, translationJobUid: string, params: ListJobFilesParameters
-    ): Promise<HTTPResponse<FullSourceFileDto>> {
+    ): Promise<SmartlingListResponse<FullSourceFileDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/files`,
@@ -47,7 +47,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async listJobs(
         projectId: string, params: ListJobsParameters
-    ): Promise<HTTPResponse<BaseJobDto>> {
+    ): Promise<SmartlingListResponse<BaseJobDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs`,
