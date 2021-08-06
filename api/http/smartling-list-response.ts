@@ -1,6 +1,4 @@
-import { SmartlingBaseResponse } from "./smartling-base-response";
-
-interface SmartlingListResponse<T> extends SmartlingBaseResponse {
+interface SmartlingListResponse<T> {
     totalCount: number;
     items: Array<T>;
 }

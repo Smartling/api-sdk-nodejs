@@ -7,6 +7,8 @@ import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batc
 import { FileType } from "../api/files/params/file-type";
 import { ProcessBatchActionParameters } from "../api/job-batches/params/process-batch-action-parameters";
 import { BatchAction } from "../api/job-batches/params/batch-action";
+import { CancelBatchFileParameters } from "../api/job-batches/params/cancel-batch-file-parameters";
+import { RegisterBatchFileParameters } from "../api/job-batches/params/register-batch-file-parameters";
 
 describe("SmartlingJobAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -66,15 +68,14 @@ describe("SmartlingJobAPI class tests.", () => {
             );
         });
 
-        it("Process batch action", async () => {
-            const params = new ProcessBatchActionParameters();
+        it("Cancel batch file action", async () => {
+            const params = new CancelBatchFileParameters();
 
             params
-                .setAction(BatchAction.CANCEL_FILE)
                 .setFileUri("test_file_uri")
                 .setReason("test reason");
 
-            await jobBatchesApi.processBatchAction(projectId, batchUid, params);
+            await jobBatchesApi.cancelBatchFile(projectId, batchUid, params);
 
             sinon.assert.calledOnce(jobBatchesApiFetchStub);
             sinon.assert.calledWithExactly(
@@ -82,6 +83,31 @@ describe("SmartlingJobAPI class tests.", () => {
                 `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}`,
                 {
                     body: "{\"action\":\"CANCEL_FILE\",\"fileUri\":\"test_file_uri\",\"reason\":\"test reason\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
+                }
+            );
+        });
+
+        it("Register batch file action", async () => {
+            const params = new RegisterBatchFileParameters();
+
+            params
+                .setFileUri("test_file_uri")
+                .setReason("test reason");
+
+            await jobBatchesApi.registerBatchFile(projectId, batchUid, params);
+
+            sinon.assert.calledOnce(jobBatchesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobBatchesApiFetchStub,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}`,
+                {
+                    body: "{\"action\":\"REGISTER_FILE\",\"fileUri\":\"test_file_uri\",\"reason\":\"test reason\"}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",

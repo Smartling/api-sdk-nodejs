@@ -1,3 +1,0 @@
-interface SmartlingBaseResponse {}
-
-export { SmartlingBaseResponse };

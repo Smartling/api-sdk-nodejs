@@ -8,6 +8,8 @@ import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters
 import { BatchStatusDto } from "./dto/batch-status-dto";
 import { BatchDto } from "./dto/batch-dto";
 import { ProcessBatchActionParameters } from "./params/process-batch-action-parameters";
+import { CancelBatchFileParameters } from "./params/cancel-batch-file-parameters";
+import { RegisterBatchFileParameters } from "./params/register-batch-file-parameters";
 
 export class SmartlingJobBatchesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -50,8 +52,18 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         );
     }
 
-    async processBatchAction(
-        projectId: string, batchUid: string, params: ProcessBatchActionParameters
+    async registerBatchFile(
+        projectId: string, batchUid: string, params: RegisterBatchFileParameters
+    ): Promise<BatchDto> {
+        return await this.makeRequest(
+            "put",
+            `${this.entrypoint}/${projectId}/batches/${batchUid}`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async cancelBatchFile(
+        projectId: string, batchUid: string, params: CancelBatchFileParameters
     ): Promise<BatchDto> {
         return await this.makeRequest(
             "put",
