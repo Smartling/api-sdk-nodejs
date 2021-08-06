@@ -19,7 +19,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
 
     /* eslint-disable-next-line class-methods-use-this */
     alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
-        if (uri.match(/jobs-batch-api\/.*\/projects\/.*\/batches\/.*\/file$/g)) {
+        if (uri.match(/job-batches-api\/.*\/projects\/.*\/batches\/.*\/file$/g)) {
             const formData = new FormData();
 
             Object.keys(opts.body).forEach((key) => {
@@ -77,7 +77,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches/${batchUid}/file`,
-            JSON.stringify(params.export())
+            params.export()
         );
     }
 
