@@ -1,6 +1,7 @@
 import { BaseParameters } from "../../parameters/index";
 import { SmartlingException } from "../../exception/index";
 import { Order } from "./order";
+import { JobStatus } from "./job-status";
 
 export class ListJobsParameters extends BaseParameters {
     setName(jobName: string): ListJobsParameters {
@@ -29,7 +30,7 @@ export class ListJobsParameters extends BaseParameters {
         return this;
     }
 
-    setStatuses(statuses: string | Array<string>): ListJobsParameters {
+    setStatuses(statuses: JobStatus | Array<JobStatus>): ListJobsParameters {
         this.set("translationJobStatus", statuses);
 
         return this;

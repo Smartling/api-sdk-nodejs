@@ -8,6 +8,6 @@ export class RegisterBatchFileParameters extends ProcessBatchActionParameters {
     constructor(parameters: Record<string, any> = {}) {
         super(parameters);
 
-        this.setAction(BatchAction.REGISTER_FILE);
+        this.set("action", BatchAction.REGISTER_FILE);
     }
 }

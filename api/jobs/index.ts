@@ -12,6 +12,8 @@ import { SmartlingListResponse } from "../http/smartling-list-response";
 import { FullSourceFileDto } from "./dto/full-source-file-dto";
 import { BaseJobDto } from "./dto/base-job-dto";
 import { FileProgressDto } from "./dto/file-progress-dto";
+import { SourceFileDto } from "./dto/source-file-dto";
+import { RemovedFileDto } from "./dto/removed-file-dto";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -37,7 +39,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async getJobFiles(
         projectId: string, translationJobUid: string, params: ListJobFilesParameters
-    ): Promise<SmartlingListResponse<FullSourceFileDto>> {
+    ): Promise<SmartlingListResponse<SourceFileDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/files`,
@@ -66,7 +68,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async removeFileFromJob(
         projectId: string, translationJobUid: string, params: RemoveFileParameters
-    ): Promise<boolean> {
+    ): Promise<RemovedFileDto> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/file/remove`,

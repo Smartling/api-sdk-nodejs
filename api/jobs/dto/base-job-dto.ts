@@ -9,6 +9,7 @@ interface BaseJobDto {
     jobStatus: JobStatus;
     targetLocaleIds: Array<string>;
     translationJobUid: string;
+    referenceNumber: string;
 }
 
 export { BaseJobDto };
