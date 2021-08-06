@@ -23,15 +23,13 @@ pipeline {
 
             steps {
                 script {
-                    String scannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
-                    withSonarQubeEnv('sonar') {
+                    String scannerHome = tool name: 'sonar-next', type: 'hudson.plugins.sonar.SonarRunnerInstallation';
+                    withSonarQubeEnv('sonar-next') {
                         sh "${scannerHome}/bin/sonar-scanner \
+                         -Dsonar.sources=api \
                          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-                         -Dsonar.coverage.exclusions=built/tests/** \
-                         -Dsonar.sources=built \
-                         -Dsonar.exclusions=built/node_modules \
-                         -Dsonar.projectKey=\"api-sdk-nodejs\" \
-                         -Dsonar.projectName=\"API SDK nodejs\" \
+                         -Dsonar.projectKey=\"api-sdk-nodejs-public\" \
+                         -Dsonar.projectName=\"API SDK nodejs (public)\" \
                          -Dsonar.projectVersion=${env.BUILD_NUMBER}"
                     }
                 }

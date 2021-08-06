@@ -1,6 +1,8 @@
-import SmartlingAuthApi from "../auth";
-import SmartlingBaseApi from "../base";
-import { Logger } from "../factory/logger";
+import { SmartlingAuthApi } from "../auth/index";
+import { SmartlingBaseApi } from "../base/index";
+import { Logger } from "../logger";
+
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const packageJson = require("../../package.json");
 
 export class SmartlingApiClientBuilder {
@@ -8,16 +10,19 @@ export class SmartlingApiClientBuilder {
     private userId: string = null;
     private userSecret: string = null;
     private baseSmartlingApiUrl: string;
-    private httpClientOptions: object = {};
+    private httpClientOptions: Record<string, unknown> = {};
     private clientLibId: string = packageJson.name;
     private clientLibVersion: string = packageJson.version;
     private logger: Logger = {
+        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
         debug: () => {},
+        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
         warn: () => {},
+        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
         error: () => {}
     };
 
-    public setLogger(logger: Logger) {
+    public setLogger(logger: Logger): SmartlingApiClientBuilder {
         this.logger = logger;
 
         return this;
@@ -29,20 +34,26 @@ export class SmartlingApiClientBuilder {
         return this;
     }
 
-    public setHttpClientConfiguration(httpClientOptions: object): SmartlingApiClientBuilder {
+    public setHttpClientConfiguration(
+        httpClientOptions: Record<string, unknown>
+    ): SmartlingApiClientBuilder {
         this.httpClientOptions = httpClientOptions;
 
         return this;
     }
 
-    public setClientLibMetadata(clientLibId: string, clientLibVersion: string): SmartlingApiClientBuilder {
+    public setClientLibMetadata(
+        clientLibId: string, clientLibVersion: string
+    ): SmartlingApiClientBuilder {
         this.clientLibId = clientLibId;
         this.clientLibVersion = clientLibVersion;
 
         return this;
     }
 
-    public authWithUserIdAndUserSecret(userId: string, userSecret: string): SmartlingApiClientBuilder {
+    public authWithUserIdAndUserSecret(
+        userId: string, userSecret: string
+    ): SmartlingApiClientBuilder {
         this.userId = userId;
         this.userSecret = userSecret;
 
@@ -55,30 +66,32 @@ export class SmartlingApiClientBuilder {
         return this;
     }
 
-    public build<T extends SmartlingBaseApi>(constructor: new (authApi: SmartlingAuthApi, logger, baseUrl: string) => T): T {
+    public build<T extends SmartlingBaseApi>(
+        constructor: new (baseUrl: string, authApi: SmartlingAuthApi, logger) => T
+    ): T {
         if (this.authApiClient === null && this.userId !== null && this.userSecret !== null) {
             this.authApiClient = new SmartlingAuthApi(
+                this.baseSmartlingApiUrl,
                 this.userId,
                 this.userSecret,
-                this.logger,
-                this.baseSmartlingApiUrl
+                this.logger
             );
 
-            this.authApiClient["clientLibId"] = this.clientLibId;
-            this.authApiClient["clientLibVersion"] = this.clientLibVersion;
+            this.authApiClient.setClientLibId(this.clientLibId);
+            this.authApiClient.setClientLibVersion(this.clientLibVersion);
         }
 
-        const instance = new constructor(this.authApiClient, this.logger, this.baseSmartlingApiUrl);
+        const instance = new constructor(this.baseSmartlingApiUrl, this.authApiClient, this.logger);
 
-        instance["clientLibId"] = this.clientLibId;
-        instance["clientLibVersion"] = this.clientLibVersion;
+        instance.setClientLibId(this.clientLibId);
+        instance.setClientLibVersion(this.clientLibVersion);
 
         instance.setOptions(
             Object.assign(
                 this.httpClientOptions,
                 {
                     headers: {
-                        "X-SL-ServiceOrigin": instance["clientLibId"]
+                        "X-SL-ServiceOrigin": instance.getClientLibId()
                     }
                 }
             )

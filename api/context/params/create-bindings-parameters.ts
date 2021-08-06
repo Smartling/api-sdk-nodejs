@@ -1,4 +1,4 @@
-import BaseParameters from "../../parameters";
+import { BaseParameters } from "../../parameters/index";
 import { BindingDto } from "../dto/binding/binding-dto";
 
 export class CreateBindingsParameters extends BaseParameters {
@@ -9,7 +9,7 @@ export class CreateBindingsParameters extends BaseParameters {
     }
 
     addBinding<T extends BindingDto>(binding: T): CreateBindingsParameters {
-        this.parameters.bindings.push(binding);
+        this.parameters.bindings = this.parameters.bindings.concat(binding);
 
         return this;
     }

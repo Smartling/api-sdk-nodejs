@@ -1,8 +1,8 @@
-import BaseParameters from "../../parameters";
-import { ContextTypeEnum } from "./context-type-enum";
+import { BaseParameters } from "../../parameters/index";
+import { ContextType } from "./context-type";
 
 export class ListParameters extends BaseParameters {
-    setType(type: ContextTypeEnum): ListParameters {
+    setType(type: ContextType): ListParameters {
         this.set("type", type);
 
         return this;
