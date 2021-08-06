@@ -33,7 +33,7 @@ describe("SmartlingContextApi class tests.", () => {
             .setFileUri(fileName)
             .setOverrideContextOlderThanDays(1);
 
-        contextApi = new SmartlingContextApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
+        contextApi = new SmartlingContextApi("https://test.com", authMock as unknown as SmartlingAuthApi, loggerMock);
         contextServiceApiFetchStub = sinon.stub(contextApi, "fetch");
         contextServiceApiUaStub = sinon.stub(contextApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");

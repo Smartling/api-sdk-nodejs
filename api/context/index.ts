@@ -13,7 +13,7 @@ import { ListParameters } from "./params/list-parameters";
 import { Logger } from "../logger";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
-    constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
+    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
         super(logger);
 
         this.authApi = authApi;

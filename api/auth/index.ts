@@ -11,7 +11,7 @@ export class SmartlingAuthApi extends SmartlingBaseApi {
     private response: AccessTokenDto;
 
     constructor(
-        userIdentifier: string, tokenSecret: string, logger: Logger, smartlingApiBaseUrl: string
+        smartlingApiBaseUrl: string, userIdentifier: string, tokenSecret: string, logger: Logger
     ) {
         super(logger);
         this.ttlCorrectionSec = 10;

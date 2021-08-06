@@ -17,7 +17,7 @@ describe("SmartlingStringsApi class tests.", () => {
     let responseMockJsonStub;
 
     beforeEach(() => {
-        filesApi = new SmartlingFilesApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
+        filesApi = new SmartlingFilesApi("https://test.com", authMock as unknown as SmartlingAuthApi, loggerMock);
         filesApiFetchStub = sinon.stub(filesApi, "fetch");
         filesApiUaStub = sinon.stub(filesApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");

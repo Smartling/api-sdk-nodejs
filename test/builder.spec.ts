@@ -143,6 +143,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
 
     it("Smartling api builder can use existing auth api client", () => {
         const authApiClient = new SmartlingAuthApi(
+            "baz",
             "foo",
             "bar",
             {
@@ -150,8 +151,7 @@ describe("SmartlingApiClientBuilder class tests.", () => {
                 warn: () => {},
                 error: () => {},
                 test: () => {}
-            },
-            "baz"
+            }
         );
 
         const apiClientBuilder = new SmartlingApiClientBuilder()

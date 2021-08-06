@@ -21,7 +21,7 @@ describe("SmartlingJobAPI class tests.", () => {
     let responseMockJsonStub;
 
     beforeEach(() => {
-        jobApi = new SmartlingJobsApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
+        jobApi = new SmartlingJobsApi("https://test.com", authMock as unknown as SmartlingAuthApi, loggerMock);
         jobServiceApiFetchStub = sinon.stub(jobApi, "fetch");
         jobServiceApiUaStub = sinon.stub(jobApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");

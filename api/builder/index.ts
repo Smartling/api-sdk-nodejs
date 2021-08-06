@@ -67,21 +67,21 @@ export class SmartlingApiClientBuilder {
     }
 
     public build<T extends SmartlingBaseApi>(
-        constructor: new (authApi: SmartlingAuthApi, logger, baseUrl: string) => T
+        constructor: new (baseUrl: string, authApi: SmartlingAuthApi, logger) => T
     ): T {
         if (this.authApiClient === null && this.userId !== null && this.userSecret !== null) {
             this.authApiClient = new SmartlingAuthApi(
+                this.baseSmartlingApiUrl,
                 this.userId,
                 this.userSecret,
-                this.logger,
-                this.baseSmartlingApiUrl
+                this.logger
             );
 
             this.authApiClient.setClientLibId(this.clientLibId);
             this.authApiClient.setClientLibVersion(this.clientLibVersion);
         }
 
-        const instance = new constructor(this.authApiClient, this.logger, this.baseSmartlingApiUrl);
+        const instance = new constructor(this.baseSmartlingApiUrl, this.authApiClient, this.logger);
 
         instance.setClientLibId(this.clientLibId);
         instance.setClientLibVersion(this.clientLibVersion);

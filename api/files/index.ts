@@ -10,7 +10,7 @@ import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
-    constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
+    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/files-api/v2/projects`;

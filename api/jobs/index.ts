@@ -14,7 +14,7 @@ import { BaseJobDto } from "./dto/base-job-dto";
 import { FileProgressDto } from "./dto/file-progress-dto";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
-    constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
+    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/jobs-api/v3/projects`;

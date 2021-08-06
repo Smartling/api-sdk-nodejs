@@ -4,7 +4,7 @@ import { Logger } from "../logger";
 import { ProjectDto } from "./dto/project-dto";
 
 export class SmartlingProjectsApi extends SmartlingBaseApi {
-    constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
+    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/projects-api/v2/projects`;

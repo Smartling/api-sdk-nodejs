@@ -10,7 +10,7 @@ describe("Auth class tests.", () => {
     let authResetRequestTimeStampSpy;
 
     beforeEach(() => {
-        auth = new SmartlingAuthApi("test_user_id", "test_user_secret", loggerMock, "https://api.smartling.com");
+        auth = new SmartlingAuthApi("https://api.smartling.com", "test_user_id", "test_user_secret", loggerMock);
 
         authMakeRequestStub = sinon.stub(auth, "makeRequest");
         authResetRequestTimeStampSpy = sinon.spy(auth, "resetRequestTimeStamp");

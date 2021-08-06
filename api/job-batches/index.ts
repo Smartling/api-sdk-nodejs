@@ -10,7 +10,7 @@ import { BatchDto } from "./dto/batch-dto";
 import { ProcessBatchActionParameters } from "./params/process-batch-action-parameters";
 
 export class SmartlingJobBatchesApi extends SmartlingBaseApi {
-    constructor(authApi: SmartlingAuthApi, logger: Logger, smartlingApiBaseUrl: string) {
+    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/job-batches-api/v2/projects`;

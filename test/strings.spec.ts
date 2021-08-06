@@ -26,7 +26,7 @@ describe("SmartlingStringsApi class tests.", () => {
             .setLimit(limit)
             .setOffset(offset);
 
-        stringsApi = new SmartlingStringsApi(authMock as unknown as SmartlingAuthApi, loggerMock, "https://test.com");
+        stringsApi = new SmartlingStringsApi("https://test.com", authMock as unknown as SmartlingAuthApi, loggerMock);
         stringsServiceApiFetchStub = sinon.stub(stringsApi, "fetch");
         stringsServiceApiUaStub = sinon.stub(stringsApi, "ua");
         responseMockJsonStub = sinon.stub(responseMock, "json");
