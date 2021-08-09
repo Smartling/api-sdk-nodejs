@@ -70,8 +70,7 @@ describe("SmartlingJobAPI class tests.", () => {
             const params = new CancelBatchFileParameters();
 
             params
-                .setFileUri("test_file_uri")
-                .setReason("test reason");
+                .setFileUri("test_file_uri");
 
             await jobBatchesApi.cancelBatchFile(projectId, batchUid, params);
 
@@ -80,7 +79,7 @@ describe("SmartlingJobAPI class tests.", () => {
                 jobBatchesApiFetchStub,
                 `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}`,
                 {
-                    body: "{\"action\":\"CANCEL_FILE\",\"fileUri\":\"test_file_uri\",\"reason\":\"test reason\"}",
+                    body: "{\"action\":\"CANCEL_FILE\",\"fileUri\":\"test_file_uri\"}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -95,8 +94,7 @@ describe("SmartlingJobAPI class tests.", () => {
             const params = new RegisterBatchFileParameters();
 
             params
-                .setFileUri("test_file_uri")
-                .setReason("test reason");
+                .setFileUri("test_file_uri");
 
             await jobBatchesApi.registerBatchFile(projectId, batchUid, params);
 
@@ -105,7 +103,7 @@ describe("SmartlingJobAPI class tests.", () => {
                 jobBatchesApiFetchStub,
                 `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}`,
                 {
-                    body: "{\"action\":\"REGISTER_FILE\",\"fileUri\":\"test_file_uri\",\"reason\":\"test reason\"}",
+                    body: "{\"action\":\"REGISTER_FILE\",\"fileUri\":\"test_file_uri\"}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
