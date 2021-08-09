@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--smartling.variants_enabled = true-->
+<!--smartling.translate_paths = root/strings/string-->
+<root>
+	<strings>
+		<string sl-variant="variant">Test string</string>
+	</strings>
+</root>
