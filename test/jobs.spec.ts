@@ -1,6 +1,6 @@
 import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
-import { Order } from "../api/jobs/params/order";
+import { Order } from "../api/parameters/order";
 import { ListJobsParameters } from "../api/jobs/params/list-jobs-parameters";
 import { SmartlingJobsApi } from "../api/jobs/index";
 import { FileProgressParameters } from "../api/jobs/params/file-progress-parameters";

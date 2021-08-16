@@ -1,6 +1,6 @@
 import { BaseParameters } from "../../parameters/index";
 import { SmartlingException } from "../../exception/index";
-import { Order } from "./order";
+import { Order } from "../../parameters/order";
 import { JobStatus } from "./job-status";
 
 export class ListJobsParameters extends BaseParameters {
