@@ -137,7 +137,27 @@ export class SmartlingBaseApi {
         }
 
         try {
-            const jsonResponse = await response.json();
+            const textResponse = await response.text();
+            const jsonResponse = JSON.parse(textResponse, (key, value) => {
+                const dateProperties = [
+                    "created",
+                    "modified",
+                    "updated",
+                    "createdDate",
+                    "modifiedDate",
+                    "updatedDate",
+                    "dueDate",
+                    "actionTime",
+                    "publishDate",
+                    "lastModified"
+                ];
+
+                if (dateProperties.includes(key) && value) {
+                    return new Date(value);
+                }
+
+                return value;
+            });
 
             this.logger.debug(`Received code ${response.status}; content: ${JSON.stringify(jsonResponse)}`);
 

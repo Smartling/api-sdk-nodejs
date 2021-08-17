@@ -2,7 +2,7 @@ import { FileType } from "../params/file-type";
 import { FileStatusForLocaleItemDto } from "./file-status-for-locale-item-dto";
 
 interface FileStatusForAllLocalesDto {
-    created: string;
+    created: Date;
     fileType: FileType;
     fileUri: string;
     hasInstructions: boolean;

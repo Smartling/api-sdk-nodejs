@@ -6,7 +6,7 @@ interface BatchItemDto {
     fileUri: string;
     status: BatchItemStatus;
     targetLocales: Array<BatchLocaleDto>;
-    updatedDate: string;
+    updatedDate: Date;
 }
 
 export { BatchItemDto };

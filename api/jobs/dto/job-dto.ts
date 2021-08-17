@@ -8,7 +8,7 @@ interface JobDto extends BaseJobDto {
     firstCompletedDate: string;
     lastCompletedDate: string;
     modifiedByUserUid: string;
-    modifiedDate: string;
+    modifiedDate: Date;
     customFields: Array<CustomFieldDto>;
 }
 

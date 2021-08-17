@@ -7,7 +7,7 @@ interface BatchStatusDto {
     generalErrors: string;
     projectId: string;
     translationJobUid: string;
-    updatedDate: string;
+    updatedDate: Date;
     files: Array<BatchItemDto>;
 }
 

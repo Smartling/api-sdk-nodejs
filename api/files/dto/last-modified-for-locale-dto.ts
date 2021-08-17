@@ -1,5 +1,5 @@
 interface LastModifiedForLocale {
-    lastModified: string;
+    lastModified: Date;
     localeId: string;
 }
 
