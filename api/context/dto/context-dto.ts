@@ -3,7 +3,7 @@ import { ContextType } from "../params/context-type";
 interface ContextDto {
     name: string;
     contextType: ContextType;
-    created: string;
+    created: Date;
     contextUid: string;
 }
 

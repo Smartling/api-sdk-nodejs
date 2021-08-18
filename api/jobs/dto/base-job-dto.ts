@@ -1,9 +1,9 @@
 import { JobStatus } from "../params/job-status";
 
 interface BaseJobDto {
-    createdDate: string;
+    createdDate: Date;
     description: string;
-    dueDate: string;
+    dueDate: Date;
     jobName: string;
     jobNumber: string;
     jobStatus: JobStatus;
