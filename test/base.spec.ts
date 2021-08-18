@@ -70,7 +70,6 @@ describe("Base class tests.", () => {
         let baseAlterRequestDataSpy;
         let authResetTokenStub;
         let responseMockTextStub;
-        let responseMockJsonStub;
 
         beforeEach(() => {
             base = new SmartlingBaseApi(loggerMock);
@@ -82,7 +81,6 @@ describe("Base class tests.", () => {
             baseAlterRequestDataSpy = sinon.spy(base, "alterRequestData");
             authResetTokenStub = sinon.stub(base.authApi, "resetToken");
             responseMockTextStub = sinon.stub(responseMock, "text");
-            responseMockJsonStub = sinon.stub(responseMock, "json");
 
             baseUaStub.returns("test_user_agent");
         });
@@ -92,7 +90,6 @@ describe("Base class tests.", () => {
             baseGetDefaultHeaderSpy.restore();
             authResetTokenStub.restore();
             responseMockTextStub.restore();
-            responseMockJsonStub.restore();
             baseUaStub.restore();
         });
 
@@ -104,9 +101,8 @@ describe("Base class tests.", () => {
             };
 
             baseFetchStub.returns(responseMock);
-            responseMockJsonStub.returns({
-                response: {}
-            });
+
+            responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
 
             await base.makeRequest(requestVerb, requestUri, payload);
 
@@ -138,9 +134,9 @@ describe("Base class tests.", () => {
                 body: payload
             });
 
+            sinon.assert.calledOnce(responseMockTextStub);
+
             sinon.assert.notCalled(authResetTokenStub);
-            sinon.assert.notCalled(responseMockTextStub);
-            sinon.assert.calledOnce(responseMockJsonStub);
         });
 
         it("Success (JSON response, object result).", async () => {
@@ -151,11 +147,8 @@ describe("Base class tests.", () => {
             };
 
             baseFetchStub.returns(responseMock);
-            responseMockJsonStub.returns({
-                response: {
-                    data: {}
-                }
-            });
+
+            responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
 
             await base.makeRequest(requestVerb, requestUri, payload);
 
@@ -187,9 +180,9 @@ describe("Base class tests.", () => {
                 body: payload
             });
 
+            sinon.assert.calledOnce(responseMockTextStub);
+
             sinon.assert.notCalled(authResetTokenStub);
-            sinon.assert.notCalled(responseMockTextStub);
-            sinon.assert.calledOnce(responseMockJsonStub);
         });
 
         it("Success (raw text response).", async () => {
@@ -200,11 +193,8 @@ describe("Base class tests.", () => {
             };
 
             baseFetchStub.returns(responseMock);
-            responseMockJsonStub.returns({
-                response: {
-                    data: {}
-                }
-            });
+
+            responseMockTextStub.returns("invalid json: this test just returns raw text response but does not parse text as json");
 
             await base.makeRequest(requestVerb, requestUri, payload, true);
 
@@ -238,7 +228,6 @@ describe("Base class tests.", () => {
 
             sinon.assert.notCalled(authResetTokenStub);
             sinon.assert.calledOnce(responseMockTextStub);
-            sinon.assert.notCalled(responseMockJsonStub);
         });
 
         it("Success (re-authenticate): GET request.", async () => {
@@ -250,11 +239,8 @@ describe("Base class tests.", () => {
 
             baseFetchStub.onCall(0).returns(response401Mock);
             baseFetchStub.onCall(1).returns(responseMock);
-            responseMockJsonStub.returns({
-                response: {
-                    data: {}
-                }
-            });
+
+            responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
 
             await base.makeRequest(requestVerb, requestUri);
 
@@ -295,8 +281,7 @@ describe("Base class tests.", () => {
                 }
             });
 
-            sinon.assert.notCalled(responseMockTextStub);
-            sinon.assert.calledOnce(responseMockJsonStub);
+            sinon.assert.calledOnce(responseMockTextStub);
         });
 
         it("Success (re-authenticate): non-GET request.", async () => {
@@ -308,11 +293,8 @@ describe("Base class tests.", () => {
 
             baseFetchStub.onCall(0).returns(response401Mock);
             baseFetchStub.onCall(1).returns(responseMock);
-            responseMockJsonStub.returns({
-                response: {
-                    data: {}
-                }
-            });
+
+            responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
 
             await base.makeRequest(requestVerb, requestUri, {
                 foo: "bar"
@@ -364,8 +346,7 @@ describe("Base class tests.", () => {
                 }
             });
 
-            sinon.assert.notCalled(responseMockTextStub);
-            sinon.assert.calledOnce(responseMockJsonStub);
+            sinon.assert.calledOnce(responseMockTextStub);
         });
 
         it("GET: success (payload is set).", async () => {
@@ -376,11 +357,8 @@ describe("Base class tests.", () => {
             };
 
             baseFetchStub.returns(responseMock);
-            responseMockJsonStub.returns({
-                response: {
-                    data: {}
-                }
-            });
+
+            responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
 
             await base.makeRequest(requestVerb, requestUri, payload);
 
@@ -410,9 +388,9 @@ describe("Base class tests.", () => {
                 }
             });
 
+            sinon.assert.calledOnce(responseMockTextStub);
+
             sinon.assert.notCalled(authResetTokenStub);
-            sinon.assert.notCalled(responseMockTextStub);
-            sinon.assert.calledOnce(responseMockJsonStub);
         });
 
         it("GET: success (payload is not set).", async () => {
@@ -420,11 +398,8 @@ describe("Base class tests.", () => {
             const requestUri = "https://test.com";
 
             baseFetchStub.returns(responseMock);
-            responseMockJsonStub.returns({
-                response: {
-                    data: {}
-                }
-            });
+
+            responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
 
             await base.makeRequest(requestVerb, requestUri);
 
@@ -454,9 +429,9 @@ describe("Base class tests.", () => {
                 }
             });
 
+            sinon.assert.calledOnce(responseMockTextStub);
+
             sinon.assert.notCalled(authResetTokenStub);
-            sinon.assert.notCalled(responseMockTextStub);
-            sinon.assert.calledOnce(responseMockJsonStub);
         });
 
         it("Custom options for api object (timeout)", async () => {
@@ -467,11 +442,8 @@ describe("Base class tests.", () => {
             };
 
             baseFetchStub.returns(responseMock);
-            responseMockJsonStub.returns({
-                response: {
-                    data: {}
-                }
-            });
+
+            responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
 
             base.setOptions({
                 timeout: 10000,
@@ -514,9 +486,9 @@ describe("Base class tests.", () => {
                 timeout: 10000
             });
 
+            sinon.assert.calledOnce(responseMockTextStub);
+
             sinon.assert.notCalled(authResetTokenStub);
-            sinon.assert.notCalled(responseMockTextStub);
-            sinon.assert.calledOnce(responseMockJsonStub);
         });
 
         it("Fail (non 200/401 response).", async () => {
@@ -534,11 +506,6 @@ describe("Base class tests.", () => {
             };
 
             baseFetchStub.returns(response400Mock);
-            responseMockJsonStub.returns({
-                response: {
-                    data: {}
-                }
-            });
 
             try {
                 await base.makeRequest(requestVerb, requestUri, payload);
@@ -584,7 +551,6 @@ describe("Base class tests.", () => {
 
                 sinon.assert.notCalled(authResetTokenStub);
                 sinon.assert.notCalled(responseMockTextStub);
-                sinon.assert.notCalled(responseMockJsonStub);
             }
         });
 
@@ -601,8 +567,8 @@ describe("Base class tests.", () => {
             };
 
             baseFetchStub.returns(responseMock);
-            responseMockJsonStub.throws(error);
-            responseMockTextStub.resolves("error");
+            responseMockTextStub.onCall(0).throws(error);
+            responseMockTextStub.onCall(1).resolves("error");
 
             try {
                 await base.makeRequest(requestVerb, requestUri, payload);
@@ -642,8 +608,7 @@ describe("Base class tests.", () => {
                 });
 
                 sinon.assert.notCalled(authResetTokenStub);
-                sinon.assert.calledOnce(responseMockTextStub);
-                sinon.assert.calledOnce(responseMockJsonStub);
+                sinon.assert.calledTwice(responseMockTextStub);
             }
         });
     });
