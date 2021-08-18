@@ -148,9 +148,21 @@ describe("Base class tests.", () => {
 
             baseFetchStub.returns(responseMock);
 
-            responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
+            responseMockTextStub.returns("{\"response\": {\"data\": {\"created\":\"2021-08-18T09:57:59.088Z\",\"modified\":\"2021-08-18T09:57:59.088Z\",\"updated\":\"2021-08-18T09:57:59.088Z\",\"createdDate\":\"2021-08-18T09:57:59.088Z\",\"modifiedDate\":\"2021-08-18T09:57:59.088Z\",\"updatedDate\":\"2021-08-18T09:57:59.088Z\",\"dueDate\":\"2021-08-18T09:57:59.088Z\",\"actionTime\":\"2021-08-18T09:57:59.088Z\",\"publishDate\":\"2021-08-18T09:57:59.088Z\",\"lastModified\":\"2021-08-18T09:57:59.088Z\",\"createdString\":\"2021-08-18T09:57:59.088Z\"}}}");
 
-            await base.makeRequest(requestVerb, requestUri, payload);
+            const result = await base.makeRequest(requestVerb, requestUri, payload);
+
+            assert.equal(result.created instanceof Date, true);
+            assert.equal(result.modified instanceof Date, true);
+            assert.equal(result.updated instanceof Date, true);
+            assert.equal(result.createdDate instanceof Date, true);
+            assert.equal(result.modifiedDate instanceof Date, true);
+            assert.equal(result.updatedDate instanceof Date, true);
+            assert.equal(result.dueDate instanceof Date, true);
+            assert.equal(result.actionTime instanceof Date, true);
+            assert.equal(result.publishDate instanceof Date, true);
+            assert.equal(result.lastModified instanceof Date, true);
+            assert.equal(typeof result.createdString, "string");
 
             sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
