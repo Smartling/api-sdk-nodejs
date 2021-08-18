@@ -16,7 +16,7 @@ export const authMock = {
 
 export const responseMock = {
     status: 200,
-    text: (): void => {},
+    text: async (): Promise<string> => "{}",
     json: async (): Promise<void> => {},
     headers: {}
 };
