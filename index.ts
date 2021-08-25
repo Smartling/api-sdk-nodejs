@@ -50,7 +50,7 @@ export * from "./api/jobs/dto/source-file-dto";
 export * from "./api/jobs/dto/workflow-progress-report-item-dto";
 export * from "./api/jobs/dto/workflow-step-summary-report-item-dto";
 export * from "./api/jobs/dto/removed-file-dto";
-export * from "./api/jobs/dto/file-progress-item-dto";
+export * from "./api/jobs/dto/progress-item-dto";
 export * from "./api/jobs/dto/summary-report-item-dto";
 export * from "./api/jobs/dto/job-progress-dto";
 export * from "./api/jobs/params/create-job-parameters";
