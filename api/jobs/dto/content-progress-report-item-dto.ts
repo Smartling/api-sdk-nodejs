@@ -1,5 +1,5 @@
 import { WorkflowProgressReportItemDto } from "./workflow-progress-report-item-dto";
-import { FileProgressItemDto } from "./file-progress-item-dto";
+import { ProgressItemDto } from "./progress-item-dto";
 import { SummaryReportItemDto } from "./summary-report-item-dto";
 
 interface ContentProgressReportItemDto {
@@ -10,7 +10,7 @@ interface ContentProgressReportItemDto {
         wordCount: number;
     };
     workflowProgressReportList: Array<WorkflowProgressReportItemDto>;
-    progress: FileProgressItemDto;
+    progress: ProgressItemDto;
     summaryReport: Array<SummaryReportItemDto>;
 }
 

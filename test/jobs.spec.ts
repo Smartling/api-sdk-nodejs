@@ -9,6 +9,7 @@ import { CreateJobParameters } from "../api/jobs/params/create-job-parameters";
 import { ListJobFilesParameters } from "../api/jobs/params/list-job-files-parameters";
 import { JobStatus } from "../api/jobs/params/job-status";
 import { RemoveFileParameters } from "../api/jobs/params/remove-file-parameters";
+import { JobProgressParameters } from "../api/jobs/params/job-progress-parameters";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -123,6 +124,28 @@ describe("SmartlingJobsAPI class tests.", () => {
             sinon.assert.calledWithExactly(
                 jobServiceApiFetchStub,
                 `https://test.com/jobs-api/v3/projects/${projectId}/jobs?jobName=testName&translationJobStatus=AWAITING_AUTHORIZATION&sortBy=name&sortDirection=ASC&limit=100&offset=10`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get job progress", async () => {
+            const params = new JobProgressParameters();
+
+            params.setTargetLocaleId("fr-FR");
+
+            await jobApi.getJobProgress(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/progress?targetLocaleId=fr-FR`,
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",
