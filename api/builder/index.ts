@@ -85,17 +85,7 @@ export class SmartlingApiClientBuilder {
 
         instance.setClientLibId(this.clientLibId);
         instance.setClientLibVersion(this.clientLibVersion);
-
-        instance.setOptions(
-            Object.assign(
-                this.httpClientOptions,
-                {
-                    headers: {
-                        "X-SL-ServiceOrigin": instance.getClientLibId()
-                    }
-                }
-            )
-        );
+        instance.setOptions(this.httpClientOptions);
 
         return instance;
     }
