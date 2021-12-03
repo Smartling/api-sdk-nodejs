@@ -24,10 +24,7 @@ function assertApiClient(Type: any, apiClient: SmartlingBaseApi, assertAuthClien
 
     assert.deepEqual(
         apiClient["options"], {
-            timeout: 100500,
-            headers: {
-                "X-SL-ServiceOrigin": "example-lib-name"
-            }
+            timeout: 100500
         }
     );
 
