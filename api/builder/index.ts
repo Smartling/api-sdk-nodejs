@@ -6,14 +6,14 @@ import { Logger } from "../logger";
 const packageJson = require("../../package.json");
 
 export class SmartlingApiClientBuilder {
-    private authApiClient: SmartlingAuthApi = null;
-    private userId: string = null;
-    private userSecret: string = null;
-    private baseSmartlingApiUrl: string;
-    private httpClientOptions: Record<string, unknown> = {};
-    private clientLibId: string = packageJson.name;
-    private clientLibVersion: string = packageJson.version;
-    private logger: Logger = {
+    protected authApiClient: SmartlingAuthApi = null;
+    protected userId: string = null;
+    protected userSecret: string = null;
+    protected baseSmartlingApiUrl: string;
+    protected httpClientOptions: Record<string, unknown> = {};
+    protected clientLibId: string = packageJson.name;
+    protected clientLibVersion: string = packageJson.version;
+    protected logger: Logger = {
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
         debug: () => {},
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
