@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import { BaseParameters } from "../../parameters/index";
 import { FileType } from "../../files/params/file-type";
 
@@ -24,7 +25,9 @@ export class UploadBatchFileParameters extends BaseParameters {
     }
 
     setFile(filePath: string): UploadBatchFileParameters {
-        this.set("file", filePath);
+        this.set("file", fs.createReadStream(
+            fs.realpathSync(filePath)
+        ));
 
         return this;
     }

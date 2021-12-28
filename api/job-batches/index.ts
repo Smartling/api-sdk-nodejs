@@ -23,11 +23,7 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
             const formData = new FormData();
 
             Object.keys(opts.body).forEach((key) => {
-                if (key === "file") {
-                    formData.append(key, fs.createReadStream(
-                        fs.realpathSync(opts.body[key])
-                    ));
-                } else if (Array.isArray(opts.body[key])) {
+                if (Array.isArray(opts.body[key])) {
                     opts.body[key].forEach((value) => {
                         formData.append(`${key}[]`, value);
                     });
