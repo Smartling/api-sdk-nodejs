@@ -135,7 +135,7 @@ describe("SmartlingFilesApi class tests.", () => {
             );
         });
 
-        it("Upload file: file from disk", async () => {
+        it("Upload file: from disk", async () => {
             const params = new UploadFileParameters();
 
             params

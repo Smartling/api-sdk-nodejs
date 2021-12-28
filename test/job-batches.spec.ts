@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import sinon from "sinon";
 import assert from "assert";
 import { loggerMock, authMock, responseMock } from "./mock";
@@ -8,6 +9,7 @@ import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batc
 import { FileType } from "../api/files/params/file-type";
 import { CancelBatchFileParameters } from "../api/job-batches/params/cancel-batch-file-parameters";
 import { RegisterBatchFileParameters } from "../api/job-batches/params/register-batch-file-parameters";
+import { UploadBatchFileStringParameters } from "../api/job-batches/params/upload-batch-file-string-parameters";
 
 describe("SmartlingJobBatchesAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -115,7 +117,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             );
         });
 
-        it("Upload batch file", async () => {
+        it("Upload batch file: from disk", async () => {
             const params = new UploadBatchFileParameters();
 
             params
@@ -149,6 +151,55 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             assert.equal(
                 jobBatchesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
                 "test_user_agent"
+            );
+        });
+
+        it("Upload batch file: as string", async () => {
+            const params = new UploadBatchFileStringParameters();
+
+            params
+                .setFile(fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                ))
+                .setFileUri("test-file-uri")
+                .setFileType(FileType.XML)
+                .setDirective("foo", "bar")
+                .setLocalesToApprove(["fr-FR", "de-DE"])
+                .setCallbackUrl("testCallbackUrl")
+                .setClientLibId("clientLibId", "clientLibVersion");
+
+            await jobBatchesApi.uploadBatchFile(projectId, batchUid, params);
+
+            sinon.assert.calledOnce(jobBatchesApiFetchStub);
+
+            assert.equal(
+                jobBatchesApiFetchStub.getCall(0).args[0],
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}/file`
+            );
+
+            assert.equal(
+                jobBatchesApiFetchStub.getCall(0).args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                jobBatchesApiFetchStub.getCall(0).args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            assert.equal(
+                jobBatchesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
+                "test_user_agent"
+            );
+
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                jobBatchesApiFetchStub.getCall(0).args[1].body._streams[1].source.input.toString(),
+                fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                )
             );
         });
 
