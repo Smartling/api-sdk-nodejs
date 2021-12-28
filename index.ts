@@ -20,6 +20,7 @@ export * from "./api/files/params/download-file-parameters";
 export * from "./api/files/params/retrieval-type";
 export * from "./api/files/params/file-type";
 export * from "./api/files/params/upload-file-parameters";
+export * from "./api/files/params/upload-file-string-parameters";
 export * from "./api/files/dto/file-status-for-all-locales-dto";
 export * from "./api/files/dto/file-status-for-locale-item-dto";
 export * from "./api/files/dto/last-modified-for-locale-dto";

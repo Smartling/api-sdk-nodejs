@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import { BaseParameters } from "../../parameters/index";
 import { FileType } from "./file-type";
 
@@ -9,7 +10,9 @@ export class UploadFileParameters extends BaseParameters {
     }
 
     setFile(file: string): UploadFileParameters {
-        this.set("file", file);
+        this.set("file", fs.createReadStream(
+            fs.realpathSync(file)
+        ));
         return this;
     }
 

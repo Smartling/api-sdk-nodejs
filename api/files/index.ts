@@ -1,5 +1,4 @@
 import FormData from "form-data";
-import * as fs from "fs";
 import { SmartlingBaseApi } from "../base/index";
 import { SmartlingAuthApi } from "../auth/index";
 import { Logger } from "../logger";
@@ -68,13 +67,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         const formData = new FormData();
         const exported = parameters.export();
         Object.keys(exported).forEach((key) => {
-            if (key === "file") {
-                formData.append(key, fs.createReadStream(
-                    fs.realpathSync(exported[key])
-                ));
-            } else {
-                formData.append(key, exported[key]);
-            }
+            formData.append(key, exported[key]);
         });
 
         return await this.makeRequest(
