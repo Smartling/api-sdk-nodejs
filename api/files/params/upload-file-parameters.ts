@@ -11,9 +11,9 @@ export class UploadFileParameters extends BaseParameters {
     }
 
     /**
-     * @deprecated
+     * @deprecated This method will be deleted in 2.0.0
      * @param filePath
-     * @returns {UploadFileParameters}
+     * @returns UploadFileParameters
      */
     setFile(filePath: string): UploadFileParameters {
         this.set("file", fs.createReadStream(

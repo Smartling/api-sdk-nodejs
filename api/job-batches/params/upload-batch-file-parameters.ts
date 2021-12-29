@@ -26,9 +26,9 @@ export class UploadBatchFileParameters extends BaseParameters {
     }
 
     /**
-     * @deprecated
+     * @deprecated This method will be deleted in 2.0.0
      * @param filePath
-     * @returns {UploadBatchFileParameters}
+     * @returns UploadBatchFileParameters
      */
     setFile(filePath: string): UploadBatchFileParameters {
         this.set("file", fs.createReadStream(
