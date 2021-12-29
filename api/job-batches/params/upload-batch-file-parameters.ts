@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { Readable } from "stream";
 import { BaseParameters } from "../../parameters/index";
 import { FileType } from "../../files/params/file-type";
 
@@ -24,10 +25,29 @@ export class UploadBatchFileParameters extends BaseParameters {
         return this;
     }
 
+    /**
+     * @deprecated
+     * @param filePath
+     * @returns {UploadBatchFileParameters}
+     */
     setFile(filePath: string): UploadBatchFileParameters {
         this.set("file", fs.createReadStream(
             fs.realpathSync(filePath)
         ));
+
+        return this;
+    }
+
+    setFileFromLocalFilePath(filePath: string): UploadBatchFileParameters {
+        this.set("file", fs.createReadStream(
+            fs.realpathSync(filePath)
+        ));
+
+        return this;
+    }
+
+    setFileContent(fileContent: Readable): UploadBatchFileParameters {
+        this.set("file", fileContent);
 
         return this;
     }

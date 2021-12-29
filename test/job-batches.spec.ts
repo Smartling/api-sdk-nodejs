@@ -9,7 +9,7 @@ import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batc
 import { FileType } from "../api/files/params/file-type";
 import { CancelBatchFileParameters } from "../api/job-batches/params/cancel-batch-file-parameters";
 import { RegisterBatchFileParameters } from "../api/job-batches/params/register-batch-file-parameters";
-import { UploadBatchFileStringParameters } from "../api/job-batches/params/upload-batch-file-string-parameters";
+import { streamToString } from "./stream-to-string";
 
 describe("SmartlingJobBatchesAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -121,7 +121,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             const params = new UploadBatchFileParameters();
 
             params
-                .setFile("./test/data/file.xml")
+                .setFileFromLocalFilePath("./test/data/file.xml")
                 .setFileUri("test-file-uri")
                 .setFileType(FileType.XML)
                 .setDirective("foo", "bar")
@@ -155,10 +155,10 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
         });
 
         it("Upload batch file: as string", async () => {
-            const params = new UploadBatchFileStringParameters();
+            const params = new UploadBatchFileParameters();
 
             params
-                .setFile(fs.readFileSync(
+                .setFileContent(fs.createReadStream(
                     fs.realpathSync("./test/data/file.xml"),
                     "utf8"
                 ))
@@ -195,7 +195,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
 
             assert.equal(
                 // eslint-disable-next-line no-underscore-dangle
-                jobBatchesApiFetchStub.getCall(0).args[1].body._streams[1].source.input.toString(),
+                await streamToString(jobBatchesApiFetchStub.getCall(0).args[1].body._streams[1]),
                 fs.readFileSync(
                     fs.realpathSync("./test/data/file.xml"),
                     "utf8"

@@ -8,7 +8,7 @@ import { DownloadFileParameters } from "../api/files/params/download-file-parame
 import { UploadFileParameters } from "../api/files/params/upload-file-parameters";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { FileType } from "../api/files/params/file-type";
-import { UploadFileStringParameters } from "../api/files/params/upload-file-string-parameters";
+import { streamToString } from "./stream-to-string";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -139,7 +139,7 @@ describe("SmartlingFilesApi class tests.", () => {
             const params = new UploadFileParameters();
 
             params
-                .setFile("./test/data/file.xml")
+                .setFileFromLocalFilePath("./test/data/file.xml")
                 .setFileUri("test-file-uri")
                 .setFileType(FileType.XML)
                 .setDirective("foo", "bar");
@@ -169,11 +169,11 @@ describe("SmartlingFilesApi class tests.", () => {
             );
         });
 
-        it("Upload file: as string", async () => {
-            const params = new UploadFileStringParameters();
+        it("Upload file: as stream", async () => {
+            const params = new UploadFileParameters();
 
             params
-                .setFile(fs.readFileSync(
+                .setFileContent(fs.createReadStream(
                     fs.realpathSync("./test/data/file.xml"),
                     "utf8"
                 ))
@@ -207,7 +207,7 @@ describe("SmartlingFilesApi class tests.", () => {
 
             assert.equal(
                 // eslint-disable-next-line no-underscore-dangle
-                filesApiFetchStub.getCall(0).args[1].body._streams[1].source.input.toString(),
+                await streamToString(filesApiFetchStub.getCall(0).args[1].body._streams[1]),
                 fs.readFileSync(
                     fs.realpathSync("./test/data/file.xml"),
                     "utf8"

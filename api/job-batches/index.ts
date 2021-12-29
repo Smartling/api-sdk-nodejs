@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import FormData from "form-data";
 import { SmartlingBaseApi } from "../base/index";
 import { SmartlingAuthApi } from "../auth/index";
