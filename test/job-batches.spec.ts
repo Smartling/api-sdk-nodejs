@@ -152,6 +152,15 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
                 jobBatchesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
                 "test_user_agent"
             );
+
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                await streamToString(jobBatchesApiFetchStub.getCall(0).args[1].body._streams[1]),
+                fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                )
+            );
         });
 
         it("Upload batch file: as string", async () => {

@@ -167,6 +167,15 @@ describe("SmartlingFilesApi class tests.", () => {
                 filesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
                 "test_user_agent"
             );
+
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                await streamToString(filesApiFetchStub.getCall(0).args[1].body._streams[1]),
+                fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                )
+            );
         });
 
         it("Upload file: as stream", async () => {
