@@ -163,7 +163,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             );
         });
 
-        it("Upload batch file: as string", async () => {
+        it("Upload batch file: as stream", async () => {
             const params = new UploadBatchFileParameters();
 
             params
