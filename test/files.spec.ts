@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import sinon from "sinon";
 import assert from "assert";
 import { SmartlingFilesApi } from "../api/files/index";
@@ -7,6 +8,7 @@ import { DownloadFileParameters } from "../api/files/params/download-file-parame
 import { UploadFileParameters } from "../api/files/params/upload-file-parameters";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { FileType } from "../api/files/params/file-type";
+import { streamToString } from "./stream-to-string";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -133,11 +135,11 @@ describe("SmartlingFilesApi class tests.", () => {
             );
         });
 
-        it("Upload file", async () => {
+        it("Upload file: from disk", async () => {
             const params = new UploadFileParameters();
 
             params
-                .setFile("./test/data/file.xml")
+                .setFileFromLocalFilePath("./test/data/file.xml")
                 .setFileUri("test-file-uri")
                 .setFileType(FileType.XML)
                 .setDirective("foo", "bar");
@@ -164,6 +166,61 @@ describe("SmartlingFilesApi class tests.", () => {
             assert.equal(
                 filesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
                 "test_user_agent"
+            );
+
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                await streamToString(filesApiFetchStub.getCall(0).args[1].body._streams[1]),
+                fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                )
+            );
+        });
+
+        it("Upload file: as stream", async () => {
+            const params = new UploadFileParameters();
+
+            params
+                .setFileContent(fs.createReadStream(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                ))
+                .setFileUri("test-file-uri")
+                .setFileType(FileType.XML)
+                .setDirective("foo", "bar");
+
+            await filesApi.uploadFile(projectId, params);
+
+            sinon.assert.calledOnce(filesApiFetchStub);
+
+            assert.equal(
+                filesApiFetchStub.getCall(0).args[0],
+                `https://test.com/files-api/v2/projects/${projectId}/file`
+            );
+
+            assert.equal(
+                filesApiFetchStub.getCall(0).args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                filesApiFetchStub.getCall(0).args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            assert.equal(
+                filesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
+                "test_user_agent"
+            );
+
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                await streamToString(filesApiFetchStub.getCall(0).args[1].body._streams[1]),
+                fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                )
             );
         });
     });

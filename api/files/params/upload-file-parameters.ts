@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import { Readable } from "stream";
 import { BaseParameters } from "../../parameters/index";
 import { FileType } from "./file-type";
 
@@ -8,8 +10,28 @@ export class UploadFileParameters extends BaseParameters {
         return this;
     }
 
-    setFile(file: string): UploadFileParameters {
-        this.set("file", file);
+    /**
+     * @deprecated This method will be deleted in 2.0.0
+     * @param filePath
+     * @returns UploadFileParameters
+     */
+    setFile(filePath: string): UploadFileParameters {
+        this.set("file", fs.createReadStream(
+            fs.realpathSync(filePath)
+        ));
+        return this;
+    }
+
+    setFileFromLocalFilePath(filePath: string): UploadFileParameters {
+        this.set("file", fs.createReadStream(
+            fs.realpathSync(filePath)
+        ));
+        return this;
+    }
+
+    setFileContent(fileContent: Readable): UploadFileParameters {
+        this.set("file", fileContent);
+
         return this;
     }
 
