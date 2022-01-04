@@ -178,11 +178,11 @@ describe("SmartlingFilesApi class tests.", () => {
             );
         });
 
-        it("Upload file: as stream", async () => {
+        it("Upload file: as string", async () => {
             const params = new UploadFileParameters();
 
             params
-                .setFileContent(fs.createReadStream(
+                .setFileContent(fs.readFileSync(
                     fs.realpathSync("./test/data/file.xml"),
                     "utf8"
                 ))
