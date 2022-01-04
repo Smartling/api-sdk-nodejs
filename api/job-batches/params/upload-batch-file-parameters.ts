@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { Readable } from "stream";
+import string2fileStream from "string-to-file-stream";
 import { BaseParameters } from "../../parameters/index";
 import { FileType } from "../../files/params/file-type";
 
@@ -46,8 +46,8 @@ export class UploadBatchFileParameters extends BaseParameters {
         return this;
     }
 
-    async setFileContent(fileContent: Readable): Promise<UploadBatchFileParameters> {
-        this.set("file", await BaseParameters.readableStreamToFileStream(fileContent));
+    setFileContent(fileContent: string): UploadBatchFileParameters {
+        this.set("file", string2fileStream(fileContent));
 
         return this;
     }
