@@ -163,11 +163,11 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             );
         });
 
-        it("Upload batch file: as stream", async () => {
+        it("Upload batch file: as string", async () => {
             const params = new UploadBatchFileParameters();
 
             params
-                .setFileContent(fs.createReadStream(
+                .setFileContent(fs.readFileSync(
                     fs.realpathSync("./test/data/file.xml"),
                     "utf8"
                 ))
