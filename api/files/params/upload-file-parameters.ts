@@ -29,8 +29,8 @@ export class UploadFileParameters extends BaseParameters {
         return this;
     }
 
-    setFileContent(fileContent: Readable): UploadFileParameters {
-        this.set("file", fileContent);
+    async setFileContent(fileContent: Readable): Promise<UploadFileParameters> {
+        this.set("file", await BaseParameters.readableStreamToFileStream(fileContent));
 
         return this;
     }

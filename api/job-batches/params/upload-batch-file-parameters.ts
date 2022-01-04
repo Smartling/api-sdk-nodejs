@@ -46,8 +46,8 @@ export class UploadBatchFileParameters extends BaseParameters {
         return this;
     }
 
-    setFileContent(fileContent: Readable): UploadBatchFileParameters {
-        this.set("file", fileContent);
+    async setFileContent(fileContent: Readable): Promise<UploadBatchFileParameters> {
+        this.set("file", await BaseParameters.readableStreamToFileStream(fileContent));
 
         return this;
     }
