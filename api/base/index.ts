@@ -1,7 +1,7 @@
 import merge from "merge-deep";
 import ua from "default-user-agent";
 import FormData from "form-data";
-import * as fetch from "node-fetch";
+import fetch from 'cross-fetch';
 import { ParsedUrlQueryInput, stringify } from "querystring";
 import { Logger } from "../logger";
 import { SmartlingException } from "../exception/index";
