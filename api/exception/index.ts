@@ -7,6 +7,14 @@ class SmartlingException extends Error {
         this.payload = payload;
         this.nestedException = e;
     }
+
+    public getPayload(): Record<string, unknown> {
+        return this.payload;
+    }
+
+    public getNestedException(): Error {
+        return this.nestedException;
+    }
 }
 
 SmartlingException.prototype.toString = function smartlingExceptionToString() {

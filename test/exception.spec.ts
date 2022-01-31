@@ -10,5 +10,8 @@ describe("Exception base class tests.", () => {
 
         assert.equal(result.includes("Test root exception, payload={\"root\":\"value\"}, stack=Error: Test root exception"), true);
         assert.equal(result.includes("Test nested exception, payload={\"foo\":\"nested\"}, stack=Error: Test nested exception"), true);
+        assert.deepEqual(rootException.getPayload(), { root: "value" });
+        assert.deepEqual(rootException.getNestedException(), nestedException);
+        assert.deepEqual((rootException.getNestedException() as SmartlingException).getPayload(), { foo: "nested" });
     });
 });
