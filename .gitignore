@@ -1,5 +1,6 @@
 built/
 coverage/
+false/
 node_modules/
 .nyc_output/
 test-results.xml
