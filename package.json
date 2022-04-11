@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/Smartling/api-sdk-nodejs#readme",
   "dependencies": {
+    "@types/node": "^16.4.7",
     "cross-fetch": "^3.1.4",
     "default-user-agent": "^1.0.0",
     "form-data": "^4.0.0",
@@ -35,7 +36,6 @@
   },
   "devDependencies": {
     "@types/mocha": "^9.0.0",
-    "@types/node": "^16.4.7",
     "babel-eslint": "^8.2.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-flowtype": "^2.41.0",
