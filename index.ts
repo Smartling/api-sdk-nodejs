@@ -60,6 +60,7 @@ export * from "./api/jobs/params/job-status";
 export * from "./api/jobs/params/list-job-files-parameters";
 export * from "./api/jobs/params/list-jobs-parameters";
 export * from "./api/jobs/params/remove-file-parameters";
+export * from "./api/jobs/params/cancel-job-parameters";
 export * from "./api/parameters/index";
 export * from "./api/parameters/order";
 export * from "./api/projects/index";

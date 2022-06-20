@@ -15,6 +15,7 @@ import { SourceFileDto } from "./dto/source-file-dto";
 import { RemovedFileDto } from "./dto/removed-file-dto";
 import { JobProgressDto } from "./dto/job-progress-dto";
 import { JobProgressParameters } from "./params/job-progress-parameters";
+import { CancelJobParameters } from "./params/cancel-job-parameters";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -94,6 +95,14 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/file/progress`,
             params.export()
+        );
+    }
+
+    async cancelJob(projectId: string, translationJobUid: string, params: CancelJobParameters): Promise<void> {
+        await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/cancel`,
+            JSON.stringify(params.export())
         );
     }
 }

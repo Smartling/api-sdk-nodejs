@@ -10,6 +10,7 @@ import { ListJobFilesParameters } from "../api/jobs/params/list-job-files-parame
 import { JobStatus } from "../api/jobs/params/job-status";
 import { RemoveFileParameters } from "../api/jobs/params/remove-file-parameters";
 import { JobProgressParameters } from "../api/jobs/params/job-progress-parameters";
+import { CancelJobParameters } from "../api/jobs/params/cancel-job-parameters";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -192,6 +193,29 @@ describe("SmartlingJobsAPI class tests.", () => {
                 `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/file/remove`,
                 {
                     body: "{\"fileUri\":\"testFileUri.json\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Cancel job", async () => {
+            const params = new CancelJobParameters();
+
+            params.setReason("Test reason");
+
+            await jobApi.cancelJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/cancel`,
+                {
+                    body: "{\"reason\":\"Test reason\"}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
