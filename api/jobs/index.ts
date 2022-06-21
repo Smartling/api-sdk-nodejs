@@ -98,7 +98,9 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         );
     }
 
-    async cancelJob(projectId: string, translationJobUid: string, params: CancelJobParameters): Promise<void> {
+    async cancelJob(
+        projectId: string, translationJobUid: string, params: CancelJobParameters
+    ): Promise<void> {
         await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/cancel`,
