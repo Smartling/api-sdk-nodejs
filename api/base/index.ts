@@ -159,7 +159,20 @@ export class SmartlingBaseApi {
                 return value;
             });
 
-            this.logger.debug(`Received code ${response.status}; content: ${JSON.stringify(jsonResponse)}`);
+            this.logger.debug(`Received code ${response.status}; content: ${JSON.stringify(jsonResponse, (key, value) => {
+                const sensitiveProperties = [
+                    "userIdentifier",
+                    "userSecret",
+                    "accessToken",
+                    "refreshToken"
+                ];
+
+                if (sensitiveProperties.includes(key) && value && typeof value === "string") {
+                    return `${value.substring(0, 10)}xxxxx`;
+                }
+
+                return value;
+            })}`);
 
             return jsonResponse?.response?.data ? jsonResponse?.response?.data : true;
         } catch (e) {

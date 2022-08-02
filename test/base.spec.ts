@@ -70,6 +70,7 @@ describe("Base class tests.", () => {
         let baseAlterRequestDataSpy;
         let authResetTokenStub;
         let responseMockTextStub;
+        let loggerDebug;
 
         beforeEach(() => {
             base = new SmartlingBaseApi(loggerMock);
@@ -81,6 +82,7 @@ describe("Base class tests.", () => {
             baseAlterRequestDataSpy = sinon.spy(base, "alterRequestData");
             authResetTokenStub = sinon.stub(base.authApi, "resetToken");
             responseMockTextStub = sinon.stub(responseMock, "text");
+            loggerDebug = sinon.stub(base.logger, "debug");
 
             baseUaStub.returns("test_user_agent");
         });
@@ -91,6 +93,7 @@ describe("Base class tests.", () => {
             authResetTokenStub.restore();
             responseMockTextStub.restore();
             baseUaStub.restore();
+            loggerDebug.restore();
         });
 
         it("Success (JSON response, bool result).", async () => {
@@ -148,7 +151,7 @@ describe("Base class tests.", () => {
 
             baseFetchStub.returns(responseMock);
 
-            responseMockTextStub.returns("{\"response\": {\"data\": {\"created\":\"2021-08-18T09:57:59.088Z\",\"modified\":\"2021-08-18T09:57:59.088Z\",\"updated\":\"2021-08-18T09:57:59.088Z\",\"createdDate\":\"2021-08-18T09:57:59.088Z\",\"modifiedDate\":\"2021-08-18T09:57:59.088Z\",\"updatedDate\":\"2021-08-18T09:57:59.088Z\",\"dueDate\":\"2021-08-18T09:57:59.088Z\",\"actionTime\":\"2021-08-18T09:57:59.088Z\",\"publishDate\":\"2021-08-18T09:57:59.088Z\",\"lastModified\":\"2021-08-18T09:57:59.088Z\",\"createdString\":\"2021-08-18T09:57:59.088Z\"}}}");
+            responseMockTextStub.returns("{\"response\": {\"data\": {\"userIdentifier\":\"test_user_identifier\",\"foo\":{\"userSecret\":\"test_user_secret\",\"accessToken\":\"test_access_token\",\"refreshToken\":\"test_refresh_token\"},\"created\":\"2021-08-18T09:57:59.088Z\",\"modified\":\"2021-08-18T09:57:59.088Z\",\"updated\":\"2021-08-18T09:57:59.088Z\",\"createdDate\":\"2021-08-18T09:57:59.088Z\",\"modifiedDate\":\"2021-08-18T09:57:59.088Z\",\"updatedDate\":\"2021-08-18T09:57:59.088Z\",\"dueDate\":\"2021-08-18T09:57:59.088Z\",\"actionTime\":\"2021-08-18T09:57:59.088Z\",\"publishDate\":\"2021-08-18T09:57:59.088Z\",\"lastModified\":\"2021-08-18T09:57:59.088Z\",\"createdString\":\"2021-08-18T09:57:59.088Z\"}}}");
 
             const result = await base.makeRequest(requestVerb, requestUri, payload);
 
@@ -195,6 +198,12 @@ describe("Base class tests.", () => {
             sinon.assert.calledOnce(responseMockTextStub);
 
             sinon.assert.notCalled(authResetTokenStub);
+
+            sinon.assert.calledOnce(loggerDebug);
+            sinon.assert.calledWithExactly(
+                loggerDebug,
+                "Received code 200; content: {\"response\":{\"data\":{\"userIdentifier\":\"test_user_xxxxx\",\"foo\":{\"userSecret\":\"test_user_xxxxx\",\"accessToken\":\"test_accesxxxxx\",\"refreshToken\":\"test_refrexxxxx\"},\"created\":\"2021-08-18T09:57:59.088Z\",\"modified\":\"2021-08-18T09:57:59.088Z\",\"updated\":\"2021-08-18T09:57:59.088Z\",\"createdDate\":\"2021-08-18T09:57:59.088Z\",\"modifiedDate\":\"2021-08-18T09:57:59.088Z\",\"updatedDate\":\"2021-08-18T09:57:59.088Z\",\"dueDate\":\"2021-08-18T09:57:59.088Z\",\"actionTime\":\"2021-08-18T09:57:59.088Z\",\"publishDate\":\"2021-08-18T09:57:59.088Z\",\"lastModified\":\"2021-08-18T09:57:59.088Z\",\"createdString\":\"2021-08-18T09:57:59.088Z\"}}}"
+            );
         });
 
         it("Success (raw text response).", async () => {
