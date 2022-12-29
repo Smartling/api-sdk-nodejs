@@ -16,6 +16,7 @@ import { RemovedFileDto } from "./dto/removed-file-dto";
 import { JobProgressDto } from "./dto/job-progress-dto";
 import { JobProgressParameters } from "./params/job-progress-parameters";
 import { CancelJobParameters } from "./params/cancel-job-parameters";
+import { SearchJobsParameters } from "./params/search-jobs-parameters";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -60,11 +61,11 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    async searchJobs(projectId: string, params) {
+    async searchJobs(projectId: string, params: SearchJobsParameters) {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/search`,
-            params.export()
+            JSON.stringify(params.export())
         );
     }
 
