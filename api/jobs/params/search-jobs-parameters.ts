@@ -6,4 +6,10 @@ export class SearchJobsParameters extends BaseParameters {
 
         return this;
     }
+
+    setTranslationJobUids(jobUids: Array<string>): SearchJobsParameters {
+        this.set("translationJobUids", jobUids);
+
+        return this;
+    }
 }
