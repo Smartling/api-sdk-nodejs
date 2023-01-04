@@ -61,7 +61,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    async searchJobs(projectId: string, params: SearchJobsParameters) {
+    async searchJobs(projectId: string, params: SearchJobsParameters): Promise<SmartlingListResponse<BaseJobDto>> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/search`,
