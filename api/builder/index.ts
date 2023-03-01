@@ -79,6 +79,7 @@ export class SmartlingApiClientBuilder {
 
             this.authApiClient.setClientLibId(this.clientLibId);
             this.authApiClient.setClientLibVersion(this.clientLibVersion);
+            this.authApiClient.setOptions(this.httpClientOptions);
         }
 
         const instance = new constructor(this.baseSmartlingApiUrl, this.authApiClient, this.logger);
