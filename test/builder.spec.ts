@@ -229,6 +229,17 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
     });
 
+    it("should provide http client options to auth client", () => {
+        const httpClientOptions = { test: "value" };
+        const apiClient = new SmartlingApiClientBuilder()
+            .authWithUserIdAndUserSecret("test_user_id", "test_user_secret")
+            .setBaseSmartlingApiUrl("test_base_url")
+            .setHttpClientConfiguration(httpClientOptions)
+            .build(SmartlingJobsApi);
+
+        assert.equal(apiClient["options"], httpClientOptions);
+    });
+
     it("Instantiates files api client", () => {
         assertApiClient(
             SmartlingFilesApi,
