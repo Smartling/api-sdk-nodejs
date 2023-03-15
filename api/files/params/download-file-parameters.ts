@@ -13,4 +13,16 @@ export class DownloadFileParameters extends BaseParameters {
 
         return this;
     }
+
+    includeOriginalStrings(): DownloadFileParameters {
+        this.set("includeOriginalStrings", true);
+
+        return this;
+    }
+
+    excludeOriginalStrings(): DownloadFileParameters {
+        this.set("includeOriginalStrings", false);
+
+        return this;
+    }
 }

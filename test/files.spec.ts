@@ -74,31 +74,98 @@ describe("SmartlingFilesApi class tests.", () => {
             );
         });
 
-        it("Download file", async () => {
+        describe("Download file", () => {
             const localeId = "fr-FR";
-            const params = new DownloadFileParameters();
+            let params: DownloadFileParameters;
 
-            params
-                .setRetrievalType(RetrievalType.PUBLISHED)
-                .enableDebugMode();
+            beforeEach(() => {
+                params = new DownloadFileParameters();
+            });
 
-            await filesApi.downloadFile(projectId, fileUri, localeId, params);
+            it("Download file with debugMode enabled and retrievalType published", async () => {
+                params
+                    .setRetrievalType(RetrievalType.PUBLISHED)
+                    .enableDebugMode();
+    
+                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+    
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&debugMode=1&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
+    
+            it("Download file with debugMode disabled and retrievalType published", async () => {
+                params.setRetrievalType(RetrievalType.PUBLISHED);
+    
+                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+    
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
 
-            sinon.assert.calledOnce(filesApiFetchStub);
-            sinon.assert.calledWithExactly(
-                filesApiFetchStub,
-                `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&debugMode=1&fileUri=testFileUri`,
-                {
-                    headers: {
-                        Authorization: "test_token_type test_access_token",
-                        "Content-Type": "application/json",
-                        "User-Agent": "test_user_agent"
-                    },
-                    method: "get"
-                }
-            );
+            it("Download file with includeOriginalStrings enabled", async() => {
+                params.setRetrievalType(RetrievalType.PUBLISHED).includeOriginalStrings();
+    
+                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+    
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&includeOriginalStrings=true&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
+
+            it("Download file with includeOriginalStrings disabled", async() => {
+                params.setRetrievalType(RetrievalType.PUBLISHED).includeOriginalStrings();
+    
+                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+    
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&includeOriginalStrings=false&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
         });
 
+        
         it("Delete file", async () => {
             await filesApi.deleteFile(projectId, fileUri);
 
