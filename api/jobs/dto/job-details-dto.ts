@@ -1,9 +1,9 @@
 import { JobDto } from "./job-dto";
-import { FullSourceFileDto } from "./full-source-file-dto";
+import { SourceFileDto } from "./source-file-dto";
 
 interface JobDetailsDto extends JobDto {
     priority: string;
-    sourceFiles: Array<FullSourceFileDto>;
+    sourceFiles: Array<SourceFileDto>;
 }
 
 export { JobDetailsDto };

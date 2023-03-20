@@ -16,7 +16,7 @@ import { JobProgressDto } from "./dto/job-progress-dto";
 import { JobProgressParameters } from "./params/job-progress-parameters";
 import { CancelJobParameters } from "./params/cancel-job-parameters";
 import { SearchJobsParameters } from "./params/search-jobs-parameters";
-import { ExtendedSourceFileDto } from "./dto/extended-source-file-dto";
+import { FullSourceFileDto } from "./dto/full-source-file-dto";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -42,7 +42,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async getJobFiles(
         projectId: string, translationJobUid: string, params: ListJobFilesParameters
-    ): Promise<SmartlingListResponse<ExtendedSourceFileDto>> {
+    ): Promise<SmartlingListResponse<FullSourceFileDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/files`,

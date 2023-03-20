@@ -1,8 +1,7 @@
 import { SourceFileDto } from "./source-file-dto";
 
 interface FullSourceFileDto extends SourceFileDto {
-    name: string;
-    fileUid: string;
+    localeIds?: Array<string>;
 }
 
 export { FullSourceFileDto };
