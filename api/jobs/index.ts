@@ -15,6 +15,7 @@ import { RemovedFileDto } from "./dto/removed-file-dto";
 import { JobProgressDto } from "./dto/job-progress-dto";
 import { JobProgressParameters } from "./params/job-progress-parameters";
 import { CancelJobParameters } from "./params/cancel-job-parameters";
+import { CloseJobParameters } from "./params/close-job-parameters";
 import { SearchJobsParameters } from "./params/search-jobs-parameters";
 import { FullSourceFileDto } from "./dto/full-source-file-dto";
 
@@ -107,6 +108,16 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/cancel`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async closeJob(
+        projectId: string, translationJobUid: string, params: CloseJobParameters
+    ): Promise<void> {
+        await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/close`,
             JSON.stringify(params.export())
         );
     }
