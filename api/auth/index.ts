@@ -38,7 +38,7 @@ export class SmartlingAuthApi extends SmartlingBaseApi {
         if (this.tokenExists() && this.tokenCanBeRenewed()) {
             this.resetRequestTimeStamp();
 
-            this.logger.debug(`Refresh token with: ${JSON.stringify(this.response)}`);
+            this.logger.debug(`Refresh token with: ${JSON.stringify(this.response, SmartlingBaseApi.sensitiveReplacer)}`);
 
             return await this.makeRequest(
                 "post",

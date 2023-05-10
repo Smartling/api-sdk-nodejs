@@ -159,20 +159,7 @@ export class SmartlingBaseApi {
                 return value;
             });
 
-            this.logger.debug(`Received code ${response.status}; content: ${JSON.stringify(jsonResponse, (key, value) => {
-                const sensitiveProperties = [
-                    "userIdentifier",
-                    "userSecret",
-                    "accessToken",
-                    "refreshToken"
-                ];
-
-                if (sensitiveProperties.includes(key) && value && typeof value === "string") {
-                    return `${value.substring(0, 10)}xxxxx`;
-                }
-
-                return value;
-            })}`);
+            this.logger.debug(`Received code ${response.status}; content: ${JSON.stringify(jsonResponse, SmartlingBaseApi.sensitiveReplacer)}`);
 
             return jsonResponse?.response?.data ? jsonResponse?.response?.data : true;
         } catch (e) {
@@ -184,5 +171,20 @@ export class SmartlingBaseApi {
                 requestId: response.headers.get("x-sl-requestid")
             });
         }
+    }
+
+    public static sensitiveReplacer(key: string, value: any): any {
+        const sensitiveProperties = [
+            "userIdentifier",
+            "userSecret",
+            "accessToken",
+            "refreshToken"
+        ];
+
+        if (sensitiveProperties.includes(key) && value && typeof value === "string") {
+            return `${value.substring(0, 10)}xxxxx`;
+        }
+
+        return value;
     }
 }
