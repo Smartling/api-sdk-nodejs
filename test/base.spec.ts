@@ -263,6 +263,13 @@ describe("Base class tests.", () => {
 
             responseMockTextStub.returns("{\"response\": {\"data\": {}}}");
 
+            // Let's check that request after re-auth sends the same headers.
+            base.setOptions({
+                headers: {
+                    "X-SL-ServiceOrigin": "foo-bar"
+                }
+            });
+
             await base.makeRequest(requestVerb, requestUri);
 
             sinon.assert.calledTwice(baseGetDefaultHeaderSpy);
@@ -276,7 +283,8 @@ describe("Base class tests.", () => {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
-                        "User-Agent": "test_user_agent"
+                        "User-Agent": "test_user_agent",
+                        "X-SL-ServiceOrigin": "foo-bar"
                     }
                 }
             );
@@ -287,7 +295,8 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "test_user_agent"
+                    "User-Agent": "test_user_agent",
+                    "X-SL-ServiceOrigin": "foo-bar"
                 }
             });
 
@@ -298,7 +307,8 @@ describe("Base class tests.", () => {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
-                    "User-Agent": "test_user_agent"
+                    "User-Agent": "test_user_agent",
+                    "X-SL-ServiceOrigin": "foo-bar"
                 }
             });
 
