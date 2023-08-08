@@ -116,7 +116,7 @@ export class SmartlingBaseApi {
                 this.authApi.resetToken();
             }
 
-            // Do not override http client options set by SmartlingBaseApi.setOptions().
+            // Do not override http client headers set by SmartlingBaseApi.setOptions().
             const defaultHeaders = await this.getDefaultHeaders(headers);
             opts.headers["Authorization"] = defaultHeaders["Authorization"];
 
