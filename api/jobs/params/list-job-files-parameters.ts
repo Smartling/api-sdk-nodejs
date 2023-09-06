@@ -1,7 +1,7 @@
 import { BaseParameters } from "../../parameters/index";
 
 export class ListJobFilesParameters extends BaseParameters {
-    setLimit(limit: number): BaseParameters {
+    setLimit(limit: number): ListJobFilesParameters {
         if (limit > 0) {
             this.set("limit", limit);
         }
