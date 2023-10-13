@@ -8,6 +8,10 @@ Developers can upload resource files and download the translated files in a lang
 
 For a full description of the Smartling Translation API, please read the docs at: http://docs.smartling.com
 
+Engines support
+---------------
+* `1.x.x` - node < 18
+* `2.x.x` - node >= 18
 
 Bug tracker
 -----------
