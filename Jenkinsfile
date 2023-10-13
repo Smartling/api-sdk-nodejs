@@ -10,8 +10,8 @@ pipeline {
             }
 
             steps {
-                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm install'
-                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm test'
+                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm install'
+                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm test'
                   junit 'test-results.xml'
             }
         }
@@ -66,13 +66,13 @@ pipeline {
 
             steps {
                 sh 'rm -rf built coverage .nyc_output node_modules test-results.xml package-lock.json .npmrc'
-                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm install --production'
-                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:12.16.1 npm run build'
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm install --production'
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm run build'
 
                 withCredentials([file(credentialsId: 'node-npmrc-public-file', variable: 'FILE')]) {
-                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` -v $FILE:`pwd`/.npmrc node:12.16.1 ls -lah `pwd`'
-                    sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` -v $FILE:`pwd`/.npmrc node:12.16.1 cat `pwd`/.npmrc'
-                    sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` -v $FILE:`pwd`/.npmrc node:12.16.1 npm publish --access public'
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` -v $FILE:`pwd`/.npmrc node:18.13.0 ls -lah `pwd`'
+                    sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` -v $FILE:`pwd`/.npmrc node:18.13.0 cat `pwd`/.npmrc'
+                    sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` -v $FILE:`pwd`/.npmrc node:18.13.0 npm publish --access public'
                 }
             }
         }
