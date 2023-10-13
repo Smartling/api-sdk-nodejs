@@ -10,7 +10,7 @@ pipeline {
             }
 
             steps {
-                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm install'
+                  sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm install --force'
                   sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm test'
                   junit 'test-results.xml'
             }
@@ -66,7 +66,7 @@ pipeline {
 
             steps {
                 sh 'rm -rf built coverage .nyc_output node_modules test-results.xml package-lock.json .npmrc'
-                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm install --production'
+                sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm install --production  --force'
                 sh 'docker run --rm -w `pwd` -v `pwd`:`pwd` node:18.13.0 npm run build'
 
                 withCredentials([file(credentialsId: 'node-npmrc-public-file', variable: 'FILE')]) {
