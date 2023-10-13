@@ -1,6 +1,6 @@
 {
   "name": "smartling-api-sdk-nodejs",
-  "version": "1.5.6",
+  "version": "1.5.9",
   "description": "Package for Smartling API",
   "main": "built/index.js",
   "engines": {
