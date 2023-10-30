@@ -247,5 +247,23 @@ describe("SmartlingJobsAPI class tests.", () => {
                 }
             );
         });
+
+        it("Delete job", async () => {
+            await jobApi.deleteJob(projectId, jobUid);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
+                }
+            );
+        });
     });
 });

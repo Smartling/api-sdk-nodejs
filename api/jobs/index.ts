@@ -121,4 +121,13 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
             JSON.stringify(params.export())
         );
     }
+
+    async deleteJob(
+        projectId: string, translationJobUid: string
+    ): Promise<void> {
+        await this.makeRequest(
+            "delete",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}`
+        );
+    }
 }
