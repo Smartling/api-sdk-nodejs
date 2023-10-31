@@ -12,6 +12,7 @@ import { RemoveFileParameters } from "../api/jobs/params/remove-file-parameters"
 import { JobProgressParameters } from "../api/jobs/params/job-progress-parameters";
 import { CancelJobParameters } from "../api/jobs/params/cancel-job-parameters";
 import { CloseJobParameters } from "../api/jobs/params/close-job-parameters";
+import { AddFileParameters } from "../api/jobs/params/add-file-parameters";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -177,6 +178,29 @@ describe("SmartlingJobsAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "get"
+                }
+            );
+        });
+
+        it("Adds file to job", async () => {
+            const params = new AddFileParameters();
+
+            params.setFileUri(fileUri);
+
+            await jobApi.addFileToJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/file/add`,
+                {
+                    body: "{\"fileUri\":\"testFileUri.json\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
                 }
             );
         });
