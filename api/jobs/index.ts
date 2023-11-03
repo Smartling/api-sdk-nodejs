@@ -11,6 +11,7 @@ import { JobDetailsDto } from "./dto/job-details-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { BaseJobDto } from "./dto/base-job-dto";
 import { FileProgressDto } from "./dto/file-progress-dto";
+import { AddFileParameters } from "./params/add-file-parameters";
 import { RemovedFileDto } from "./dto/removed-file-dto";
 import { JobProgressDto } from "./dto/job-progress-dto";
 import { JobProgressParameters } from "./params/job-progress-parameters";
@@ -18,6 +19,7 @@ import { CancelJobParameters } from "./params/cancel-job-parameters";
 import { CloseJobParameters } from "./params/close-job-parameters";
 import { SearchJobsParameters } from "./params/search-jobs-parameters";
 import { FullSourceFileDto } from "./dto/full-source-file-dto";
+import { AddedFileDto } from "./dto/added-file-dto";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -68,6 +70,16 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/search`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async addFileToJob(
+        projectId: string, translationJobUid: string, params: AddFileParameters
+    ): Promise<AddedFileDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/file/add`,
             JSON.stringify(params.export())
         );
     }
