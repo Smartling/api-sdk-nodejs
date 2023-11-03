@@ -73,3 +73,4 @@ export * from "./api/strings/dto/source-string-dto";
 export * from "./api/strings/dto/source-string-key-dto";
 export * from "./api/strings/params/fetch-source-strings-parameters";
 export * from "./api/logger";
+export * from "./api/jobs/params/add-file-parameters";
