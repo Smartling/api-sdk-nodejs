@@ -8,6 +8,7 @@ import { FileStatusForAllLocalesDto } from "./dto/file-status-for-all-locales-dt
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
+import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -76,6 +77,15 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             formData,
             false,
             SmartlingFilesApi.fixContentTypeHeaderCase(formData)
+        );
+    }
+
+    async getRecentlyUploadedFiles(
+        projectId: string
+    ): Promise<SmartlingListResponse<FileStatusForProjectDto>> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/files/list`
         );
     }
 

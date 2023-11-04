@@ -56,6 +56,24 @@ describe("SmartlingFilesApi class tests.", () => {
             );
         });
 
+        it("Get recently uploaded files for project", async () => {
+            await filesApi.getRecentlyUploadedFiles(projectId);
+
+            sinon.assert.calledOnce(filesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                filesApiFetchStub,
+                `https://test.com/files-api/v2/projects/${projectId}/files/list`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
         it("Get last modified", async () => {
             await filesApi.getLastModified(projectId, fileUri);
 
