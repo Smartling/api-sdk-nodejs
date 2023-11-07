@@ -9,6 +9,7 @@ import { SmartlingListResponse } from "../http/smartling-list-response";
 import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
+import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -43,6 +44,19 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
+            Object.assign(params.export(), { fileUri }),
+            true
+        );
+    }
+
+    async downloadFileAllTranslations(
+        projectId: string,
+        fileUri: string,
+        params: DownloadFileAllTranslationsParameters
+    ): Promise<string> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/locales/all/file`,
             Object.assign(params.export(), { fileUri }),
             true
         );
