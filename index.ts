@@ -75,3 +75,4 @@ export * from "./api/strings/params/fetch-source-strings-parameters";
 export * from "./api/logger";
 export * from "./api/jobs/params/add-file-parameters";
 export * from "./api/files/params/download-file-all-translations-parameters";
+export * from "./api/jobs/params/authorize-job-parameters";
