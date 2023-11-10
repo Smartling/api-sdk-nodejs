@@ -20,6 +20,7 @@ import { CloseJobParameters } from "./params/close-job-parameters";
 import { SearchJobsParameters } from "./params/search-jobs-parameters";
 import { FullSourceFileDto } from "./dto/full-source-file-dto";
 import { AddedFileDto } from "./dto/added-file-dto";
+import { AuthorizeJobParameters } from "./params/authorize-job-parameters";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -40,6 +41,15 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}`
+        );
+    }
+
+    async authorizeJob(projectId: string, translationJobUid: string, params: AuthorizeJobParameters
+    ): Promise<Record<string, unknown>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/authorize`,
+            JSON.stringify(params.export())
         );
     }
 

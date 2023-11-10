@@ -13,6 +13,7 @@ import { JobProgressParameters } from "../api/jobs/params/job-progress-parameter
 import { CancelJobParameters } from "../api/jobs/params/cancel-job-parameters";
 import { CloseJobParameters } from "../api/jobs/params/close-job-parameters";
 import { AddFileParameters } from "../api/jobs/params/add-file-parameters";
+import { AuthorizeJobParameters } from "../api/jobs/params/authorize-job-parameters";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -50,7 +51,8 @@ describe("SmartlingJobsAPI class tests.", () => {
             params
                 .setName("Test job")
                 .setDescription("Test job description")
-                .setDueDate(new Date("2100-12-31T22:00:00.000Z"));
+                .setDueDate(new Date("2100-12-31T22:00:00.000Z"))
+                .setTargetLocaleIds(["pt-PT"]);
 
 
             await jobApi.createJob(projectId, params);
@@ -60,7 +62,7 @@ describe("SmartlingJobsAPI class tests.", () => {
                 jobServiceApiFetchStub,
                 `https://test.com/jobs-api/v3/projects/${projectId}/jobs`,
                 {
-                    body: "{\"jobName\":\"Test job\",\"description\":\"Test job description\",\"dueDate\":\"2100-12-31T22:00:00.000Z\"}",
+                    body: "{\"jobName\":\"Test job\",\"description\":\"Test job description\",\"dueDate\":\"2100-12-31T22:00:00.000Z\",\"targetLocaleIds\":[\"pt-PT\"]}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -195,6 +197,43 @@ describe("SmartlingJobsAPI class tests.", () => {
                 `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/file/add`,
                 {
                     body: "{\"fileUri\":\"testFileUri.json\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Authorizes a job", async () => {
+            const params = new AuthorizeJobParameters();
+            await jobApi.authorizeJob(projectId, jobUid, params);
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/authorize`,
+                {
+                    body: "{}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+
+            params.addLocaleWorkflows("fr", "wf1");
+            params.addLocaleWorkflows("de", "wf2");
+            await jobApi.authorizeJob(projectId, jobUid, params);
+            sinon.assert.calledTwice(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/authorize`,
+                {
+                    body: "{\"localeWorkflows\":[{\"targetLocaleId\":\"fr\",\"workflowUid\":\"wf1\"},{\"targetLocaleId\":\"de\",\"workflowUid\":\"wf2\"}]}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",

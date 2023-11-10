@@ -8,6 +8,8 @@ import { FileStatusForAllLocalesDto } from "./dto/file-status-for-all-locales-dt
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
+import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
+import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -47,6 +49,19 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         );
     }
 
+    async downloadFileAllTranslations(
+        projectId: string,
+        fileUri: string,
+        params: DownloadFileAllTranslationsParameters
+    ): Promise<string> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/locales/all/file`,
+            Object.assign(params.export(), { fileUri }),
+            true
+        );
+    }
+
     async deleteFile(projectId: string, fileUri: string): Promise<boolean> {
         const form = new FormData();
 
@@ -76,6 +91,15 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             formData,
             false,
             SmartlingFilesApi.fixContentTypeHeaderCase(formData)
+        );
+    }
+
+    async getRecentlyUploadedFiles(
+        projectId: string
+    ): Promise<SmartlingListResponse<FileStatusForProjectDto>> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/files/list`
         );
     }
 

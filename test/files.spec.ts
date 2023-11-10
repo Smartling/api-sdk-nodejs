@@ -9,6 +9,7 @@ import { UploadFileParameters } from "../api/files/params/upload-file-parameters
 import { SmartlingAuthApi } from "../api/auth/index";
 import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
+import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -45,6 +46,24 @@ describe("SmartlingFilesApi class tests.", () => {
             sinon.assert.calledWithExactly(
                 filesApiFetchStub,
                 `https://test.com/files-api/v2/projects/${projectId}/file/status?fileUri=testFileUri`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get recently uploaded files for project", async () => {
+            await filesApi.getRecentlyUploadedFiles(projectId);
+
+            sinon.assert.calledOnce(filesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                filesApiFetchStub,
+                `https://test.com/files-api/v2/projects/${projectId}/files/list`,
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",
@@ -153,6 +172,59 @@ describe("SmartlingFilesApi class tests.", () => {
                 sinon.assert.calledWithExactly(
                     filesApiFetchStub,
                     `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&includeOriginalStrings=false&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
+        });
+
+        describe("Download file - all translations", () => {
+            let params: DownloadFileAllTranslationsParameters;
+
+            beforeEach(() => {
+                params = new DownloadFileAllTranslationsParameters();
+            });
+
+
+            it("Supports all parameters of single file download", async () => {
+                params
+                    .setRetrievalType(RetrievalType.PUBLISHED)
+                    .enableDebugMode();
+
+                await filesApi.downloadFileAllTranslations(projectId, fileUri, params);
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file?retrievalType=published&debugMode=1&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
+
+            it("Download file with zip's name set", async () => {
+                const zipFileName = "translations-2.zip";
+                params.setZipFileName(zipFileName);
+
+
+                await filesApi.downloadFileAllTranslations(projectId, fileUri, params);
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file?zipFileName=${zipFileName}&fileUri=testFileUri`,
                     {
                         headers: {
                             Authorization: "test_token_type test_access_token",

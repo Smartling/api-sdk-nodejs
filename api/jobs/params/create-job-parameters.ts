@@ -31,4 +31,10 @@ export class CreateJobParameters extends BaseParameters {
 
         return this;
     }
+
+    setTargetLocaleIds(targetLocaleIds: string[]): CreateJobParameters {
+        this.set("targetLocaleIds", targetLocaleIds);
+
+        return this;
+    }
 }
