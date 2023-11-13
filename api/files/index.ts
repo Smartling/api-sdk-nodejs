@@ -56,7 +56,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
     ): Promise<string> {
         return await this.makeRequest(
             "get",
-            `${this.entrypoint}/${projectId}/locales/all/file`,
+            `${this.entrypoint}/${projectId}/locales/all/file/zip`,
             Object.assign(params.export(), { fileUri }),
             true
         );

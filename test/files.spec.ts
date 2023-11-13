@@ -202,7 +202,7 @@ describe("SmartlingFilesApi class tests.", () => {
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
                     filesApiFetchStub,
-                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file?retrievalType=published&debugMode=1&fileUri=testFileUri`,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file/zip?retrievalType=published&debugMode=1&fileUri=testFileUri`,
                     {
                         headers: {
                             Authorization: "test_token_type test_access_token",
@@ -224,7 +224,7 @@ describe("SmartlingFilesApi class tests.", () => {
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
                     filesApiFetchStub,
-                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file?zipFileName=${zipFileName}&fileUri=testFileUri`,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file/zip?zipFileName=${zipFileName}&fileUri=testFileUri`,
                     {
                         headers: {
                             Authorization: "test_token_type test_access_token",
