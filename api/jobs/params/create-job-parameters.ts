@@ -37,4 +37,10 @@ export class CreateJobParameters extends BaseParameters {
 
         return this;
     }
+
+    setCallbackUrl(callbackUrl: string): CreateJobParameters {
+        this.set("callbackUrl", callbackUrl);
+
+        return this;
+    }
 }
