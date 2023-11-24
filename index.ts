@@ -30,6 +30,7 @@ export * from "./api/job-batches/dto/batch-dto";
 export * from "./api/job-batches/dto/batch-item-dto";
 export * from "./api/job-batches/dto/batch-locale-dto";
 export * from "./api/job-batches/dto/batch-status-dto";
+export * from "./api/job-batches/dto/batch-list-item-dto";
 export * from "./api/job-batches/params/create-batch-parameters";
 export * from "./api/job-batches/params/upload-batch-file-parameters";
 export * from "./api/job-batches/params/process-batch-action-parameters";

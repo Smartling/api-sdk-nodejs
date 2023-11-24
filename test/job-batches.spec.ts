@@ -229,5 +229,23 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
                 }
             );
         });
+
+        it("List batches", async () => {
+            await jobBatchesApi.listBatches(projectId);
+
+            sinon.assert.calledOnce(jobBatchesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobBatchesApiFetchStub,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
     });
 });
