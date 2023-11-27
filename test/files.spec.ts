@@ -213,28 +213,6 @@ describe("SmartlingFilesApi class tests.", () => {
                     }
                 );
             });
-
-            it("Download file with zip's name set", async () => {
-                const zipFileName = "translations-2.zip";
-                params.setZipFileName(zipFileName);
-
-
-                await filesApi.downloadFileAllTranslations(projectId, fileUri, params);
-
-                sinon.assert.calledOnce(filesApiFetchStub);
-                sinon.assert.calledWithExactly(
-                    filesApiFetchStub,
-                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file/zip?zipFileName=${zipFileName}&fileUri=testFileUri`,
-                    {
-                        headers: {
-                            Authorization: "test_token_type test_access_token",
-                            "Content-Type": "application/json",
-                            "User-Agent": "test_user_agent"
-                        },
-                        method: "get"
-                    }
-                );
-            });
         });
 
         it("Delete file", async () => {

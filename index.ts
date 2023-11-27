@@ -38,6 +38,7 @@ export * from "./api/job-batches/params/cancel-batch-file-parameters";
 export * from "./api/job-batches/params/register-batch-file-parameters";
 export * from "./api/job-batches/params/batch-action";
 export * from "./api/job-batches/params/batch-status";
+export * from "./api/job-batches/params/list-batches-parameters";
 export * from "./api/job-batches/params/batch-item-status";
 export * from "./api/jobs/index";
 export * from "./api/jobs/dto/base-job-dto";
