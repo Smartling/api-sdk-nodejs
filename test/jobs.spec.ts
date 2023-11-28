@@ -52,7 +52,8 @@ describe("SmartlingJobsAPI class tests.", () => {
                 .setName("Test job")
                 .setDescription("Test job description")
                 .setDueDate(new Date("2100-12-31T22:00:00.000Z"))
-                .setTargetLocaleIds(["pt-PT"]);
+                .setTargetLocaleIds(["pt-PT"])
+                .setCallbackUrl("testCallbackUrl");
 
 
             await jobApi.createJob(projectId, params);
@@ -62,7 +63,7 @@ describe("SmartlingJobsAPI class tests.", () => {
                 jobServiceApiFetchStub,
                 `https://test.com/jobs-api/v3/projects/${projectId}/jobs`,
                 {
-                    body: "{\"jobName\":\"Test job\",\"description\":\"Test job description\",\"dueDate\":\"2100-12-31T22:00:00.000Z\",\"targetLocaleIds\":[\"pt-PT\"]}",
+                    body: "{\"jobName\":\"Test job\",\"description\":\"Test job description\",\"dueDate\":\"2100-12-31T22:00:00.000Z\",\"targetLocaleIds\":[\"pt-PT\"],\"callbackUrl\":\"testCallbackUrl\"}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",

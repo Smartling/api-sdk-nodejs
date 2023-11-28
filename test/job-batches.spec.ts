@@ -10,6 +10,9 @@ import { FileType } from "../api/files/params/file-type";
 import { CancelBatchFileParameters } from "../api/job-batches/params/cancel-batch-file-parameters";
 import { RegisterBatchFileParameters } from "../api/job-batches/params/register-batch-file-parameters";
 import { streamToString } from "./stream-to-string";
+import { ListBatchesParameters } from "../api/job-batches/params/list-batches-parameters";
+import { Order } from "../api/parameters/order";
+import { BatchStatus } from "../api/job-batches/params/batch-status";
 
 describe("SmartlingJobBatchesAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -226,6 +229,33 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "get"
+                }
+            );
+        });
+
+        it("List batches", async () => {
+            const params = new ListBatchesParameters();
+            const sortByParam = "status";
+            params
+                .setTranslationJobUid(jobUid)
+                .setLimit(100)
+                .setOffset(10)
+                .setStatus(BatchStatus.COMPLETED)
+                .setSort(sortByParam, Order.ASC);
+
+            await jobBatchesApi.listBatches(projectId, params);
+
+            sinon.assert.calledOnce(jobBatchesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobBatchesApiFetchStub,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches?translationJobUid=${jobUid}&limit=100&offset=10&status=${BatchStatus.COMPLETED}&sortBy=${sortByParam}&sortDirection=${(Order.ASC).toLowerCase()}`,
+                {
+                    method: "get",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    }
                 }
             );
         });
