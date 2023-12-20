@@ -1,0 +1,7 @@
+export enum MTState {
+    QUEUED = "QUEUED",
+    PROCESSING = "PROCESSING",
+    FAILED = "FAILED",
+    CANCELED = "CANCELED",
+    COMPLETED = "COMPLETED"
+}

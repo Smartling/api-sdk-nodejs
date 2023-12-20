@@ -7,6 +7,7 @@
 
 import assert from "assert";
 import { SmartlingApiClientBuilder } from "../api/builder/index";
+import { SmartlingFileTranslationsApi } from "../api/file-translations/index";
 import { SmartlingFilesApi } from "../api/files/index";
 import { SmartlingJobsApi } from "../api/jobs/index";
 import { SmartlingJobBatchesApi } from "../api/job-batches/index";
@@ -238,6 +239,13 @@ describe("SmartlingApiClientBuilder class tests.", () => {
             .build(SmartlingJobsApi);
 
         assert.equal(apiClient["options"], httpClientOptions);
+    });
+
+    it("Instantiates file translations api client", () => {
+        assertApiClient(
+            SmartlingFileTranslationsApi,
+            apiClientsBuilder.build(SmartlingFileTranslationsApi)
+        );
     });
 
     it("Instantiates files api client", () => {
