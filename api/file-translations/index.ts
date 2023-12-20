@@ -2,8 +2,8 @@ import FormData from "form-data";
 import { SmartlingBaseApi } from "../base";
 import { SmartlingAuthApi } from "../auth";
 import { Logger } from "../logger";
-import { UploadedFileDto } from "./dto/uploaded-file-dto";
-import { UploadFileParameters } from "./params/upload-file-parameters";
+import { FtsUploadedFileDto } from "./dto/fts-uploaded-file-dto";
+import { FtsUploadFileParameters } from "./params/fts-upload-file-parameters";
 import { TranslationDto } from "./dto/translation-dto";
 import { TranslateFileParameters } from "./params/translate-file-parameters";
 import { TranslationStatusDto } from "./dto/translation-status-dto";
@@ -18,8 +18,8 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
     }
 
     async uploadFile(
-        accountUid: string, parameters: UploadFileParameters
-    ): Promise<UploadedFileDto> {
+        accountUid: string, parameters: FtsUploadFileParameters
+    ): Promise<FtsUploadedFileDto> {
         const formData = new FormData();
         const exported = parameters.export();
 

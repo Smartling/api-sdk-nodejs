@@ -5,7 +5,7 @@ import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingFileTranslationsApi } from "../api/file-translations";
 import { SmartlingAuthApi } from "../api/auth";
-import { UploadFileParameters } from "../api/file-translations/params/upload-file-parameters";
+import { FtsUploadFileParameters } from "../api/file-translations/params/fts-upload-file-parameters";
 import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { TranslateFileParameters } from "../api/file-translations/params/translate-file-parameters";
@@ -47,7 +47,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
 
     describe("Methods", () => {
         it("Upload file: from disk", async () => {
-            const params = new UploadFileParameters();
+            const params = new FtsUploadFileParameters();
 
             params
                 .setFileType(FileType.XML)
@@ -96,7 +96,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         });
 
         it("Upload file: as string", async () => {
-            const params = new UploadFileParameters();
+            const params = new FtsUploadFileParameters();
 
             const testFileContent = fs.readFileSync(
                 fs.realpathSync("./test/data/file.xml"),
