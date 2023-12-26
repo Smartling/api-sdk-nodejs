@@ -11,7 +11,7 @@ import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 import { RecentlyPublishedFileDto } from "./dto/recently-published-file-dto";
-import {GetRecentlyPublishedFilesParameters} from "./params/get-recently-published-files-parameters";
+import { GetRecentlyPublishedFilesParameters} from "./params/get-recently-published-files-parameters";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
