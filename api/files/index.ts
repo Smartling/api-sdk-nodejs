@@ -11,6 +11,7 @@ import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 import { RecentlyPublishedFileDto } from "./dto/recently-published-file-dto";
+import {GetRecentlyPublishedFilesParameters} from "./params/get-recently-published-files-parameters";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -105,12 +106,12 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
     }
 
     async getRecentlyPublishedFiles(
-      projectId: string, publishedAfter: string
+        projectId: string, params: GetRecentlyPublishedFilesParameters
     ): Promise<SmartlingListResponse<RecentlyPublishedFileDto>> {
         return await this.makeRequest(
-          "get",
-          `${this.entrypoint}/${projectId}/files/list/recently-published`,
-          { publishedAfter }
+            "get",
+            `${this.entrypoint}/${projectId}/files/list/recently-published`,
+            Object.assign(params.export(), {})
         );
     }
 
