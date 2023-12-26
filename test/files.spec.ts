@@ -340,4 +340,26 @@ describe("SmartlingFilesApi class tests.", () => {
             );
         });
     });
+
+    describe("Get recently published files", () => {
+        it("Get all files published after date", async () => {
+            const publishedAfter = new Date().toDateString();
+
+            await filesApi.getRecentlyPublishedFiles(projectId, publishedAfter);
+
+            sinon.assert.calledOnce(filesApiFetchStub);
+            sinon.assert.calledWithExactly(
+              filesApiFetchStub,
+              `https://test.com/files-api/v2/projects/${projectId}/files/list/recently-published?publishedAfter=${publishedAfter}`,
+              {
+                  headers: {
+                      Authorization: "test_token_type test_access_token",
+                      "Content-Type": "application/json",
+                      "User-Agent": "test_user_agent"
+                  },
+                  method: "get"
+              }
+            );
+        });
+    });
 });
