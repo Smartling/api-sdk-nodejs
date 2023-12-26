@@ -10,7 +10,6 @@ import { SmartlingAuthApi } from "../api/auth/index";
 import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
-import { GetRecentlyPublishedFilesParameters } from "../api/files/params/get-recently-published-files-parameters";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -338,66 +337,6 @@ describe("SmartlingFilesApi class tests.", () => {
                     fs.realpathSync("./test/data/file.xml"),
                     "utf8"
                 )
-            );
-        });
-    });
-
-    describe("Get recently published files", () => {
-        let params: GetRecentlyPublishedFilesParameters;
-
-        beforeEach(() => {
-            params = new GetRecentlyPublishedFilesParameters();
-        });
-
-        it("Get all files published after date", async () => {
-            const publishedAfter = new Date().toISOString();
-            const encodedPublishedAfter = encodeURIComponent(publishedAfter);
-
-            params
-                .setPublishedAfter(publishedAfter);
-
-            await filesApi.getRecentlyPublishedFiles(projectId, params);
-
-            sinon.assert.calledOnce(filesApiFetchStub);
-            sinon.assert.calledWithExactly(
-                filesApiFetchStub,
-                `https://test.com/files-api/v2/projects/${projectId}/files/list/recently-published?publishedAfter=${encodedPublishedAfter}`,
-                {
-                    headers: {
-                        Authorization: "test_token_type test_access_token",
-                        "Content-Type": "application/json",
-                        "User-Agent": "test_user_agent"
-                    },
-                    method: "get"
-                }
-            );
-        });
-
-        it("Get all files published after date with all params", async () => {
-            const publishedAfter = new Date().toISOString();
-            const encodedPublishedAfter = encodeURIComponent(publishedAfter);
-
-            params
-                .setPublishedAfter(publishedAfter)
-                .setFileUris(new Array<string>("testFileUri1", "testFileUri2"))
-                .setLocaleIds(new Array<string>("fr-CA", "de-DE"))
-                .setOffset(1)
-                .setLimit(10);
-
-            await filesApi.getRecentlyPublishedFiles(projectId, params);
-
-            sinon.assert.calledOnce(filesApiFetchStub);
-            sinon.assert.calledWithExactly(
-                filesApiFetchStub,
-                `https://test.com/files-api/v2/projects/${projectId}/files/list/recently-published?publishedAfter=${encodedPublishedAfter}&fileUris=testFileUri1&fileUris=testFileUri2&localeIds=fr-CA&localeIds=de-DE&offset=1&limit=10`,
-                {
-                    headers: {
-                        Authorization: "test_token_type test_access_token",
-                        "Content-Type": "application/json",
-                        "User-Agent": "test_user_agent"
-                    },
-                    method: "get"
-                }
             );
         });
     });

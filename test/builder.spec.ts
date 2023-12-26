@@ -16,6 +16,7 @@ import { SmartlingStringsApi } from "../api/strings/index";
 import { SmartlingContextApi } from "../api/context/index";
 import { SmartlingBaseApi } from "../api/base/index";
 import { SmartlingAuthApi } from "../api/auth/index";
+import { SmartlingPublishedFilesApi } from "../api/published-files";
 
 const packageJson = require("../../package.json");
 
@@ -287,6 +288,13 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         assertApiClient(
             SmartlingContextApi,
             apiClientsBuilder.build(SmartlingContextApi)
+        );
+    });
+
+    it("Instantiates published files api client", () => {
+        assertApiClient(
+            SmartlingPublishedFilesApi,
+            apiClientsBuilder.build(SmartlingPublishedFilesApi)
         );
     });
 });
