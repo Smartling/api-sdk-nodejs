@@ -91,3 +91,6 @@ export * from "./api/logger";
 export * from "./api/jobs/params/add-file-parameters";
 export * from "./api/files/params/download-file-all-translations-parameters";
 export * from "./api/jobs/params/authorize-job-parameters";
+export * from "./api/published-files/index";
+export * from "./api/published-files/dto/recently-published-file-dto";
+export * from "./api/published-files/params/get-recently-published-files-parameters";
