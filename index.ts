@@ -78,6 +78,7 @@ export * from "./api/jobs/params/remove-file-parameters";
 export * from "./api/jobs/params/cancel-job-parameters";
 export * from "./api/jobs/params/close-job-parameters";
 export * from "./api/jobs/params/search-jobs-parameters";
+export * from "./api/jobs/params/update-job-parameters";
 export * from "./api/parameters/index";
 export * from "./api/parameters/order";
 export * from "./api/projects/index";
