@@ -14,6 +14,8 @@ import { CancelJobParameters } from "../api/jobs/params/cancel-job-parameters";
 import { CloseJobParameters } from "../api/jobs/params/close-job-parameters";
 import { AddFileParameters } from "../api/jobs/params/add-file-parameters";
 import { AuthorizeJobParameters } from "../api/jobs/params/authorize-job-parameters";
+import { UpdateJobParameters } from "../api/jobs/params/update-job-parameters";
+import { CallbackMethod } from "../api/jobs/params/callback-method";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -70,6 +72,86 @@ describe("SmartlingJobsAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "post"
+                }
+            );
+        });
+
+        it("Update job", async () => {
+            const params = new UpdateJobParameters()
+                .setName("Test job")
+                .setDescription("Test job description")
+                .setDueDate(new Date("2100-12-31T22:00:00.000Z"))
+                .setReferenceNumber("CustomerReferenceNumber1")
+                .setCallbackUrl("https://test-domain.com")
+                .setCallbackMethod(CallbackMethod.GET)
+                .setCustomFields([
+                    {
+                        fieldUid: "testFieldUid",
+                        fieldValue: "testFieldValue"
+                    }
+                ]);
+
+            await jobApi.updateJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnceWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}`,
+                {
+                    method: "put",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({
+                        jobName: "Test job",
+                        description: "Test job description",
+                        dueDate: "2100-12-31T22:00:00.000Z",
+                        referenceNumber: "CustomerReferenceNumber1",
+                        callbackUrl: "https://test-domain.com",
+                        callbackMethod: "GET",
+                        customFields: [
+                            {
+                                fieldUid: "testFieldUid",
+                                fieldValue: "testFieldValue"
+                            }
+                        ]
+                    })
+                }
+            );
+        });
+
+        it("Update job: reset fields", async () => {
+            const params = new UpdateJobParameters()
+                .setName("Test job")
+                .setDescription(null)
+                .setDueDate(null)
+                .setReferenceNumber(null)
+                .setCallbackUrl(null)
+                .setCallbackMethod(null)
+                .setCustomFields([]);
+
+            await jobApi.updateJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnceWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}`,
+                {
+                    method: "put",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({
+                        jobName: "Test job",
+                        description: null,
+                        dueDate: null,
+                        referenceNumber: null,
+                        callbackUrl: null,
+                        callbackMethod: null,
+                        customFields: []
+                    })
                 }
             );
         });
