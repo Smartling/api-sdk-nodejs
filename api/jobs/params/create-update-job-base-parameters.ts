@@ -1,5 +1,6 @@
 import { BaseParameters } from "../../parameters";
 import { SmartlingException } from "../../exception";
+import { CallbackMethod } from "./callback-method";
 
 interface CustomFieldBasicRequest {
     fieldUid: string,
@@ -53,7 +54,7 @@ export abstract class CreateUpdateJobBaseParameters<T extends CreateUpdateJobBas
         return this as unknown as T;
     }
 
-    setCallbackMethod(callbackMethod: string | null): T {
+    setCallbackMethod(callbackMethod: CallbackMethod | null): T {
         this.set("callbackMethod", callbackMethod);
 
         return this as unknown as T;

@@ -15,6 +15,7 @@ import { CloseJobParameters } from "../api/jobs/params/close-job-parameters";
 import { AddFileParameters } from "../api/jobs/params/add-file-parameters";
 import { AuthorizeJobParameters } from "../api/jobs/params/authorize-job-parameters";
 import { UpdateJobParameters } from "../api/jobs/params/update-job-parameters";
+import { CallbackMethod } from "../api/jobs/params/callback-method";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -82,7 +83,7 @@ describe("SmartlingJobsAPI class tests.", () => {
                 .setDueDate(new Date("2100-12-31T22:00:00.000Z"))
                 .setReferenceNumber("CustomerReferenceNumber1")
                 .setCallbackUrl("https://test-domain.com")
-                .setCallbackMethod("GET")
+                .setCallbackMethod(CallbackMethod.GET)
                 .setCustomFields([
                     {
                         fieldUid: "testFieldUid",
