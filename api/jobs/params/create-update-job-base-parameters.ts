@@ -30,10 +30,6 @@ export abstract class CreateUpdateJobBaseParameters<T extends CreateUpdateJobBas
     }
 
     setDueDate(dueDate: Date | null): T {
-        if (dueDate && (dueDate.getTime() < (new Date()).getTime())) {
-            throw new SmartlingException("Job Due Date cannot be in the past.");
-        }
-
         this.set("dueDate", dueDate ? dueDate.toISOString() : null);
 
         return this as unknown as T;
