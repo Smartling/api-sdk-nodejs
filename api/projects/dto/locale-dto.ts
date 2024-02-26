@@ -1,6 +1,6 @@
-interface LocaleDto {
-    localeId: string;
-    description: string;
+import { BaseLocaleDto } from "../../dto/base-locale-dto";
+
+interface LocaleDto extends BaseLocaleDto {
     enabled: boolean;
 }
 

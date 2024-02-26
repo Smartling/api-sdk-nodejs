@@ -96,3 +96,8 @@ export * from "./api/logger";
 export * from "./api/jobs/params/add-file-parameters";
 export * from "./api/files/params/download-file-all-translations-parameters";
 export * from "./api/jobs/params/authorize-job-parameters";
+export * from "./api/locales/dto/country-dto";
+export * from "./api/locales/dto/smartling-language-dto";
+export * from "./api/locales/dto/smartling-locale-dto";
+export * from "./api/locales/params/get-locales-parameters";
+export * from "./api/locales/index";
