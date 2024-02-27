@@ -99,5 +99,7 @@ export * from "./api/jobs/params/authorize-job-parameters";
 export * from "./api/locales/dto/country-dto";
 export * from "./api/locales/dto/smartling-language-dto";
 export * from "./api/locales/dto/smartling-locale-dto";
+export * from "./api/locales/dto/direction";
+export * from "./api/locales/dto/word-delimeter";
 export * from "./api/locales/params/get-locales-parameters";
 export * from "./api/locales/index";
