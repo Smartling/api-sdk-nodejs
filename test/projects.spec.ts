@@ -2,6 +2,7 @@ import sinon from "sinon";
 import { SmartlingProjectsApi } from "../api/projects/index";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAuthApi } from "../api/auth/index";
+import assert from "assert";
 
 describe("SmartlingProjectsApi class tests.", () => {
     const projectId = "testProjectId";
@@ -46,6 +47,26 @@ describe("SmartlingProjectsApi class tests.", () => {
                     method: "get"
                 }
             );
+        });
+
+        describe("IsNotEmpty decorator test", () => {
+            it("Empty string", async () => {
+                await assert.rejects(async () => {
+                    await projectsApi.getProjectDetails("")
+                }, new Error('Invalid empty argument at index 0 with "" value in "getProjectDetails" method'));
+            });
+
+            it("null string", async () => {
+                await assert.rejects(async () => {
+                    await projectsApi.getProjectDetails(null)
+                }, new Error('Invalid empty argument at index 0 with "null" value in "getProjectDetails" method'));
+            });
+
+            it("undefined string", async () => {
+                await assert.rejects(async () => {
+                    await projectsApi.getProjectDetails(undefined)
+                }, new Error('Invalid empty argument at index 0 with "undefined" value in "getProjectDetails" method'));
+            });
         });
     });
 });

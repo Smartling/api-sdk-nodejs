@@ -103,3 +103,4 @@ export * from "./api/locales/dto/direction";
 export * from "./api/locales/dto/word-delimeter";
 export * from "./api/locales/params/get-locales-parameters";
 export * from "./api/locales/index";
+export * from "./api/decorators/index";
