@@ -97,7 +97,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
 
     async getRecentlyUploadedFiles(
         projectId: string,
-        params: RecentlyUploadedFilesParameters,
+        params: RecentlyUploadedFilesParameters
     ): Promise<SmartlingListResponse<FileStatusForProjectDto>> {
         return await this.makeRequest(
             "get",
