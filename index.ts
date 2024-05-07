@@ -30,6 +30,7 @@ export * from "./api/file-translations/dto/translation-locale-status-dto";
 export * from "./api/file-translations/dto/translation-status-dto";
 export * from "./api/files/index";
 export * from "./api/files/params/download-file-parameters";
+export * from "./api/files/params/recently-uploaded-files";
 export * from "./api/files/params/retrieval-type";
 export * from "./api/files/params/file-type";
 export * from "./api/files/params/upload-file-parameters";
