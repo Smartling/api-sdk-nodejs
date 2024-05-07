@@ -10,6 +10,7 @@ import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
+import { RecentlyUploadedFilesParameters } from "./params/recently-uploaded-files";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -95,11 +96,13 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
     }
 
     async getRecentlyUploadedFiles(
-        projectId: string
+        projectId: string,
+        params: RecentlyUploadedFilesParameters,
     ): Promise<SmartlingListResponse<FileStatusForProjectDto>> {
         return await this.makeRequest(
             "get",
-            `${this.entrypoint}/${projectId}/files/list`
+            `${this.entrypoint}/${projectId}/files/list`,
+            params.export()
         );
     }
 
