@@ -10,6 +10,7 @@ import { SmartlingAuthApi } from "../api/auth/index";
 import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
+import { RecentlyUploadedFilesParameters } from "../api/files/params/recently-uploaded-files";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -58,12 +59,17 @@ describe("SmartlingFilesApi class tests.", () => {
         });
 
         it("Get recently uploaded files for project", async () => {
-            await filesApi.getRecentlyUploadedFiles(projectId);
+            const params = new RecentlyUploadedFilesParameters()
+                .setOffset(0)
+                .setLimit(99)
+                .setUriMask("TEST");
+
+            await filesApi.getRecentlyUploadedFiles(projectId, params);
 
             sinon.assert.calledOnce(filesApiFetchStub);
             sinon.assert.calledWithExactly(
                 filesApiFetchStub,
-                `https://test.com/files-api/v2/projects/${projectId}/files/list`,
+                `https://test.com/files-api/v2/projects/${projectId}/files/list?offset=0&limit=99&uriMask=TEST`,
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",
