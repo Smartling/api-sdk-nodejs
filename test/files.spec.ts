@@ -264,6 +264,7 @@ describe("SmartlingFilesApi class tests.", () => {
                 .setFileFromLocalFilePath("./test/data/file.xml")
                 .setFileUri("test-file-uri")
                 .setFileType(FileType.XML)
+                .setCallbackUrl("https://callback.url")
                 .setDirective("foo", "bar");
 
             await filesApi.uploadFile(projectId, params);
@@ -289,6 +290,10 @@ describe("SmartlingFilesApi class tests.", () => {
                 filesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
                 "test_user_agent"
             );
+
+            const stringifiedFormData = JSON.stringify(filesApiFetchStub.getCall(0).args[1].body);
+
+            assert.ok(stringifiedFormData.includes("Content-Disposition: form-data; name=\\\"callbackUrl\\\"\\r\\n\\r\\n\",\"https://callback.url\""));
 
             assert.equal(
                 // eslint-disable-next-line no-underscore-dangle
@@ -310,6 +315,7 @@ describe("SmartlingFilesApi class tests.", () => {
                 ))
                 .setFileUri("test-file-uri")
                 .setFileType(FileType.XML)
+                .setCallbackUrl("https://callback.url")
                 .setDirective("foo", "bar");
 
             await filesApi.uploadFile(projectId, params);
@@ -335,6 +341,10 @@ describe("SmartlingFilesApi class tests.", () => {
                 filesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
                 "test_user_agent"
             );
+
+            const stringifiedFormData = JSON.stringify(filesApiFetchStub.getCall(0).args[1].body);
+
+            assert.ok(stringifiedFormData.includes("Content-Disposition: form-data; name=\\\"callbackUrl\\\"\\r\\n\\r\\n\",\"https://callback.url\""));
 
             assert.equal(
                 // eslint-disable-next-line no-underscore-dangle
