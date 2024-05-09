@@ -2,6 +2,7 @@ import * as fs from "fs";
 import string2fileStream from "string-to-file-stream";
 import { BaseParameters } from "../../parameters/index";
 import { FileType } from "./file-type";
+import { SmartlingException } from "../../exception";
 
 export class UploadFileParameters extends BaseParameters {
     setDirective(key: string, value: string): UploadFileParameters {
@@ -46,6 +47,10 @@ export class UploadFileParameters extends BaseParameters {
     }
 
     setCallbackUrl(callbackUrl: string): UploadFileParameters {
+        if (callbackUrl && (callbackUrl.length > 255)) {
+            throw new SmartlingException("File callback URL should be not greater than 255 characters.");
+        }
+
         this.set("callbackUrl", callbackUrl);
 
         return this;
