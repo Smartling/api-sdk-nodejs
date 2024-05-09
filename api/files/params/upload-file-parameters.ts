@@ -44,4 +44,10 @@ export class UploadFileParameters extends BaseParameters {
         this.set("fileUri", fileUri);
         return this;
     }
+
+    setCallbackUrl(callbackUrl: string): UploadFileParameters {
+        this.set("callbackUrl", callbackUrl);
+
+        return this;
+    }
 }
