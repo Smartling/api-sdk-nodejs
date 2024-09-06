@@ -105,9 +105,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
 
             params
                 .setFileType(FileType.XML)
-                .setFileContent(testFileContent)
-                .addDirective("entity_escaping_strategy", "propagade")
-                .addDirective("placeholder_format_custom", "test");
+                .setFileContent(testFileContent);
 
             await fileTranslationsApi.uploadFile(accountUid, params);
 
@@ -143,7 +141,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             assert.equal(content, testFileContent);
 
             // eslint-disable-next-line no-underscore-dangle
-            assert.equal(fileTranslationsApiFetchCall.args[1].body._streams[4], "{\"fileType\":\"XML\",\"parseConfigItems\":[{\"instruction\":\"entity_escaping_strategy\",\"value\":\"propagade\"},{\"instruction\":\"placeholder_format_custom\",\"value\":\"test\"}]}");
+            assert.equal(fileTranslationsApiFetchCall.args[1].body._streams[4], "{\"fileType\":\"XML\"}");
         });
 
         it("Translate file", async () => {
