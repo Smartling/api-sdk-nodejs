@@ -26,4 +26,17 @@ export class FtsUploadFileParameters extends BaseParameters {
         this.parameters.request.fileType = fileType.toUpperCase();
         return this;
     }
+
+    addDirective(instruction: string, value: string): FtsUploadFileParameters {
+        if (!this.parameters.request.parseConfigItems) {
+            this.parameters.request.parseConfigItems = [];
+        }
+
+        this.parameters.request.parseConfigItems = this.parameters.request.parseConfigItems.concat({
+            instruction,
+            value
+        });
+
+        return this;
+    }
 }
