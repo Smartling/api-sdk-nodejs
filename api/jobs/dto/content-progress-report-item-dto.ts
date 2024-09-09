@@ -5,7 +5,7 @@ import { SummaryReportItemDto } from "./summary-report-item-dto";
 interface ContentProgressReportItemDto {
     targetLocaleDescription: string;
     targetLocaleId: string;
-    unuathorizedProgressReport: {
+    unauthorizedProgressReport: {
         stringCount: number;
         wordCount: number;
     };
