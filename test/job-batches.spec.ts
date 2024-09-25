@@ -13,7 +13,7 @@ import { streamToString } from "./stream-to-string";
 import { ListBatchesParameters } from "../api/job-batches/params/list-batches-parameters";
 import { Order } from "../api/parameters/order";
 import { BatchStatus } from "../api/job-batches/params/batch-status";
-import { JobParameters } from "../api/job-batches/params/job-parameters";
+import { JobBatchesParameters } from "../api/job-batches/params/job-batches-parameters";
 
 describe("SmartlingJobBatchesAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -101,7 +101,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             await jobBatchesApi.createJob(
                 projectId,
                 "jobNameTemplate",
-                new JobParameters()
+                new JobBatchesParameters()
                     .setDescription("testDescription")
                     .setMode("CREATE_NEW")
                     .setSalt("RANDOM_ALPHANUMERIC")

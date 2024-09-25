@@ -1,7 +1,7 @@
 import { BaseParameters } from "../../parameters";
 import { SmartlingException } from "../../exception";
 
-export class JobParameters extends BaseParameters {
+export class JobBatchesParameters extends BaseParameters {
     setDescription(description: string): this {
         if (description.length >= 2000) {
             throw new SmartlingException("Job description should be less than 2000 characters.");

@@ -12,7 +12,7 @@ import { BatchListItemDto } from "./dto/batch-list-item-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { ListBatchesParameters } from "./params/list-batches-parameters";
 import { BaseJobDto } from "../jobs/dto/base-job-dto";
-import { JobParameters } from "./params/job-parameters";
+import { JobBatchesParameters } from "./params/job-batches-parameters";
 
 export class SmartlingJobBatchesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -52,10 +52,10 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
     }
 
     async createJob(
-        projectId: string, nameTemplate: string, params: JobParameters
+        projectId: string, nameTemplate: string, params: JobBatchesParameters
     ): Promise<BaseJobDto> {
         if (params === undefined) {
-            params = new JobParameters();
+            params = new JobBatchesParameters();
         }
         params.set("nameTemplate", nameTemplate);
         return await this.makeRequest(
