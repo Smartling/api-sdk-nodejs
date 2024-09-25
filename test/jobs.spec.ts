@@ -2,9 +2,9 @@ import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { Order } from "../api/parameters/order";
 import { ListJobsParameters } from "../api/jobs/params/list-jobs-parameters";
-import { SmartlingJobsApi } from "../api/jobs/index";
+import { SmartlingJobsApi } from "../api/jobs";
 import { FileProgressParameters } from "../api/jobs/params/file-progress-parameters";
-import { SmartlingAuthApi } from "../api/auth/index";
+import { SmartlingAuthApi } from "../api/auth";
 import { CreateJobParameters } from "../api/jobs/params/create-job-parameters";
 import { ListJobFilesParameters } from "../api/jobs/params/list-job-files-parameters";
 import { JobStatus } from "../api/jobs/params/job-status";
@@ -15,7 +15,7 @@ import { CloseJobParameters } from "../api/jobs/params/close-job-parameters";
 import { AddFileParameters } from "../api/jobs/params/add-file-parameters";
 import { AuthorizeJobParameters } from "../api/jobs/params/authorize-job-parameters";
 import { CallbackMethod } from "../api/jobs/params/callback-method";
-import { JobParameters } from "../api/jobs/params/job-parameters";
+import { UpdateJobParameters } from "../api/jobs/params/update-job-parameters";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -77,7 +77,7 @@ describe("SmartlingJobsAPI class tests.", () => {
         });
 
         it("Update job", async () => {
-            const params = new JobParameters()
+            const params = new UpdateJobParameters()
                 .setName("Test job")
                 .setDescription("Test job description")
                 .setDueDate(new Date("2100-12-31T22:00:00.000Z"))
@@ -122,7 +122,7 @@ describe("SmartlingJobsAPI class tests.", () => {
         });
 
         it("Update job: reset fields", async () => {
-            const params = new JobParameters()
+            const params = new UpdateJobParameters()
                 .setName("Test job")
                 .setDescription(null)
                 .setDueDate(null)

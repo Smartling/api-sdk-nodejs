@@ -71,7 +71,7 @@ export * from "./api/jobs/dto/progress-item-dto";
 export * from "./api/jobs/dto/summary-report-item-dto";
 export * from "./api/jobs/dto/job-progress-dto";
 export * from "./api/jobs/params/callback-method";
-export * from "./api/jobs/params/job-parameters";
+export * from "./api/jobs/params/update-job-parameters";
 export * from "./api/jobs/params/create-job-parameters";
 export * from "./api/jobs/params/file-progress-parameters";
 export * from "./api/jobs/params/job-progress-parameters";

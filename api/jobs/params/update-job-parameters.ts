@@ -7,7 +7,7 @@ interface CustomFieldBasicRequest {
     fieldValue: string
 }
 
-export class JobParameters extends BaseParameters {
+export class UpdateJobParameters extends BaseParameters {
     setName(jobName: string): this {
         if (jobName.length >= 170) {
             throw new SmartlingException("Job name should be less than 170 characters.");

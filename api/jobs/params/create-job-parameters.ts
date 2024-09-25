@@ -1,6 +1,6 @@
-import { JobParameters } from "./job-parameters";
+import { UpdateJobParameters } from "./update-job-parameters";
 
-export class CreateJobParameters extends JobParameters {
+export class CreateJobParameters extends UpdateJobParameters {
     setTargetLocaleIds(targetLocaleIds: string[]): this {
         this.set("targetLocaleIds", targetLocaleIds);
 
