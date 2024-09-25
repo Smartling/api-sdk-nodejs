@@ -2,8 +2,8 @@ import * as fs from "fs";
 import sinon from "sinon";
 import assert from "assert";
 import { loggerMock, authMock, responseMock } from "./mock";
-import { SmartlingJobBatchesApi } from "../api/job-batches/index";
-import { SmartlingAuthApi } from "../api/auth/index";
+import { SmartlingJobBatchesApi } from "../api/job-batches";
+import { SmartlingAuthApi } from "../api/auth";
 import { CreateBatchParameters } from "../api/job-batches/params/create-batch-parameters";
 import { UploadBatchFileParameters } from "../api/job-batches/params/upload-batch-file-parameters";
 import { FileType } from "../api/files/params/file-type";
@@ -13,6 +13,7 @@ import { streamToString } from "./stream-to-string";
 import { ListBatchesParameters } from "../api/job-batches/params/list-batches-parameters";
 import { Order } from "../api/parameters/order";
 import { BatchStatus } from "../api/job-batches/params/batch-status";
+import { JobParameters } from "../api/job-batches/dto/job-parameters";
 
 describe("SmartlingJobBatchesAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -92,6 +93,34 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "put"
+                }
+            );
+        });
+
+        it("should call api when creating job", async () => {
+            await jobBatchesApi.createJob(
+                projectId,
+                "jobNameTemplate",
+                new JobParameters()
+                    .setDescription("testDescription")
+                    .setMode("CREATE_NEW")
+                    .setSalt("RANDOM_ALPHANUMERIC")
+                    .setTargetLocaleIds(["locale1", "locale2"])
+                    .setTimeZoneName("testTimeZoneName")
+            );
+
+            sinon.assert.calledOnce(jobBatchesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobBatchesApiFetchStub,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/jobs`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: "{\"description\":\"testDescription\",\"mode\":\"CREATE_NEW\",\"salt\":\"RANDOM_ALPHANUMERIC\",\"targetLocaleIds\":[\"locale1\",\"locale2\"],\"timeZoneName\":\"testTimeZoneName\",\"nameTemplate\":\"jobNameTemplate\"}"
                 }
             );
         });
