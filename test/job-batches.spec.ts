@@ -13,7 +13,7 @@ import { streamToString } from "./stream-to-string";
 import { ListBatchesParameters } from "../api/job-batches/params/list-batches-parameters";
 import { Order } from "../api/parameters/order";
 import { BatchStatus } from "../api/job-batches/params/batch-status";
-import { JobParameters } from "../api/job-batches/dto/job-parameters";
+import { JobParameters } from "../api/job-batches/params/job-parameters";
 
 describe("SmartlingJobBatchesAPI class tests.", () => {
     const projectId = "testProjectId";
