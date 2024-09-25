@@ -21,7 +21,7 @@ import { SearchJobsParameters } from "./params/search-jobs-parameters";
 import { FullSourceFileDto } from "./dto/full-source-file-dto";
 import { AddedFileDto } from "./dto/added-file-dto";
 import { AuthorizeJobParameters } from "./params/authorize-job-parameters";
-import { UpdateJobParameters } from "./params/update-job-parameters";
+import { JobParameters } from "./params/job-parameters";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -41,7 +41,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
     async updateJob(
         projectId: string,
         translationJobUid: string,
-        params: UpdateJobParameters
+        params: JobParameters
     ): Promise<JobDto> {
         return await this.makeRequest(
             "put",

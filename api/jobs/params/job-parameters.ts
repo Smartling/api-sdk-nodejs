@@ -7,59 +7,58 @@ interface CustomFieldBasicRequest {
     fieldValue: string
 }
 
-export abstract class CreateUpdateJobBaseParameters<T extends CreateUpdateJobBaseParameters<T>>
-    extends BaseParameters {
-    setName(jobName: string): T {
+export class JobParameters extends BaseParameters {
+    setName(jobName: string): this {
         if (jobName.length >= 170) {
             throw new SmartlingException("Job name should be less than 170 characters.");
         }
 
         this.set("jobName", jobName);
 
-        return this as unknown as T;
+        return this;
     }
 
-    setDescription(description: string | null): T {
+    setDescription(description: string | null): this {
         if (description && (description.length >= 2000)) {
             throw new SmartlingException("Job description should be less than 2000 characters.");
         }
 
         this.set("description", description);
 
-        return this as unknown as T;
+        return this;
     }
 
-    setDueDate(dueDate: Date | null): T {
+    setDueDate(dueDate: Date | null): this {
         this.set("dueDate", dueDate ? dueDate.toISOString() : null);
 
-        return this as unknown as T;
+        return this;
     }
 
-    setReferenceNumber(referenceNumber: string | null): T {
+    setReferenceNumber(referenceNumber: string | null): this {
         this.set("referenceNumber", referenceNumber);
 
-        return this as unknown as T;
+        return this;
     }
 
-    setCallbackUrl(callbackUrl: string | null): T {
+    setCallbackUrl(callbackUrl: string | null): this {
         if (callbackUrl && (callbackUrl.length > 8192)) {
             throw new SmartlingException("Job callback URL should be not greater than 8192 characters.");
         }
 
         this.set("callbackUrl", callbackUrl);
 
-        return this as unknown as T;
+        return this;
     }
 
-    setCallbackMethod(callbackMethod: CallbackMethod | null): T {
+    setCallbackMethod(callbackMethod: CallbackMethod | null): this {
         this.set("callbackMethod", callbackMethod);
 
-        return this as unknown as T;
+        return this;
     }
 
-    setCustomFields(customFields: CustomFieldBasicRequest[]): T {
+    setCustomFields(customFields: CustomFieldBasicRequest[]): this {
         this.set("customFields", customFields);
 
-        return this as unknown as T;
+        return this;
     }
 }

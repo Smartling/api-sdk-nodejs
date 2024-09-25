@@ -14,8 +14,8 @@ import { CancelJobParameters } from "../api/jobs/params/cancel-job-parameters";
 import { CloseJobParameters } from "../api/jobs/params/close-job-parameters";
 import { AddFileParameters } from "../api/jobs/params/add-file-parameters";
 import { AuthorizeJobParameters } from "../api/jobs/params/authorize-job-parameters";
-import { UpdateJobParameters } from "../api/jobs/params/update-job-parameters";
 import { CallbackMethod } from "../api/jobs/params/callback-method";
+import { JobParameters } from "../api/jobs/params/job-parameters";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -77,7 +77,7 @@ describe("SmartlingJobsAPI class tests.", () => {
         });
 
         it("Update job", async () => {
-            const params = new UpdateJobParameters()
+            const params = new JobParameters()
                 .setName("Test job")
                 .setDescription("Test job description")
                 .setDueDate(new Date("2100-12-31T22:00:00.000Z"))
@@ -122,7 +122,7 @@ describe("SmartlingJobsAPI class tests.", () => {
         });
 
         it("Update job: reset fields", async () => {
-            const params = new UpdateJobParameters()
+            const params = new JobParameters()
                 .setName("Test job")
                 .setDescription(null)
                 .setDueDate(null)
