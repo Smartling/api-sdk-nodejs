@@ -11,6 +11,8 @@ import { RegisterBatchFileParameters } from "./params/register-batch-file-parame
 import { BatchListItemDto } from "./dto/batch-list-item-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { ListBatchesParameters } from "./params/list-batches-parameters";
+import { BaseJobDto } from "../jobs/dto/base-job-dto";
+import { JobParameters } from "./dto/job-parameters";
 
 export class SmartlingJobBatchesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -45,6 +47,17 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async createJob(
+        projectId: string, nameTemplate: string, params: JobParameters
+    ): Promise<BaseJobDto> {
+        params.set("nameTemplate", nameTemplate);
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs`,
             JSON.stringify(params.export())
         );
     }
