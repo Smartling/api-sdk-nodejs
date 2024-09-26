@@ -2,9 +2,9 @@ import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { Order } from "../api/parameters/order";
 import { ListJobsParameters } from "../api/jobs/params/list-jobs-parameters";
-import { SmartlingJobsApi } from "../api/jobs";
+import { SmartlingJobsApi } from "../api/jobs/index";
 import { FileProgressParameters } from "../api/jobs/params/file-progress-parameters";
-import { SmartlingAuthApi } from "../api/auth";
+import { SmartlingAuthApi } from "../api/auth/index";
 import { CreateJobParameters } from "../api/jobs/params/create-job-parameters";
 import { ListJobFilesParameters } from "../api/jobs/params/list-job-files-parameters";
 import { JobStatus } from "../api/jobs/params/job-status";
@@ -14,8 +14,8 @@ import { CancelJobParameters } from "../api/jobs/params/cancel-job-parameters";
 import { CloseJobParameters } from "../api/jobs/params/close-job-parameters";
 import { AddFileParameters } from "../api/jobs/params/add-file-parameters";
 import { AuthorizeJobParameters } from "../api/jobs/params/authorize-job-parameters";
-import { CallbackMethod } from "../api/jobs/params/callback-method";
 import { UpdateJobParameters } from "../api/jobs/params/update-job-parameters";
+import { CallbackMethod } from "../api/jobs/params/callback-method";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
