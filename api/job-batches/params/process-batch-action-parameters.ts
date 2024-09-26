@@ -1,4 +1,4 @@
-import { BaseParameters } from "../../parameters";
+import { BaseParameters } from "../../parameters/index";
 
 export class ProcessBatchActionParameters extends BaseParameters {
     setFileUri(fileUri: string): ProcessBatchActionParameters {

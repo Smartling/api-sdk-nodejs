@@ -11,7 +11,7 @@ export class CancelBatchFileParameters extends ProcessBatchActionParameters {
         this.set("action", BatchAction.CANCEL_FILE);
     }
 
-    setReason(reason: string): CancelBatchFileParameters {
+    setReason(reason: string): this {
         this.set("reason", reason);
 
         return this;
