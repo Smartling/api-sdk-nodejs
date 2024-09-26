@@ -1,5 +1,7 @@
 import { BaseParameters } from "../../parameters";
 import { SmartlingException } from "../../exception";
+import { JobBatchesParametersMode } from "../dto/job-batches-parameters-mode";
+import { JobBatchesParametersSalt } from "../dto/job-batches-parameters-salt";
 
 export class JobBatchesParameters extends BaseParameters {
     setDescription(description: string): this {
@@ -16,12 +18,12 @@ export class JobBatchesParameters extends BaseParameters {
 
         return this;
     }
-    setMode(mode: "CREATE_NEW" | "REUSE_EXISTING"): this {
+    setMode(mode: JobBatchesParametersMode): this {
         this.set("mode", mode);
 
         return this;
     }
-    setSalt(salt: "ORDINAL" | "TIMESTAMP" | "RANDOM_ALPHANUMERIC"): this {
+    setSalt(salt: JobBatchesParametersSalt): this {
         this.set("salt", salt);
 
         return this;

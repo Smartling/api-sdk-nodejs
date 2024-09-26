@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import sinon from "sinon";
 import assert from "assert";
-import { loggerMock, authMock, responseMock } from "./mock";
+import { authMock, loggerMock, responseMock } from "./mock";
 import { SmartlingJobBatchesApi } from "../api/job-batches";
 import { SmartlingAuthApi } from "../api/auth";
 import { CreateBatchParameters } from "../api/job-batches/params/create-batch-parameters";
@@ -14,6 +14,8 @@ import { ListBatchesParameters } from "../api/job-batches/params/list-batches-pa
 import { Order } from "../api/parameters/order";
 import { BatchStatus } from "../api/job-batches/params/batch-status";
 import { JobBatchesParameters } from "../api/job-batches/params/job-batches-parameters";
+import { JobBatchesParametersMode } from "../api/job-batches/dto/job-batches-parameters-mode";
+import { JobBatchesParametersSalt } from "../api/job-batches/dto/job-batches-parameters-salt";
 
 describe("SmartlingJobBatchesAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -103,8 +105,8 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
                 "jobNameTemplate",
                 new JobBatchesParameters()
                     .setDescription("testDescription")
-                    .setMode("CREATE_NEW")
-                    .setSalt("RANDOM_ALPHANUMERIC")
+                    .setMode(JobBatchesParametersMode.CREATE_NEW)
+                    .setSalt(JobBatchesParametersSalt.RANDOM_ALPHANUMERIC)
                     .setTargetLocaleIds(["locale1", "locale2"])
                     .setTimeZoneName("testTimeZoneName")
             );
