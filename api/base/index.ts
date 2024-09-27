@@ -133,7 +133,7 @@ export class SmartlingBaseApi {
             });
         }
 
-        // Special case for file download - return raw response text.
+        // Special case for file download - return raw response.
         if (returnRawResponseBody === 'buffer') {
             return response.arrayBuffer();
         }
