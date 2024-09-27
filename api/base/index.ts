@@ -135,7 +135,7 @@ export class SmartlingBaseApi {
 
         // Special case for file download - return raw response text.
         if (returnRawResponseBody) {
-            return response.text();
+            return response.arrayBuffer();
         }
 
         try {
