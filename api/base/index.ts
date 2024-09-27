@@ -89,7 +89,7 @@ export class SmartlingBaseApi {
         verb: string,
         uri: string,
         payload: Record<string, unknown> | string | FormData = null,
-        returnRawResponseBody = false,
+        returnRawResponseBody: false | true | 'buffer' = false,
         headers: Record<string, unknown> = {}
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     ): Promise<any> {
@@ -134,8 +134,11 @@ export class SmartlingBaseApi {
         }
 
         // Special case for file download - return raw response text.
-        if (returnRawResponseBody) {
+        if (returnRawResponseBody === 'buffer') {
             return response.arrayBuffer();
+        }
+        if (returnRawResponseBody) {
+            return response.text();
         }
 
         try {

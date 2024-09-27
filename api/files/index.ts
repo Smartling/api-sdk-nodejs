@@ -59,7 +59,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${projectId}/locales/all/file/zip`,
             Object.assign(params.export(), { fileUri }),
-            true
+            'buffer'
         );
     }
 

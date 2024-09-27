@@ -74,7 +74,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/all/file/zip`,
             null,
-            true
+            'buffer'
         );
     }
 
