@@ -89,7 +89,7 @@ export class SmartlingBaseApi {
         verb: string,
         uri: string,
         payload: Record<string, unknown> | string | FormData = null,
-        returnRawResponseBody: false | true | 'buffer' = false,
+        returnRawResponseBody: boolean | 'buffer' = false,
         headers: Record<string, unknown> = {}
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     ): Promise<any> {
