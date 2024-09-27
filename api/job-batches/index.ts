@@ -1,6 +1,6 @@
 import FormData from "form-data";
-import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
+import { SmartlingBaseApi } from "../base";
+import { SmartlingAuthApi } from "../auth";
 import { Logger } from "../logger";
 import { CreateBatchParameters } from "./params/create-batch-parameters";
 import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters";
@@ -11,6 +11,8 @@ import { RegisterBatchFileParameters } from "./params/register-batch-file-parame
 import { BatchListItemDto } from "./dto/batch-list-item-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { ListBatchesParameters } from "./params/list-batches-parameters";
+import { BaseJobDto } from "../jobs/dto/base-job-dto";
+import { JobBatchesParameters } from "./params/job-batches-parameters";
 
 export class SmartlingJobBatchesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -45,6 +47,20 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/batches`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async createJob(
+        projectId: string, nameTemplate: string, params: JobBatchesParameters
+    ): Promise<BaseJobDto> {
+        if (params === undefined) {
+            params = new JobBatchesParameters();
+        }
+        params.set("nameTemplate", nameTemplate);
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs`,
             JSON.stringify(params.export())
         );
     }
