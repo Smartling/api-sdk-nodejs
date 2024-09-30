@@ -9,6 +9,7 @@ import { TranslateFileParameters } from "./params/translate-file-parameters";
 import { TranslationStatusDto } from "./dto/translation-status-dto";
 import { LanguageDetectionDto } from "./dto/language-detection-dto";
 import { LanguageDetectionStatusDto } from "./dto/language-detection-status-dto";
+import { ResponseBodyType } from "../base/enum/response-body-type";
 
 export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -74,7 +75,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/all/file/zip`,
             null,
-            true
+            ResponseBodyType.ARRAY_BUFFER
         );
     }
 
