@@ -11,6 +11,7 @@ import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "./params/recently-uploaded-files";
+import { ResponseBodyType } from "../base/response-body-type";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -46,7 +47,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
             Object.assign(params.export(), { fileUri }),
-            true
+            ResponseBodyType.RAW_STRING,
         );
     }
 
@@ -59,7 +60,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${projectId}/locales/all/file/zip`,
             Object.assign(params.export(), { fileUri }),
-            'buffer'
+            ResponseBodyType.ARRAY_BUFFER,
         );
     }
 
@@ -72,7 +73,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             "post",
             `${this.entrypoint}/${projectId}/file/delete`,
             form,
-            false,
+            ResponseBodyType.RAW_STRING,
             SmartlingFilesApi.fixContentTypeHeaderCase(form)
         );
     }
@@ -90,7 +91,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             "post",
             `${this.entrypoint}/${projectId}/file`,
             formData,
-            false,
+            ResponseBodyType.JSON,
             SmartlingFilesApi.fixContentTypeHeaderCase(formData)
         );
     }
