@@ -6,6 +6,7 @@ import { ParsedUrlQueryInput, stringify } from "querystring";
 import { Logger } from "../logger";
 import { SmartlingException } from "../exception/index";
 import { SmartlingAuthApi } from "../auth/index";
+import { ResponseBodyType } from "./enum/response-body-type";
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const packageJson = require("../../package.json");
@@ -89,7 +90,7 @@ export class SmartlingBaseApi {
         verb: string,
         uri: string,
         payload: Record<string, unknown> | string | FormData = null,
-        returnRawResponseBody = false,
+        returnRawResponseBody: ResponseBodyType | boolean = false,
         headers: Record<string, unknown> = {}
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     ): Promise<any> {
@@ -134,8 +135,13 @@ export class SmartlingBaseApi {
         }
 
         // Special case for file download - return raw response text.
-        if (returnRawResponseBody) {
+        if (returnRawResponseBody === true || returnRawResponseBody === ResponseBodyType.TEXT) {
             return response.text();
+        }
+
+        // Special case for zip file download - return raw response array buffer.
+        if (returnRawResponseBody === ResponseBodyType.ARRAY_BUFFER) {
+            return response.arrayBuffer();
         }
 
         try {

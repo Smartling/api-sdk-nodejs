@@ -18,5 +18,6 @@ export const responseMock = {
     status: 200,
     text: async (): Promise<string> => "{}",
     json: async (): Promise<void> => {},
+    arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
     headers: {}
 };

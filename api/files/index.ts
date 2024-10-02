@@ -11,6 +11,7 @@ import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "./params/recently-uploaded-files";
+import { ResponseBodyType } from "../base/enum/response-body-type";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -59,7 +60,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${projectId}/locales/all/file/zip`,
             Object.assign(params.export(), { fileUri }),
-            true
+            ResponseBodyType.ARRAY_BUFFER
         );
     }
 
