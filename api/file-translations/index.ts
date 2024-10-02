@@ -9,7 +9,7 @@ import { TranslateFileParameters } from "./params/translate-file-parameters";
 import { TranslationStatusDto } from "./dto/translation-status-dto";
 import { LanguageDetectionDto } from "./dto/language-detection-dto";
 import { LanguageDetectionStatusDto } from "./dto/language-detection-status-dto";
-import { ResponseBodyType } from "../base/response-body-type";
+import { ResponseBodyType } from "../base/enum/response-body-type";
 
 export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -33,7 +33,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
             "post",
             `${this.entrypoint}/${accountUid}/files`,
             formData,
-            ResponseBodyType.JSON,
+            false,
             SmartlingFileTranslationsApi.fixContentTypeHeaderCase(formData)
         );
     }
@@ -64,7 +64,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/${localeId}/file`,
             null,
-            ResponseBodyType.RAW_STRING,
+            true
         );
     }
 
@@ -75,7 +75,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
             "get",
             `${this.entrypoint}/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/all/file/zip`,
             null,
-            ResponseBodyType.ARRAY_BUFFER,
+            ResponseBodyType.ARRAY_BUFFER
         );
     }
 

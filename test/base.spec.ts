@@ -2,7 +2,6 @@ import assert from "assert";
 import sinon from "sinon";
 import { SmartlingBaseApi } from "../api/base/index";
 import { loggerMock, responseMock, authMock } from "./mock";
-import { ResponseBodyType } from "../api/base/response-body-type";
 // eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires
 const packageJson = require("../../package.json");
 
@@ -218,7 +217,7 @@ describe("Base class tests.", () => {
 
             responseMockTextStub.returns("invalid json: this test just returns raw text response but does not parse text as json");
 
-            await base.makeRequest(requestVerb, requestUri, payload, ResponseBodyType.RAW_STRING);
+            await base.makeRequest(requestVerb, requestUri, payload, true);
 
             sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 

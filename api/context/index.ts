@@ -11,7 +11,6 @@ import { ContextSourceDto } from "./dto/context-source-dto";
 import { ContextHttpResponse } from "./context-http-response";
 import { ListParameters } from "./params/list-parameters";
 import { Logger } from "../logger";
-import { ResponseBodyType } from "../base/response-body-type";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -28,7 +27,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
             "post",
             `${this.entrypoint}/${projectId}/contexts`,
             params.export(),
-            ResponseBodyType.JSON,
+            false,
             {
                 "X-SL-Context-Source": contextSource ? `group=${contextSource.group};name=${contextSource.name};version=${contextSource.version}` : ""
             }
