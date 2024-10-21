@@ -11,6 +11,7 @@ export enum FileType {
     PPTX = "pptx",
     XLSX = "xlsx",
     IDML = "idml",
+    INDD = "indd",
     QT = "qt",
     RESX = "resx",
     PLAIN_TEXT = "plain_text",
