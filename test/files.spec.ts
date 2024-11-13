@@ -112,7 +112,7 @@ describe("SmartlingFilesApi class tests.", () => {
                     .setRetrievalType(RetrievalType.PUBLISHED)
                     .enableDebugMode();
 
-                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+                await filesApi.downloadFile(projectId, fileUri, localeId, true, params);
 
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
@@ -132,7 +132,7 @@ describe("SmartlingFilesApi class tests.", () => {
             it("Download file with debugMode disabled and retrievalType published", async () => {
                 params.setRetrievalType(RetrievalType.PUBLISHED);
 
-                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+                await filesApi.downloadFile(projectId, fileUri, localeId, true, params);
 
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
@@ -152,7 +152,7 @@ describe("SmartlingFilesApi class tests.", () => {
             it("Download file with includeOriginalStrings enabled", async() => {
                 params.setRetrievalType(RetrievalType.PUBLISHED).includeOriginalStrings();
 
-                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+                await filesApi.downloadFile(projectId, fileUri, localeId, true, params);
 
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
@@ -172,7 +172,7 @@ describe("SmartlingFilesApi class tests.", () => {
             it("Download file with includeOriginalStrings disabled", async() => {
                 params.setRetrievalType(RetrievalType.PUBLISHED).excludeOriginalStrings();
 
-                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+                await filesApi.downloadFile(projectId, fileUri, localeId, true, params);
 
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
