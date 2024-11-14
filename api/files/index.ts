@@ -44,7 +44,7 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
         projectId: string,
         fileUri: string,
         locale: string,
-        responseType: ResponseBodyType | boolean,
+        responseType: ResponseBodyType,
         params: DownloadFileParameters
     ): Promise<string> {
         return await this.makeRequest(
