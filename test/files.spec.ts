@@ -2,7 +2,7 @@ import * as fs from "fs";
 import sinon from "sinon";
 import assert from "assert";
 import { SmartlingFilesApi } from "../api/files/index";
-import { loggerMock, authMock, responseMock } from "./mock";
+import { authMock, loggerMock, responseMock } from "./mock";
 import { RetrievalType } from "../api/files/params/retrieval-type";
 import { DownloadFileParameters } from "../api/files/params/download-file-parameters";
 import { UploadFileParameters } from "../api/files/params/upload-file-parameters";
@@ -11,6 +11,7 @@ import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "../api/files/params/recently-uploaded-files";
+import { ResponseBodyType } from "../api/base/enum/response-body-type";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -112,7 +113,12 @@ describe("SmartlingFilesApi class tests.", () => {
                     .setRetrievalType(RetrievalType.PUBLISHED)
                     .enableDebugMode();
 
-                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+                await filesApi.downloadFile(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
 
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
@@ -132,7 +138,12 @@ describe("SmartlingFilesApi class tests.", () => {
             it("Download file with debugMode disabled and retrievalType published", async () => {
                 params.setRetrievalType(RetrievalType.PUBLISHED);
 
-                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+                await filesApi.downloadFile(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
 
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
@@ -152,7 +163,12 @@ describe("SmartlingFilesApi class tests.", () => {
             it("Download file with includeOriginalStrings enabled", async() => {
                 params.setRetrievalType(RetrievalType.PUBLISHED).includeOriginalStrings();
 
-                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+                await filesApi.downloadFile(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
 
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(
@@ -172,7 +188,12 @@ describe("SmartlingFilesApi class tests.", () => {
             it("Download file with includeOriginalStrings disabled", async() => {
                 params.setRetrievalType(RetrievalType.PUBLISHED).excludeOriginalStrings();
 
-                await filesApi.downloadFile(projectId, fileUri, localeId, params);
+                await filesApi.downloadFile(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
 
                 sinon.assert.calledOnce(filesApiFetchStub);
                 sinon.assert.calledWithExactly(

@@ -41,13 +41,17 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
     }
 
     async downloadFile(
-        projectId: string, fileUri: string, locale: string, params: DownloadFileParameters
+        projectId: string,
+        fileUri: string,
+        locale: string,
+        params: DownloadFileParameters,
+        responseType: ResponseBodyType = ResponseBodyType.TEXT
     ): Promise<string> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
             Object.assign(params.export(), { fileUri }),
-            true
+            responseType
         );
     }
 
