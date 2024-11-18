@@ -117,7 +117,6 @@ describe("SmartlingFilesApi class tests.", () => {
                     projectId,
                     fileUri,
                     localeId,
-                    ResponseBodyType.TEXT,
                     params
                 );
 
@@ -143,7 +142,6 @@ describe("SmartlingFilesApi class tests.", () => {
                     projectId,
                     fileUri,
                     localeId,
-                    ResponseBodyType.TEXT,
                     params
                 );
 
@@ -169,7 +167,6 @@ describe("SmartlingFilesApi class tests.", () => {
                     projectId,
                     fileUri,
                     localeId,
-                    ResponseBodyType.TEXT,
                     params
                 );
 
@@ -195,7 +192,6 @@ describe("SmartlingFilesApi class tests.", () => {
                     projectId,
                     fileUri,
                     localeId,
-                    ResponseBodyType.TEXT,
                     params
                 );
 
