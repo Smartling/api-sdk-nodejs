@@ -24,7 +24,15 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
         const formData = new FormData();
         const exported = parameters.export();
 
-        formData.append("file", exported.file);
+        const fileOptions: Record<string, unknown> = {};
+        if (exported.fileName) {
+            fileOptions.filename = exported.fileName;
+        }
+        if (exported.contentType) {
+            fileOptions.contentType = exported.contentType;
+        }
+
+        formData.append("file", exported.file, fileOptions);
         formData.append("request", JSON.stringify(exported.request), {
             contentType: "application/json"
         });
@@ -70,7 +78,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
 
     async downloadTranslatedFiles(
         accountUid: string, fileUid: string, mtUid: string
-    ): Promise<string> {
+    ): Promise<ArrayBuffer> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/all/file/zip`,

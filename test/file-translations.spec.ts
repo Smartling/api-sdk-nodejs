@@ -144,6 +144,158 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             assert.equal(fileTranslationsApiFetchCall.args[1].body._streams[4], "{\"fileType\":\"XML\"}");
         });
 
+        it("Upload file: as binary buffer", async () => {
+            const params = new FtsUploadFileParameters();
+
+            const testFileContent = fs.readFileSync(
+                fs.realpathSync("./test/data/file.xml")
+            );
+
+            params
+                .setFileType(FileType.XML)
+                .setFileContentFromBuffer(testFileContent);
+
+            await fileTranslationsApi.uploadFile(accountUid, params);
+
+            sinon.assert.calledOnce(fileTranslationsApiFetchStub);
+
+            const fileTranslationsApiFetchCall = fileTranslationsApiFetchStub.getCall(0);
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[0],
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files`
+            );
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            const formData = fileTranslationsApiFetchCall.args[1].body as FormData;
+            const boundary = formData.getBoundary();
+
+            assert.equal(fileTranslationsApiFetchCall.args[1].headers["User-Agent"], userAgent);
+            assert.equal(fileTranslationsApiFetchCall.args[1].headers["Content-Type"], `multipart/form-data; boundary=${boundary}`);
+
+            // eslint-disable-next-line no-underscore-dangle
+            const content = fileTranslationsApiFetchCall.args[1].body._streams[1].toString("utf-8");
+            assert.equal(content, testFileContent);
+
+            // eslint-disable-next-line no-underscore-dangle
+            assert.equal(fileTranslationsApiFetchCall.args[1].body._streams[4], "{\"fileType\":\"XML\"}");
+        });
+
+        it("Upload file: with file name", async () => {
+            const params = new FtsUploadFileParameters();
+
+            const testFileContent = fs.readFileSync(
+                fs.realpathSync("./test/data/file.xml")
+            );
+
+            params
+                .setFileType(FileType.XML)
+                .setFileContentFromBuffer(testFileContent)
+                .setFileName("my-file");
+
+            await fileTranslationsApi.uploadFile(accountUid, params);
+
+            sinon.assert.calledOnce(fileTranslationsApiFetchStub);
+
+            const fileTranslationsApiFetchCall = fileTranslationsApiFetchStub.getCall(0);
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[0],
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files`
+            );
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            const formData = fileTranslationsApiFetchCall.args[1].body as FormData;
+            const boundary = formData.getBoundary();
+
+            assert.equal(fileTranslationsApiFetchCall.args[1].headers["User-Agent"], userAgent);
+            assert.equal(fileTranslationsApiFetchCall.args[1].headers["Content-Type"], `multipart/form-data; boundary=${boundary}`);
+
+            // eslint-disable-next-line no-underscore-dangle
+            const content = fileTranslationsApiFetchCall.args[1].body._streams[1].toString("utf-8");
+            assert.equal(content, testFileContent);
+
+            // eslint-disable-next-line no-underscore-dangle
+            const contentDisposition = fileTranslationsApiFetchCall.args[1].body._streams[0].toString("utf-8");
+
+            assert.ok(contentDisposition.includes("filename=\"my-file\""));
+            assert.ok(contentDisposition.includes("Content-Type: application/octet-stream"));
+
+            // eslint-disable-next-line no-underscore-dangle
+            assert.equal(fileTranslationsApiFetchCall.args[1].body._streams[4], "{\"fileType\":\"XML\"}");
+        });
+
+        it("Upload file: with file content type", async () => {
+            const params = new FtsUploadFileParameters();
+
+            const testFileContent = fs.readFileSync(
+                fs.realpathSync("./test/data/file.xml")
+            );
+
+            params
+                .setFileType(FileType.XML)
+                .setFileContentFromBuffer(testFileContent)
+                .setFileContentType("application/xml");
+
+            await fileTranslationsApi.uploadFile(accountUid, params);
+
+            sinon.assert.calledOnce(fileTranslationsApiFetchStub);
+
+            const fileTranslationsApiFetchCall = fileTranslationsApiFetchStub.getCall(0);
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[0],
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files`
+            );
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                fileTranslationsApiFetchCall.args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            const formData = fileTranslationsApiFetchCall.args[1].body as FormData;
+            const boundary = formData.getBoundary();
+
+            assert.equal(fileTranslationsApiFetchCall.args[1].headers["User-Agent"], userAgent);
+            assert.equal(fileTranslationsApiFetchCall.args[1].headers["Content-Type"], `multipart/form-data; boundary=${boundary}`);
+
+            // eslint-disable-next-line no-underscore-dangle
+            const content = fileTranslationsApiFetchCall.args[1].body._streams[1].toString("utf-8");
+            assert.equal(content, testFileContent);
+
+            // eslint-disable-next-line no-underscore-dangle
+            const contentDisposition = fileTranslationsApiFetchCall.args[1].body._streams[0].toString("utf-8");
+
+            assert.ok(!contentDisposition.includes("filename="));
+            assert.ok(contentDisposition.includes("Content-Type: application/xml"));
+
+            // eslint-disable-next-line no-underscore-dangle
+            assert.equal(fileTranslationsApiFetchCall.args[1].body._streams[4], "{\"fileType\":\"XML\"}");
+        });
+
         it("Translate file", async () => {
             const params = new TranslateFileParameters();
 
