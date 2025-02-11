@@ -22,6 +22,21 @@ export class FtsUploadFileParameters extends BaseParameters {
         return this;
     }
 
+    setFileContentFromBuffer(fileContent: Buffer): FtsUploadFileParameters {
+        this.set("file", fileContent);
+        return this;
+    }
+
+    setFileName(fileName: string): FtsUploadFileParameters {
+        this.set("fileName", fileName);
+        return this;
+    }
+
+    setFileContentType(contentType: string): FtsUploadFileParameters {
+        this.set("contentType", contentType);
+        return this;
+    }
+
     setFileType(fileType: FileType): FtsUploadFileParameters {
         this.parameters.request.fileType = fileType.toUpperCase();
         return this;
