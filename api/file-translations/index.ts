@@ -149,7 +149,8 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
     }
 
     private static async downloadResponseToTranslatedFileDto(
-        response: Response): Promise<TranslatedFileDto> {
+        response: Response
+    ): Promise<TranslatedFileDto> {
         const contentType = response.headers.get("content-type") ?? undefined;
         const contentDisposition = response.headers.get("content-disposition");
         let fileName;

@@ -372,7 +372,8 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             fileTranslationsApiFetchStub.returns(downloadMock);
 
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFileWithMetadata(
-                accountUid, fileUid, mtUid, localeId);
+                accountUid, fileUid, mtUid, localeId
+            );
 
             sinon.assert.calledOnceWithExactly(
                 fileTranslationsApiFetchStub,
@@ -414,7 +415,8 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             fileTranslationsApiFetchStub.returns(downloadMock);
 
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFileWithMetadata(
-                accountUid, fileUid, mtUid, localeId);
+                accountUid, fileUid, mtUid, localeId
+            );
 
             sinon.assert.calledOnceWithExactly(
                 fileTranslationsApiFetchStub,
@@ -462,7 +464,8 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             fileTranslationsApiFetchStub.returns(downloadMock);
 
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFilesWithMetadata(
-                accountUid, fileUid, mtUid);
+                accountUid, fileUid, mtUid
+            );
 
             sinon.assert.calledOnceWithExactly(
                 fileTranslationsApiFetchStub,
@@ -502,7 +505,8 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             fileTranslationsApiFetchStub.returns(downloadMock);
 
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFilesWithMetadata(
-                accountUid, fileUid, mtUid);
+                accountUid, fileUid, mtUid
+            );
 
             sinon.assert.calledOnceWithExactly(
                 fileTranslationsApiFetchStub,
