@@ -21,6 +21,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
     let fileTranslationsApiFetchStub;
     let fileTranslationsApiUaStub;
     let responseMockJsonStub;
+    let getHeaderStub;
 
     beforeEach(() => {
         fileTranslationsApi = new SmartlingFileTranslationsApi(
@@ -37,12 +38,15 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         responseMockJsonStub.returns({
             response: {}
         });
+        getHeaderStub = sinon.stub(responseMock.headers, "get");
+        getHeaderStub.returns(null);
     });
 
     afterEach(() => {
         fileTranslationsApiFetchStub.restore();
         fileTranslationsApiUaStub.restore();
         responseMockJsonStub.restore();
+        getHeaderStub.restore();
     });
 
     describe("Methods", () => {
@@ -362,15 +366,6 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Download translated file with metadata when no headers", async () => {
             const localeId = "de-DE";
 
-            const downloadMock = {
-                status: 200,
-                arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
-                headers: {
-                    get: (): string | null => null
-                }
-            };
-            fileTranslationsApiFetchStub.returns(downloadMock);
-
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFileWithMetadata(
                 accountUid, fileUid, mtUid, localeId
             );
@@ -396,23 +391,9 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Download translated file with metadata", async () => {
             const localeId = "de-DE";
 
-            const downloadMock = {
-                status: 200,
-                arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
-                headers: {
-                    get: (name: string): string | null => {
-                        switch (name) {
-                        case "content-type":
-                            return "application/xml";
-                        case "content-disposition":
-                            return "attachment; filename=\"test.xml\"";
-                        default:
-                            return null;
-                        }
-                    }
-                }
-            };
-            fileTranslationsApiFetchStub.returns(downloadMock);
+            getHeaderStub.onCall(0).returns("application/xml");
+            getHeaderStub.onCall(1).returns("attachment; filename=\"test.xml\"");
+            getHeaderStub.returns(null);
 
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFileWithMetadata(
                 accountUid, fileUid, mtUid, localeId
@@ -454,15 +435,6 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         });
 
         it("Download translated files with metadata when no headers", async () => {
-            const downloadMock = {
-                status: 200,
-                arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
-                headers: {
-                    get: (): string | null => null
-                }
-            };
-            fileTranslationsApiFetchStub.returns(downloadMock);
-
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFilesWithMetadata(
                 accountUid, fileUid, mtUid
             );
@@ -486,23 +458,9 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         });
 
         it("Download translated files with metadata", async () => {
-            const downloadMock = {
-                status: 200,
-                arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
-                headers: {
-                    get: (name: string): string | null => {
-                        switch (name) {
-                        case "content-type":
-                            return "application/zip";
-                        case "content-disposition":
-                            return "attachment; filename=\"test.zip\"";
-                        default:
-                            return null;
-                        }
-                    }
-                }
-            };
-            fileTranslationsApiFetchStub.returns(downloadMock);
+            getHeaderStub.onCall(0).returns("application/zip");
+            getHeaderStub.onCall(1).returns("attachment; filename=\"test.zip\"");
+            getHeaderStub.returns(null);
 
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFilesWithMetadata(
                 accountUid, fileUid, mtUid
