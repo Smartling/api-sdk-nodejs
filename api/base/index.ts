@@ -144,6 +144,11 @@ export class SmartlingBaseApi {
             return response.arrayBuffer();
         }
 
+        // Special case for download file with metadata - return raw response.
+        if (returnRawResponseBody === ResponseBodyType.RAW_RESPONSE) {
+            return response;
+        }
+
         try {
             const textResponse = await response.text();
             const jsonResponse = JSON.parse(textResponse, (key, value) => {

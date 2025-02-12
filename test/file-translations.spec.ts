@@ -359,6 +359,64 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             );
         });
 
+        it("Download translated file with metadata when no headers", async () => {
+            const localeId = "de-DE";
+
+            const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFileWithMetadata(
+                accountUid, fileUid, mtUid, localeId);
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/${localeId}/file`,
+                {
+                    method: "get",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    }
+                }
+            );
+
+            assert.ok(fileWithMetadata.contentType === undefined);
+            assert.ok(fileWithMetadata.fileName === undefined);
+            assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+        });
+
+        it("Download translated file with metadata", async () => {
+            const localeId = "de-DE";
+
+            const downloadMock = {
+                status: 200,
+                arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
+                headers: {
+                    "content-type": "application/xml",
+                    "content-disposition": "attachment; filename=\"test.xml\""
+                }
+            };
+            fileTranslationsApiFetchStub.returns(downloadMock);
+
+            const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFileWithMetadata(
+                accountUid, fileUid, mtUid, localeId);
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/${localeId}/file`,
+                {
+                    method: "get",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    }
+                }
+            );
+
+            assert.ok(fileWithMetadata.contentType === "application/xml");
+            assert.ok(fileWithMetadata.fileName === "test.xml");
+            assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+        });
+
         it("Download translated files", async () => {
             await fileTranslationsApi.downloadTranslatedFiles(accountUid, fileUid, mtUid);
 
@@ -374,6 +432,60 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                     }
                 }
             );
+        });
+
+        it("Download translated files with metadata when no headers", async () => {
+            const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFilesWithMetadata(
+                accountUid, fileUid, mtUid);
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/all/file/zip`,
+                {
+                    method: "get",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    }
+                }
+            );
+
+            assert.ok(fileWithMetadata.contentType === undefined);
+            assert.ok(fileWithMetadata.fileName === undefined);
+            assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+        });
+
+        it("Download translated files with metadata", async () => {
+            const downloadMock = {
+                status: 200,
+                arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
+                headers: {
+                    "content-type": "application/zip",
+                    "content-disposition": "attachment; filename=\"test.zip\""
+                }
+            };
+            fileTranslationsApiFetchStub.returns(downloadMock);
+
+            const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFilesWithMetadata(
+                accountUid, fileUid, mtUid);
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/all/file/zip`,
+                {
+                    method: "get",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    }
+                }
+            );
+
+            assert.ok(fileWithMetadata.contentType === "application/zip");
+            assert.ok(fileWithMetadata.fileName === "test.zip");
+            assert.ok(fileWithMetadata.fileContent.byteLength === 1);
         });
 
         it("Cancel file translation", async () => {
