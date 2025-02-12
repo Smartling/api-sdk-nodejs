@@ -150,8 +150,8 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
 
     private static async downloadResponseToTranslatedFileDto(
         response: Response): Promise<TranslatedFileDto> {
-        const contentType = response.headers["content-type"];
-        const contentDisposition = response.headers["content-disposition"];
+        const contentType = response.headers.get("content-type") ?? undefined;
+        const contentDisposition = response.headers.get("content-disposition");
         let fileName;
         if (contentDisposition) {
             const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);

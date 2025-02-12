@@ -362,6 +362,15 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Download translated file with metadata when no headers", async () => {
             const localeId = "de-DE";
 
+            const downloadMock = {
+                status: 200,
+                arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
+                headers: {
+                    get: (): string | null => null
+                }
+            };
+            fileTranslationsApiFetchStub.returns(downloadMock);
+
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFileWithMetadata(
                 accountUid, fileUid, mtUid, localeId);
 
@@ -390,8 +399,16 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                 status: 200,
                 arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
                 headers: {
-                    "content-type": "application/xml",
-                    "content-disposition": "attachment; filename=\"test.xml\""
+                    get: (name: string): string | null => {
+                        switch (name) {
+                        case "content-type":
+                            return "application/xml";
+                        case "content-disposition":
+                            return "attachment; filename=\"test.xml\"";
+                        default:
+                            return null;
+                        }
+                    }
                 }
             };
             fileTranslationsApiFetchStub.returns(downloadMock);
@@ -435,6 +452,15 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         });
 
         it("Download translated files with metadata when no headers", async () => {
+            const downloadMock = {
+                status: 200,
+                arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
+                headers: {
+                    get: (): string | null => null
+                }
+            };
+            fileTranslationsApiFetchStub.returns(downloadMock);
+
             const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFilesWithMetadata(
                 accountUid, fileUid, mtUid);
 
@@ -461,8 +487,16 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                 status: 200,
                 arrayBuffer: async (): Promise<ArrayBuffer> => new ArrayBuffer(1),
                 headers: {
-                    "content-type": "application/zip",
-                    "content-disposition": "attachment; filename=\"test.zip\""
+                    get: (name: string): string | null => {
+                        switch (name) {
+                        case "content-type":
+                            return "application/zip";
+                        case "content-disposition":
+                            return "attachment; filename=\"test.zip\"";
+                        default:
+                            return null;
+                        }
+                    }
                 }
             };
             fileTranslationsApiFetchStub.returns(downloadMock);
