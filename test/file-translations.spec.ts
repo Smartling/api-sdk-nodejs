@@ -417,6 +417,35 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             assert.ok(fileWithMetadata.fileContent.byteLength === 1);
         });
 
+        it("Download translated file with escaped quotes in the file name", async () => {
+            const localeId = "de-DE";
+
+            getHeaderStub.onCall(0).returns("application/xml");
+            getHeaderStub.onCall(1).returns("attachment; filename=\"test - \\\"phase 1\\\".xml\"");
+            getHeaderStub.returns(null);
+
+            const fileWithMetadata = await fileTranslationsApi.downloadTranslatedFileWithMetadata(
+                accountUid, fileUid, mtUid, localeId
+            );
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/${localeId}/file`,
+                {
+                    method: "get",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    }
+                }
+            );
+
+            assert.ok(fileWithMetadata.contentType === "application/xml");
+            assert.ok(fileWithMetadata.fileName === "test - \"phase 1\".xml");
+            assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+        });
+
         it("Download translated files", async () => {
             await fileTranslationsApi.downloadTranslatedFiles(accountUid, fileUid, mtUid);
 

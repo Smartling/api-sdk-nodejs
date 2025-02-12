@@ -155,9 +155,9 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
         const contentDisposition = response.headers.get("content-disposition");
         let fileName;
         if (contentDisposition) {
-            const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+            const fileNameMatch = contentDisposition.match(/filename="((?:[^"\\]|\\.)*)"/);
             if (fileNameMatch) {
-                fileName = fileNameMatch[1];
+                fileName = fileNameMatch[1].replace(/\\"/g, "\"");
             }
         }
         return {
