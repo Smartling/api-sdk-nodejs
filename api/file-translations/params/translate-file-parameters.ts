@@ -1,6 +1,6 @@
-import { BaseParameters } from "../../parameters";
+import { BaseParametersWithCallback } from "./base-parameters-with-callback";
 
-export class TranslateFileParameters extends BaseParameters {
+export class TranslateFileParameters extends BaseParametersWithCallback {
     setSourceLocaleId(sourceLocaleId: string): TranslateFileParameters {
         this.set("sourceLocaleId", sourceLocaleId);
         return this;

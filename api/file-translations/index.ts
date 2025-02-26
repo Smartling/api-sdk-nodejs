@@ -11,6 +11,7 @@ import { LanguageDetectionDto } from "./dto/language-detection-dto";
 import { LanguageDetectionStatusDto } from "./dto/language-detection-status-dto";
 import { TranslatedFileDto } from "./dto/translated-file-dto";
 import { ResponseBodyType } from "../base/enum/response-body-type";
+import { LanguageDetectionParameters } from "./params/language-detection-parameters";
 
 export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -123,10 +124,13 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
         );
     }
 
-    async detectFileLanguage(accountUid: string, fileUid: string): Promise<LanguageDetectionDto> {
+    async detectFileLanguage(
+        accountUid: string, fileUid: string, params?: LanguageDetectionParameters
+    ): Promise<LanguageDetectionDto> {
         return await this.makeRequest(
             "post",
-            `${this.entrypoint}/${accountUid}/files/${fileUid}/language-detection`
+            `${this.entrypoint}/${accountUid}/files/${fileUid}/language-detection`,
+            JSON.stringify(params?.export())
         );
     }
 
