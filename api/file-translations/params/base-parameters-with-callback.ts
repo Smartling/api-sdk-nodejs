@@ -5,23 +5,27 @@ export class BaseParametersWithCallback extends BaseParameters {
     setCallback(
         url: string,
         httpMethod?: FtsCallbackMethod,
-        userData?: FtsCallbackUserData
+        userData?: FtsCallbackUserData | string
     ): this;
     setCallback(callback: FtsCallback): this;
 
     setCallback(
-        urlOrCallback: string | FtsCallback,
+        urlOrCallback: FtsCallback | string,
         httpMethod: FtsCallbackMethod = FtsCallbackMethod.POST,
-        userData?: FtsCallbackUserData
+        userData?: FtsCallbackUserData | string
     ): this {
         if (typeof urlOrCallback === "string") {
             this.parameters.callback = {
                 url: urlOrCallback,
                 httpMethod,
-                userData
+                userData: (typeof userData === "string") ? userData : JSON.stringify(userData)
             };
         } else {
-            this.parameters.callback = urlOrCallback;
+            const { userData: callbackUserData } = urlOrCallback;
+            this.parameters.callback = (typeof callbackUserData === "string") ? urlOrCallback : {
+                ...urlOrCallback,
+                userData: JSON.stringify(callbackUserData)
+            };
         }
         return this;
     }

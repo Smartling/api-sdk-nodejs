@@ -8,7 +8,7 @@ enum FtsCallbackMethod {
 interface FtsCallback {
     url: string;
     httpMethod: FtsCallbackMethod;
-    userData?: FtsCallbackUserData
+    userData?: FtsCallbackUserData | string
 }
 
 export { FtsCallback, FtsCallbackMethod, FtsCallbackUserData };
