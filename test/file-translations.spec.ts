@@ -9,6 +9,8 @@ import { FtsUploadFileParameters } from "../api/file-translations/params/fts-upl
 import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { TranslateFileParameters } from "../api/file-translations/params/translate-file-parameters";
+import { FtsCallbackMethod } from "../api/file-translations/params/fts-callback-method";
+import { LanguageDetectionParameters } from "../api/file-translations/params/language-detection-parameters";
 
 describe("SmartlingFileTranslationsApi class tests.", () => {
     const userAgent = "test_user_agent";
@@ -327,6 +329,78 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             );
         });
 
+        it("Translate file with callback and without user data", async () => {
+            const params = new TranslateFileParameters();
+
+            params
+                .setSourceLocaleId("en-US")
+                .setTargetLocaleIds(["de-DE", "fr-FR"])
+                .setCallback({
+                    url: "https://myhost.com",
+                    httpMethod: FtsCallbackMethod.POST
+                });
+
+            await fileTranslationsApi.translateFile(accountUid, fileUid, params);
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/mt`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    },
+                    body: JSON.stringify({
+                        sourceLocaleId: "en-US",
+                        targetLocaleIds: ["de-DE", "fr-FR"],
+                        callback: {
+                            url: "https://myhost.com",
+                            httpMethod: "POST"
+                        }
+                    })
+                }
+            );
+        });
+
+        it("Translate file with callback and user data", async () => {
+            const params = new TranslateFileParameters();
+
+            params
+                .setSourceLocaleId("en-US")
+                .setTargetLocaleIds(["de-DE", "fr-FR"])
+                .setCallback({
+                    url: "https://myhost.com",
+                    httpMethod: FtsCallbackMethod.POST,
+                    userData: "test user data"
+                });
+
+            await fileTranslationsApi.translateFile(accountUid, fileUid, params);
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/mt`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    },
+                    body: JSON.stringify({
+                        sourceLocaleId: "en-US",
+                        targetLocaleIds: ["de-DE", "fr-FR"],
+                        callback: {
+                            url: "https://myhost.com",
+                            httpMethod: "POST",
+                            userData: "test user data"
+                        }
+                    })
+                }
+            );
+        });
+
         it("Get translation progress", async () => {
             await fileTranslationsApi.getTranslationProgress(accountUid, fileUid, mtUid);
 
@@ -543,6 +617,86 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                         "Content-Type": "application/json",
                         "User-Agent": userAgent
                     }
+                }
+            );
+        });
+
+        it("Detect file language with empty parameters", async () => {
+            await fileTranslationsApi.detectFileLanguage(
+                accountUid, fileUid, new LanguageDetectionParameters()
+            );
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/language-detection`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    },
+                    body: JSON.stringify({})
+                }
+            );
+        });
+
+        it("Detect file language with callback and without user data", async () => {
+            const params = new LanguageDetectionParameters()
+                .setCallback({
+                    url: "https://myhost.com",
+                    httpMethod: FtsCallbackMethod.POST
+                });
+
+            await fileTranslationsApi.detectFileLanguage(accountUid, fileUid, params);
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/language-detection`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    },
+                    body: JSON.stringify({
+                        callback: {
+                            url: "https://myhost.com",
+                            httpMethod: "POST"
+                        }
+                    })
+                }
+            );
+        });
+
+        it("Detect file language with callback and with user data", async () => {
+            const params = new LanguageDetectionParameters()
+                .setCallback({
+                    url: "https://myhost.com",
+                    httpMethod: FtsCallbackMethod.POST,
+                    userData: "test user data"
+                });
+
+            await fileTranslationsApi.detectFileLanguage(accountUid, fileUid, params);
+
+            sinon.assert.calledOnceWithExactly(
+                fileTranslationsApiFetchStub,
+                `https://test.com/file-translations-api/v2/accounts/${accountUid}/files/${fileUid}/language-detection`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": userAgent
+                    },
+                    body: JSON.stringify({
+                        callback: {
+                            url: "https://myhost.com",
+                            httpMethod: "POST",
+                            userData: "test user data"
+                        }
+                    })
                 }
             );
         });
