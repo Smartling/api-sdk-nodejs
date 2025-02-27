@@ -110,3 +110,7 @@ export * from "./api/locales/dto/direction";
 export * from "./api/locales/dto/word-delimeter";
 export * from "./api/locales/params/get-locales-parameters";
 export * from "./api/locales/index";
+export * from "./api/mt/index";
+export * from "./api/mt/params/smartling-mt-parameters";
+export * from "./api/mt/params/source-text-item";
+export * from "./api/mt/dto/translation-text-item-dto";
