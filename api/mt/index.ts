@@ -12,7 +12,7 @@ export class SmartlingMachineTranslationsApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/mt-router-api/v2/accounts`;
     }
 
-    async translateUsingSmartlingMT(
+    async translate(
         accountUid: string,
         params: SmartlingMTParameters
     ): Promise<SmartlingListResponse<TranslationTextItemDto>> {

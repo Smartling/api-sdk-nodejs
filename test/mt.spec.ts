@@ -40,7 +40,7 @@ describe("SmartlinMachineTranslationsApi class tests.", () => {
                 sourceText: "This is text for translation"
             }]
         );
-        await mtApi.translateUsingSmartlingMT(accountUid, params);
+        await mtApi.translate(accountUid, params);
 
         sinon.assert.calledOnce(mtApiFetchStub);
         sinon.assert.calledWithExactly(
