@@ -1,7 +1,7 @@
 type FtsCallbackUserData = Record<string, unknown>;
 
 enum FtsCallbackMethod {
-    GET = "GET",
+    // Other HTTP methods are not supported by API for now
     POST = "POST"
 }
 

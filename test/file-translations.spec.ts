@@ -367,7 +367,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
             params
                 .setSourceLocaleId("en-US")
                 .setTargetLocaleIds(["de-DE", "fr-FR"])
-                .setCallback("https://myhost.com", FtsCallbackMethod.GET);
+                .setCallback("https://myhost.com", FtsCallbackMethod.POST);
 
             await fileTranslationsApi.translateFile(accountUid, fileUid, params);
 
@@ -386,7 +386,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                         targetLocaleIds: ["de-DE", "fr-FR"],
                         callback: {
                             url: "https://myhost.com",
-                            httpMethod: "GET"
+                            httpMethod: "POST"
                         }
                     })
                 }
@@ -465,7 +465,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Translate file with callback object without user data", async () => {
             const callback = {
                 url: "https://myhost.com",
-                httpMethod: FtsCallbackMethod.GET
+                httpMethod: FtsCallbackMethod.POST
             };
 
             const params = new TranslateFileParameters();
@@ -492,7 +492,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                         targetLocaleIds: ["de-DE", "fr-FR"],
                         callback: {
                             url: "https://myhost.com",
-                            httpMethod: "GET"
+                            httpMethod: "POST"
                         }
                     })
                 }
@@ -502,7 +502,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Translate file with callback object with user data as object", async () => {
             const callback = {
                 url: "https://myhost.com",
-                httpMethod: FtsCallbackMethod.GET,
+                httpMethod: FtsCallbackMethod.POST,
                 userData: {
                     key1: 67,
                     key2: true
@@ -533,7 +533,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                         targetLocaleIds: ["de-DE", "fr-FR"],
                         callback: {
                             url: "https://myhost.com",
-                            httpMethod: "GET",
+                            httpMethod: "POST",
                             userData: JSON.stringify({
                                 key1: 67,
                                 key2: true
@@ -547,7 +547,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Translate file with callback object with user data as string", async () => {
             const callback = {
                 url: "https://myhost.com",
-                httpMethod: FtsCallbackMethod.GET,
+                httpMethod: FtsCallbackMethod.POST,
                 userData: "test string value"
             };
 
@@ -575,7 +575,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                         targetLocaleIds: ["de-DE", "fr-FR"],
                         callback: {
                             url: "https://myhost.com",
-                            httpMethod: "GET",
+                            httpMethod: "POST",
                             userData: "test string value"
                         }
                     })
@@ -851,7 +851,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
 
         it("Detect file language with callback specified by URL and method", async () => {
             const params = new LanguageDetectionParameters()
-                .setCallback("https://myhost.com", FtsCallbackMethod.GET);
+                .setCallback("https://myhost.com", FtsCallbackMethod.POST);
 
             await fileTranslationsApi.detectFileLanguage(accountUid, fileUid, params);
 
@@ -868,7 +868,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                     body: JSON.stringify({
                         callback: {
                             url: "https://myhost.com",
-                            httpMethod: "GET"
+                            httpMethod: "POST"
                         }
                     })
                 }
@@ -935,7 +935,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Detect file language with callback object without user data", async () => {
             const callback = {
                 url: "https://myhost.com",
-                httpMethod: FtsCallbackMethod.GET
+                httpMethod: FtsCallbackMethod.POST
             };
 
             const params = new LanguageDetectionParameters()
@@ -956,7 +956,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                     body: JSON.stringify({
                         callback: {
                             url: "https://myhost.com",
-                            httpMethod: "GET"
+                            httpMethod: "POST"
                         }
                     })
                 }
@@ -966,7 +966,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Detect file language with callback object with user data as object", async () => {
             const callback = {
                 url: "https://myhost.com",
-                httpMethod: FtsCallbackMethod.GET,
+                httpMethod: FtsCallbackMethod.POST,
                 userData: {
                     key1: 78,
                     key2: "value"
@@ -991,7 +991,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                     body: JSON.stringify({
                         callback: {
                             url: "https://myhost.com",
-                            httpMethod: "GET",
+                            httpMethod: "POST",
                             userData: JSON.stringify({
                                 key1: 78,
                                 key2: "value"
@@ -1005,7 +1005,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
         it("Detect file language with callback object with user data as string", async () => {
             const callback = {
                 url: "https://myhost.com",
-                httpMethod: FtsCallbackMethod.GET,
+                httpMethod: FtsCallbackMethod.POST,
                 userData: "test string value"
             };
 
@@ -1027,7 +1027,7 @@ describe("SmartlingFileTranslationsApi class tests.", () => {
                     body: JSON.stringify({
                         callback: {
                             url: "https://myhost.com",
-                            httpMethod: "GET",
+                            httpMethod: "POST",
                             userData: "test string value"
                         }
                     })
