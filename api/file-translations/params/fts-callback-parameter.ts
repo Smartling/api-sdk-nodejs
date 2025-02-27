@@ -1,14 +1,9 @@
-type FtsCallbackUserData = Record<string, unknown>;
-
-enum FtsCallbackMethod {
-    // Other HTTP methods are not supported by API for now
-    POST = "POST"
-}
+import { FtsCallbackMethod } from "./fts-callback-method";
 
 interface FtsCallback {
     url: string;
     httpMethod: FtsCallbackMethod;
-    userData?: FtsCallbackUserData | string
+    userData?: string
 }
 
-export { FtsCallback, FtsCallbackMethod, FtsCallbackUserData };
+export { FtsCallback };

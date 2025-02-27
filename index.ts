@@ -17,6 +17,7 @@ export * from "./api/context/context-http-response";
 export * from "./api/exception/index";
 export * from "./api/file-translations/index";
 export * from "./api/file-translations/params/fts-callback-parameter";
+export * from "./api/file-translations/params/fts-callback-method";
 export * from "./api/file-translations/params/fts-upload-file-parameters";
 export * from "./api/file-translations/params/language-detection-parameters";
 export * from "./api/file-translations/params/translate-file-parameters";
