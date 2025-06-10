@@ -650,7 +650,7 @@ describe("Base class tests.", () => {
             userIdentifier: "userIdentifier_test",
             userSecret: "userSecret_test",
             accessToken: "accessToken_test",
-            refreshToken: "refreshToken_test",
+            refreshToken: "refreshToken_test"
         };
 
         assert.equal(JSON.stringify(json, SmartlingBaseApi.sensitiveReplacer), JSON.stringify({
@@ -658,7 +658,7 @@ describe("Base class tests.", () => {
             userIdentifier: "userIdentixxxxx",
             userSecret: "userSecretxxxxx",
             accessToken: "accessTokexxxxx",
-            refreshToken: "refreshTokxxxxx",
+            refreshToken: "refreshTokxxxxx"
         }));
     });
 });
