@@ -643,4 +643,22 @@ describe("Base class tests.", () => {
             }
         });
     });
+
+    it("Check sensitive info replacer", async () => {
+        const json = {
+            foo: "bar_test",
+            userIdentifier: "userIdentifier_test",
+            userSecret: "userSecret_test",
+            accessToken: "accessToken_test",
+            refreshToken: "refreshToken_test",
+        };
+
+        assert.equal(JSON.stringify(json, SmartlingBaseApi.sensitiveReplacer), JSON.stringify({
+            foo: "bar_test",
+            userIdentifier: "userIdentixxxxx",
+            userSecret: "userSecretxxxxx",
+            accessToken: "accessTokexxxxx",
+            refreshToken: "refreshTokxxxxx",
+        }));
+    });
 });
