@@ -49,7 +49,7 @@ export class SmartlingAuthApi extends SmartlingBaseApi {
             );
         }
 
-        this.logger.debug(`Can't refresh, doing re-auth with: ${JSON.stringify(this.response)}`);
+        this.logger.debug(`Can't refresh, doing re-auth with: ${JSON.stringify(this.response, SmartlingBaseApi.sensitiveReplacer)}`);
 
         return await this.authenticate();
     }
