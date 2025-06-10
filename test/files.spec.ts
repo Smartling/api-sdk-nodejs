@@ -11,7 +11,6 @@ import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "../api/files/params/recently-uploaded-files";
-import { ResponseBodyType } from "../api/base/enum/response-body-type";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
