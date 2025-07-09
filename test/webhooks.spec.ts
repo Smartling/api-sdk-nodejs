@@ -73,6 +73,24 @@ describe("SmartlingWebhooksApi class tests.", () => {
         );
     });
 
+    it("gets available webhook event types", async () => {
+        await webhooksApi.getAvailableEventTypes(accountUid);
+
+        sinon.assert.calledOnce(webhooksApiFetchStub);
+        sinon.assert.calledWithExactly(
+            webhooksApiFetchStub,
+            `https://test.com/webhooks-api/v2/accounts/${accountUid}/available-event-types`,
+            {
+                headers: {
+                    Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                },
+                method: "get"
+            }
+        );
+    });
+
     describe("createSubscription", () => {
         it("creates a subscription", async () => {
             const event: SubscriptionEvent = {

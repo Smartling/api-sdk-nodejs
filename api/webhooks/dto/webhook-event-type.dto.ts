@@ -1,7 +1,7 @@
-class SubscriptionEventTypeDto {
+class WebhookEventTypeDto {
     eventType: string;
     description: string;
     schema: Record<string, any>;
 }
 
-export { SubscriptionEventTypeDto };
+export { WebhookEventTypeDto };

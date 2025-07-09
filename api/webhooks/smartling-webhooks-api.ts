@@ -5,7 +5,7 @@ import { SmartlingListResponse } from "../http/smartling-list-response";
 import { SubscriptionDto } from "./dto/subscription-dto";
 import { SubscriptionSecretDto } from "./dto/subscription-secret-dto";
 import { SubscriptionStatisticsDto } from "./dto/subscription-statistics-dto";
-import { SubscriptionEventTypeDto } from "./dto/subscription-event-type.dto";
+import { WebhookEventTypeDto } from "./dto/webhook-event-type.dto";
 import { CreateSubscriptionParameters } from "./params/create-subscription-parameters";
 import { UpdateSubscriptionParameters } from "./params/update-subscription-parameters";
 import { UpdateSubscriptionSecretParameters } from "./params/update-subscription-secret-parameters";
@@ -139,7 +139,7 @@ export class SmartlingWebhooksApi extends SmartlingBaseApi {
 
     // getSubscriptionEventAttempts() {}
 
-    getAvailableEventTypes(accountUid: string): Promise<SubscriptionEventTypeDto> {
+    getAvailableEventTypes(accountUid: string): Promise<WebhookEventTypeDto> {
         return this.makeRequest(
             "get",
             `${this.entrypoint}/accounts/${accountUid}/available-event-types`
