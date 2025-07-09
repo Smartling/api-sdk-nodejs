@@ -1,8 +1,7 @@
 import { CreateUpdateSubscriptionParameters } from "./create-update-subscription-parameters";
 import { SubscriptionEvent } from "./subscription-event";
 
-export class UpdateSubscriptionParameters
-    extends CreateUpdateSubscriptionParameters<UpdateSubscriptionParameters> {
+export class UpdateSubscriptionParameters extends CreateUpdateSubscriptionParameters {
     constructor(
         subscriptionName: string,
         subscriptionUrl: string,
@@ -15,6 +14,6 @@ export class UpdateSubscriptionParameters
             events
         );
 
-        this.set("enabled", !!enabled);
+        this.set("enabled", enabled);
     }
 }

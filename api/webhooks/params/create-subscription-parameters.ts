@@ -1,8 +1,7 @@
 import { CreateUpdateSubscriptionParameters } from "./create-update-subscription-parameters";
 
-export class CreateSubscriptionParameters
-    extends CreateUpdateSubscriptionParameters<CreateSubscriptionParameters> {
-    setPayloadSecret(payloadSecret: string): CreateSubscriptionParameters {
+export class CreateSubscriptionParameters extends CreateUpdateSubscriptionParameters {
+    setPayloadSecret(payloadSecret: string) {
         this.set("payloadSecret", payloadSecret);
 
         return this;

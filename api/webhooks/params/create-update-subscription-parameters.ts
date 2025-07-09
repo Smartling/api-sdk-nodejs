@@ -7,9 +7,7 @@ const MAX_EVENTS_SIZE = 1000;
 const MAX_SUBSCRIPTION_HEADERS_SIZE = 20;
 const MAX_PROJECT_UIDS_SIZE = 10;
 
-export abstract class CreateUpdateSubscriptionParameters<
-    T extends CreateUpdateSubscriptionParameters<T>
-> extends BaseParameters {
+export abstract class CreateUpdateSubscriptionParameters extends BaseParameters {
     constructor(
         subscriptionName: string,
         subscriptionUrl: string,
@@ -38,13 +36,13 @@ export abstract class CreateUpdateSubscriptionParameters<
         this.set("events", events);
     }
 
-    setDescription(description: string): T {
+    setDescription(description: string): this {
         this.set("description", description);
 
-        return this as unknown as T;
+        return this;
     }
 
-    setRequestHeaders(requestHeaders: SubscriptionRequestHeader[]): T {
+    setRequestHeaders(requestHeaders: SubscriptionRequestHeader[]) {
         if (!requestHeaders.length) {
             throw new SmartlingException("At least one subscription header is required.");
         }
@@ -54,10 +52,10 @@ export abstract class CreateUpdateSubscriptionParameters<
         }
 
         this.set("requestHeaders", requestHeaders);
-        return this as unknown as T;
+        return this;
     }
 
-    setProjectUids(projectUids: string[]): T {
+    setProjectUids(projectUids: string[]) {
         if (!projectUids.length) {
             throw new SmartlingException("At least one project uid is required.");
         }
@@ -67,6 +65,6 @@ export abstract class CreateUpdateSubscriptionParameters<
         }
         this.set("projectUids", projectUids);
 
-        return this as unknown as T;
+        return this;
     }
 }

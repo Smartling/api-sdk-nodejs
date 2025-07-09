@@ -1,6 +1,7 @@
 export { SmartlingWebhooksApi } from "./smartling-webhooks-api";
 export { SubscriptionDto } from "./dto/subscription-dto";
 export { SubscriptionSecretDto } from "./dto/subscription-secret-dto";
+export { SubscriptionEventTypeDto } from "./dto/subscription-event-type.dto";
 export { SubscriptionEvent } from "./params/subscription-event";
 export { CreateSubscriptionParameters } from "./params/create-subscription-parameters";
 export { UpdateSubscriptionParameters } from "./params/update-subscription-parameters";
