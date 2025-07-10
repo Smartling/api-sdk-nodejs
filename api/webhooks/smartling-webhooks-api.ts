@@ -139,7 +139,7 @@ export class SmartlingWebhooksApi extends SmartlingBaseApi {
 
     // getSubscriptionEventAttempts() {}
 
-    getAvailableEventTypes(accountUid: string): Promise<WebhookEventTypeDto> {
+    getAvailableEventTypes(accountUid: string): Promise<WebhookEventTypeDto[]> {
         return this.makeRequest(
             "get",
             `${this.entrypoint}/accounts/${accountUid}/available-event-types`
