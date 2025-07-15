@@ -1,5 +1,6 @@
 export * from "./api/auth/index";
 export * from "./api/auth/dto/access-token-dto";
+export * from "./api/auth/access-token-provider";
 export * from "./api/base/index";
 export * from "./api/builder/index";
 export * from "./api/context/index";
