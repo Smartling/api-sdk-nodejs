@@ -2,6 +2,7 @@ import assert from "assert";
 import sinon from "sinon";
 import { SmartlingBaseApi } from "../api/base/index";
 import { loggerMock, responseMock, authMock } from "./mock";
+import { AccessTokenProvider } from "../api/auth/access-token-provider";
 // eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires
 const packageJson = require("../../package.json");
 
@@ -241,6 +242,53 @@ describe("Base class tests.", () => {
                 method: requestVerb,
                 headers: {
                     Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                },
+                body: payload
+            });
+
+            sinon.assert.notCalled(authResetTokenStub);
+            sinon.assert.calledOnce(responseMockTextStub);
+        });
+
+        it("Success (raw text response): auth client is access token provider with static token", async () => {
+            base.authApi = new AccessTokenProvider("test.jwt.token", "Bearer");
+
+            const requestVerb = "POST";
+            const requestUri = "https://test.com";
+            const payload = {
+                foo: "bar"
+            };
+
+            baseFetchStub.returns(responseMock);
+
+            responseMockTextStub.returns("invalid json: this test just returns raw text response but does not parse text as json");
+
+            await base.makeRequest(requestVerb, requestUri, payload, true);
+
+            sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
+
+            sinon.assert.calledOnce(baseAlterRequestDataSpy);
+            sinon.assert.calledWithExactly(
+                baseAlterRequestDataSpy,
+                requestUri,
+                {
+                    method: requestVerb,
+                    headers: {
+                        Authorization: "Bearer test.jwt.token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: payload
+                }
+            );
+
+            sinon.assert.calledOnce(baseFetchStub);
+            sinon.assert.calledWithExactly(baseFetchStub, requestUri, {
+                method: requestVerb,
+                headers: {
+                    Authorization: "Bearer test.jwt.token",
                     "Content-Type": "application/json",
                     "User-Agent": "test_user_agent"
                 },
