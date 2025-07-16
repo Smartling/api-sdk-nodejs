@@ -1,5 +1,5 @@
 import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
+import { AuthApi } from "../auth/auth-api";
 import { Logger } from "../logger";
 import { CreateJobParameters } from "./params/create-job-parameters";
 import { ListJobFilesParameters } from "./params/list-job-files-parameters";
@@ -24,7 +24,7 @@ import { AuthorizeJobParameters } from "./params/authorize-job-parameters";
 import { UpdateJobParameters } from "./params/update-job-parameters";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
-    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
+    constructor(smartlingApiBaseUrl: string, authApi: AuthApi, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/jobs-api/v3/projects`;

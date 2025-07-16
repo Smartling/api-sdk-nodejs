@@ -1,39 +1,18 @@
-import { SmartlingAuthApi } from "./index";
-import { AccessTokenDto } from "./dto/access-token-dto";
+import { AuthApi } from "./auth-api";
 
-export class AccessTokenProvider extends SmartlingAuthApi {
+export class AccessTokenProvider implements AuthApi {
     constructor(
-        accessToken: string,
-        tokenType: string,
-    ) {
-        super(null, null, null, null);
+        private readonly accessToken: string,
+        private readonly tokenType: string,
+    ) {}
 
-        this.response = {
-            accessToken,
-            tokenType,
-            expiresIn: Number.MAX_SAFE_INTEGER,
-            refreshToken: "",
-            refreshExpiresIn: Number.MAX_SAFE_INTEGER
-        } as AccessTokenDto;
+    async getAccessToken(): Promise<string> {
+        return this.accessToken;
     }
 
-    async authenticate(): Promise<AccessTokenDto> {
-        return this.response;
+    async getTokenType(): Promise<string> {
+        return this.tokenType;
     }
 
-    async refreshToken(): Promise<AccessTokenDto> {
-        return this.response;
-    }
-
-    tokenExists(): boolean {
-        return !!this.response?.accessToken;
-    }
-
-    tokenExpired(): boolean {
-        return false;
-    }
-
-    tokenCanBeRenewed(): boolean {
-        return false;
-    }
+    resetToken(): void {}
 }

@@ -1,6 +1,6 @@
 import FormData from "form-data";
 import { SmartlingBaseApi } from "../base";
-import { SmartlingAuthApi } from "../auth";
+import { AuthApi } from "../auth/auth-api";
 import { Logger } from "../logger";
 import { CreateBatchParameters } from "./params/create-batch-parameters";
 import { UploadBatchFileParameters } from "./params/upload-batch-file-parameters";
@@ -15,7 +15,7 @@ import { BaseJobDto } from "../jobs/dto/base-job-dto";
 import { JobBatchesParameters } from "./params/job-batches-parameters";
 
 export class SmartlingJobBatchesApi extends SmartlingBaseApi {
-    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
+    constructor(smartlingApiBaseUrl: string, authApi: AuthApi, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/job-batches-api/v2/projects`;

@@ -1,6 +1,6 @@
 import FormData from "form-data";
 import { SmartlingBaseApi } from "../base";
-import { SmartlingAuthApi } from "../auth";
+import { AuthApi } from "../auth/auth-api";
 import { Logger } from "../logger";
 import { FtsUploadedFileDto } from "./dto/fts-uploaded-file-dto";
 import { FtsUploadFileParameters } from "./params/fts-upload-file-parameters";
@@ -14,7 +14,7 @@ import { ResponseBodyType } from "../base/enum/response-body-type";
 import { LanguageDetectionParameters } from "./params/language-detection-parameters";
 
 export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
-    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
+    constructor(smartlingApiBaseUrl: string, authApi: AuthApi, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/file-translations-api/v2/accounts`;

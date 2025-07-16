@@ -50,12 +50,12 @@ function assertApiClient(Type: any, apiClient: SmartlingBaseApi, assertAuthClien
     );
 
     assert.equal(
-        apiClient.getClientLibId(),
+        apiClient["getClientLibId"](),
         "example-lib-name"
     );
 
     assert.equal(
-        apiClient.getClientLibVersion(),
+        apiClient["getClientLibVersion"](),
         "example-lib-version"
     );
 
@@ -76,12 +76,12 @@ function assertApiClient(Type: any, apiClient: SmartlingBaseApi, assertAuthClien
         );
 
         assert.equal(
-            apiClient["authApi"].getClientLibId(),
+            apiClient["authApi"]["getClientLibId"](),
             "example-lib-name"
         );
 
         assert.equal(
-            apiClient["authApi"].getClientLibVersion(),
+            apiClient["authApi"]["getClientLibVersion"](),
             "example-lib-version"
         );
     }
@@ -119,22 +119,22 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         const apiClient = apiClientBuilder.build(SmartlingJobsApi);
 
         assert.equal(
-            apiClient.getClientLibId(),
+            apiClient["getClientLibId"](),
             packageJson.name
         );
 
         assert.equal(
-            apiClient.getClientLibVersion(),
+            apiClient["getClientLibVersion"](),
             packageJson.version
         );
 
         assert.equal(
-            apiClient["authApi"].getClientLibId(),
+            apiClient["authApi"]["getClientLibId"](),
             packageJson.name
         );
 
         assert.equal(
-            apiClient["authApi"].getClientLibVersion(),
+            apiClient["authApi"]["getClientLibVersion"](),
             packageJson.version
         );
     });
@@ -172,12 +172,12 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         const apiClient = apiClientBuilder.build(SmartlingJobsApi);
 
         assert.equal(
-            apiClient.getClientLibId(),
+            apiClient["getClientLibId"](),
             "example-lib-name"
         );
 
         assert.equal(
-            apiClient.getClientLibVersion(),
+            apiClient["getClientLibVersion"](),
             "example-lib-version"
         );
 
@@ -197,12 +197,12 @@ describe("SmartlingApiClientBuilder class tests.", () => {
         );
 
         assert.equal(
-            apiClient["authApi"].getClientLibId(),
+            apiClient["authApi"]["getClientLibId"](),
             packageJson.name
         );
 
         assert.equal(
-            apiClient["authApi"].getClientLibVersion(),
+            apiClient["authApi"]["getClientLibVersion"](),
             packageJson.version
         );
     });

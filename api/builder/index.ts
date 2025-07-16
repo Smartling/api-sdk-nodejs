@@ -1,3 +1,4 @@
+import { AuthApi } from "../auth/auth-api";
 import { SmartlingAuthApi } from "../auth/index";
 import { SmartlingBaseApi } from "../base/index";
 import { Logger } from "../logger";
@@ -6,7 +7,7 @@ import { Logger } from "../logger";
 const packageJson = require("../../package.json");
 
 export class SmartlingApiClientBuilder {
-    protected authApiClient: SmartlingAuthApi = null;
+    protected authApiClient: AuthApi = null;
     protected userId: string = null;
     protected userSecret: string = null;
     protected baseSmartlingApiUrl: string;
@@ -60,14 +61,14 @@ export class SmartlingApiClientBuilder {
         return this;
     }
 
-    public authWithAuthApiClient(authApiClient: SmartlingAuthApi): SmartlingApiClientBuilder {
+    public authWithAuthApiClient(authApiClient: AuthApi): SmartlingApiClientBuilder {
         this.authApiClient = authApiClient;
 
         return this;
     }
 
     public build<T extends SmartlingBaseApi>(
-        constructor: new (baseUrl: string, authApi: SmartlingAuthApi, logger) => T
+        constructor: new (baseUrl: string, authApi: AuthApi, logger) => T
     ): T {
         if (this.authApiClient === null && this.userId !== null && this.userSecret !== null) {
             this.authApiClient = new SmartlingAuthApi(
@@ -77,9 +78,9 @@ export class SmartlingApiClientBuilder {
                 this.logger
             );
 
-            this.authApiClient.setClientLibId(this.clientLibId);
-            this.authApiClient.setClientLibVersion(this.clientLibVersion);
-            this.authApiClient.setOptions(this.httpClientOptions);
+            (this.authApiClient as SmartlingAuthApi).setClientLibId(this.clientLibId);
+            (this.authApiClient as SmartlingAuthApi).setClientLibVersion(this.clientLibVersion);
+            (this.authApiClient as SmartlingAuthApi).setOptions(this.httpClientOptions);
         }
 
         const instance = new constructor(this.baseSmartlingApiUrl, this.authApiClient, this.logger);
