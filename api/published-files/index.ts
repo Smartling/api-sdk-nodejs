@@ -1,12 +1,12 @@
 import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
+import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
 import { RecentlyPublishedFilesParameters } from "./params/recently-published-files-parameters";
 import { PublishedFileDto } from "./dto/published-file-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
 
 export class SmartlingPublishedFilesApi extends SmartlingBaseApi {
-    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
+    constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
 
         this.authApi = authApi;

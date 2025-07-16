@@ -1,9 +1,10 @@
 import { SmartlingBaseApi } from "../base/index";
 import { SmartlingException } from "../exception/index";
 import { Logger } from "../logger";
+import { AccessTokenProvider } from "./access-token-provider";
 import { AccessTokenDto } from "./dto/access-token-dto";
 
-export class SmartlingAuthApi extends SmartlingBaseApi {
+export class SmartlingAuthApi extends SmartlingBaseApi implements AccessTokenProvider {
     private ttlCorrectionSec: number;
     private userIdentifier: string;
     private tokenSecret: string;

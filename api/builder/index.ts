@@ -1,3 +1,4 @@
+import { AccessTokenProvider } from "../auth/access-token-provider";
 import { SmartlingAuthApi } from "../auth/index";
 import { SmartlingBaseApi } from "../base/index";
 import { Logger } from "../logger";
@@ -6,7 +7,7 @@ import { Logger } from "../logger";
 const packageJson = require("../../package.json");
 
 export class SmartlingApiClientBuilder {
-    protected authApiClient: SmartlingAuthApi = null;
+    protected authApiClient: AccessTokenProvider = null;
     protected userId: string = null;
     protected userSecret: string = null;
     protected baseSmartlingApiUrl: string;
@@ -60,14 +61,14 @@ export class SmartlingApiClientBuilder {
         return this;
     }
 
-    public authWithAuthApiClient(authApiClient: SmartlingAuthApi): SmartlingApiClientBuilder {
+    public authWithAuthApiClient(authApiClient: AccessTokenProvider): SmartlingApiClientBuilder {
         this.authApiClient = authApiClient;
 
         return this;
     }
 
     public build<T extends SmartlingBaseApi>(
-        constructor: new (baseUrl: string, authApi: SmartlingAuthApi, logger) => T
+        constructor: new (baseUrl: string, authApi: AccessTokenProvider, logger) => T
     ): T {
         if (this.authApiClient === null && this.userId !== null && this.userSecret !== null) {
             this.authApiClient = new SmartlingAuthApi(
@@ -77,9 +78,11 @@ export class SmartlingApiClientBuilder {
                 this.logger
             );
 
-            this.authApiClient.setClientLibId(this.clientLibId);
-            this.authApiClient.setClientLibVersion(this.clientLibVersion);
-            this.authApiClient.setOptions(this.httpClientOptions);
+            if (this.authApiClient instanceof SmartlingAuthApi) {
+                this.authApiClient.setClientLibVersion(this.clientLibVersion);
+                this.authApiClient.setClientLibId(this.clientLibId);
+                this.authApiClient.setOptions(this.httpClientOptions);
+            }
         }
 
         const instance = new constructor(this.baseSmartlingApiUrl, this.authApiClient, this.logger);
