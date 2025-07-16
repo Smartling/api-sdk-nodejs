@@ -78,9 +78,11 @@ export class SmartlingApiClientBuilder {
                 this.logger
             );
 
-            (this.authApiClient as SmartlingAuthApi).setClientLibId(this.clientLibId);
-            (this.authApiClient as SmartlingAuthApi).setClientLibVersion(this.clientLibVersion);
-            (this.authApiClient as SmartlingAuthApi).setOptions(this.httpClientOptions);
+            if (this.authApiClient instanceof SmartlingAuthApi) {
+                this.authApiClient.setClientLibVersion(this.clientLibVersion);
+                this.authApiClient.setClientLibId(this.clientLibId);
+                this.authApiClient.setOptions(this.httpClientOptions);
+            }
         }
 
         const instance = new constructor(this.baseSmartlingApiUrl, this.authApiClient, this.logger);
