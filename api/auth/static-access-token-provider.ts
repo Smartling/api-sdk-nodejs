@@ -1,10 +1,16 @@
 import { AccessTokenProvider } from "./access-token-provider";
 
 export class StaticAccessTokenProvider implements AccessTokenProvider {
+    private accessToken: string;
+    private tokenType: string;
+
     constructor(
-        private readonly accessToken: string,
-        private readonly tokenType: string,
-    ) {}
+        accessToken: string,
+        tokenType: string
+    ) {
+        this.accessToken = accessToken;
+        this.tokenType = tokenType;
+    }
 
     async getAccessToken(): Promise<string> {
         return this.accessToken;
@@ -14,5 +20,8 @@ export class StaticAccessTokenProvider implements AccessTokenProvider {
         return this.tokenType;
     }
 
-    resetToken(): void {}
+    resetToken(): void {
+        this.accessToken = null;
+        this.tokenType = null;
+    }
 }
