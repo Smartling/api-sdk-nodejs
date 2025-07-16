@@ -9,7 +9,7 @@ export class SmartlingAuthApi extends SmartlingBaseApi implements AuthApi {
     private userIdentifier: string;
     private tokenSecret: string;
     private requestTimestamp: number;
-    protected response: AccessTokenDto;
+    private response: AccessTokenDto;
 
     constructor(
         smartlingApiBaseUrl: string, userIdentifier: string, tokenSecret: string, logger: Logger
