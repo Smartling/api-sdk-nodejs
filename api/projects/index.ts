@@ -1,10 +1,10 @@
 import { SmartlingBaseApi } from "../base/index";
-import { AuthApi } from "../auth/auth-api";
+import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
 import { ProjectDto } from "./dto/project-dto";
 
 export class SmartlingProjectsApi extends SmartlingBaseApi {
-    constructor(smartlingApiBaseUrl: string, authApi: AuthApi, logger: Logger) {
+    constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/projects-api/v2/projects`;

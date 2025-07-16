@@ -5,14 +5,14 @@ import fetch from "cross-fetch";
 import { ParsedUrlQueryInput, stringify } from "querystring";
 import { Logger } from "../logger";
 import { SmartlingException } from "../exception/index";
-import { AuthApi } from "../auth/auth-api";
+import { AccessTokenProvider } from "../auth/access-token-provider";
 import { ResponseBodyType } from "./enum/response-body-type";
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const packageJson = require("../../package.json");
 
 export class SmartlingBaseApi {
-    protected authApi: AuthApi = undefined;
+    protected authApi: AccessTokenProvider = undefined;
     protected entrypoint: string;
     protected defaultClientLibId: string;
     protected defaultClientVersion: string;

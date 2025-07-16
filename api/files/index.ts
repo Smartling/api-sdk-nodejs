@@ -1,6 +1,6 @@
 import FormData from "form-data";
 import { SmartlingBaseApi } from "../base/index";
-import { AuthApi } from "../auth/auth-api";
+import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
 import { DownloadFileParameters } from "./params/download-file-parameters";
 import { UploadFileParameters } from "./params/upload-file-parameters";
@@ -14,7 +14,7 @@ import { RecentlyUploadedFilesParameters } from "./params/recently-uploaded-file
 import { ResponseBodyType } from "../base/enum/response-body-type";
 
 export class SmartlingFilesApi extends SmartlingBaseApi {
-    constructor(smartlingApiBaseUrl: string, authApi: AuthApi, logger: Logger) {
+    constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/files-api/v2/projects`;

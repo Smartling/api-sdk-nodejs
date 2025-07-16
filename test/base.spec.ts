@@ -2,7 +2,7 @@ import assert from "assert";
 import sinon from "sinon";
 import { SmartlingBaseApi } from "../api/base/index";
 import { loggerMock, responseMock, authMock } from "./mock";
-import { AccessTokenProvider } from "../api/auth/access-token-provider";
+import { StaticAccessTokenProvider } from "../api/auth/static-access-token-provider";
 // eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires
 const packageJson = require("../../package.json");
 
@@ -253,7 +253,7 @@ describe("Base class tests.", () => {
         });
 
         it("Success (raw text response): auth client is access token provider with static token", async () => {
-            base.authApi = new AccessTokenProvider("test.jwt.token", "Bearer");
+            base.authApi = new StaticAccessTokenProvider("test.jwt.token", "Bearer");
 
             const requestVerb = "POST";
             const requestUri = "https://test.com";
