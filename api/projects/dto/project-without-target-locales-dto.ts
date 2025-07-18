@@ -1,5 +1,3 @@
-import { LocaleDto } from "./locale-dto";
-
 interface ProjectWithoutTargetLocalesDto {
     accountUid: string;
     archived: boolean;

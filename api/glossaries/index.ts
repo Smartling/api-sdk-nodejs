@@ -12,7 +12,10 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/glossary-api/v3`;
     }
 
-    async searchGlossaries(accountUid: string, parameters: SearchGlossariesParameters): Promise<SmartlingListResponse<GlossaryDto>> {
+    async searchGlossaries(
+        accountUid: string,
+        parameters: SearchGlossariesParameters
+    ): Promise<SmartlingListResponse<GlossaryDto>> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/search`,

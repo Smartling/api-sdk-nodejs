@@ -20,7 +20,10 @@ export class SmartlingProjectsApi extends SmartlingBaseApi {
         );
     }
 
-    async listProjects(accountUid: string, parameters?: ListProjectsParameters): Promise<SmartlingListResponse<ProjectWithoutTargetLocalesDto>> {
+    async listProjects(
+        accountUid: string,
+        parameters?: ListProjectsParameters
+    ): Promise<SmartlingListResponse<ProjectWithoutTargetLocalesDto>> {
         const accountsEndpoint = this.entrypoint.replace("/projects-api/v2/projects", `/accounts-api/v2/accounts/${accountUid}/projects`);
 
         return await this.makeRequest(
