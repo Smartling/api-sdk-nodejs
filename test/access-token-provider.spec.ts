@@ -6,7 +6,6 @@ describe("AccessTokenProvider", () => {
 
     it("should return the static token and token type", async () => {
         const provider = new StaticAccessTokenProvider(staticToken, "Bearer");
-        const response = await provider.getAccessToken();
 
         assert.strictEqual(await provider.getAccessToken(), staticToken);
         assert.strictEqual(await provider.getTokenType(), "Bearer");
