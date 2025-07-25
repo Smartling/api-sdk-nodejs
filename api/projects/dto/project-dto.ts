@@ -1,14 +1,8 @@
 import { LocaleDto } from "./locale-dto";
+import { ProjectWithoutTargetLocalesDto } from "./project-without-target-locales-dto";
 
-interface ProjectDto {
-    accountUid: string;
-    archived: boolean;
-    projectId: string;
-    projectName: string;
-    projectTypeCode: string;
-    sourceLocaleDescription: string;
-    sourceLocaleId: string;
-    targetLocales: Array<LocaleDto>
+interface ProjectDto extends ProjectWithoutTargetLocalesDto {
+    targetLocales: Array<LocaleDto>;
 }
 
 export { ProjectDto };

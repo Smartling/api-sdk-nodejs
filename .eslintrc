@@ -69,7 +69,8 @@
     "react/jsx-indent-props": ["error", 4],
     "react/no-unescaped-entities": "off",
     "react/prefer-stateless-function": "off",
-    "react/require-default-props": "off"
+    "react/require-default-props": "off",
+    "flowtype/no-types-missing-file-annotation": "off"
   },
   env: {
     browser: true,

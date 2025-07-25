@@ -1,7 +1,7 @@
 import string2fileStream from "string-to-file-stream";
 import FormData from "form-data";
 import { SmartlingBaseApi } from "../base/index";
-import { SmartlingAuthApi } from "../auth/index";
+import { AccessTokenProvider } from "../auth/access-token-provider";
 import { ContextUploadParameters } from "./params/context-upload-parameters";
 import { ContextDto } from "./dto/context-dto";
 import { ContextAutomaticMatchParameters } from "./params/context-automatic-match-parameters";
@@ -13,7 +13,7 @@ import { ListParameters } from "./params/list-parameters";
 import { Logger } from "../logger";
 
 export class SmartlingContextApi extends SmartlingBaseApi {
-    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
+    constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
 
         this.authApi = authApi;
