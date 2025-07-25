@@ -162,7 +162,8 @@ export class SmartlingBaseApi {
                     "dueDate",
                     "actionTime",
                     "publishDate",
-                    "lastModified"
+                    "lastModified",
+                    "attemptDate"
                 ];
 
                 if (dateProperties.includes(key) && value) {

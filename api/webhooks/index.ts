@@ -1,4 +1,11 @@
 export { SmartlingWebhooksApi } from "./smartling-webhooks-api";
+export { ScrollableResponse } from "./dto/scrollable-response";
+export { SubscriptionAttemptedEventDto } from "./dto/subscription-attempted-event-dto";
+export { SubscriptionEventDto } from "./dto/subscription-event-dto";
+export { SubscriptionEventAttemptDto } from "./dto/subscription-event-attempt-dto";
+export { SubscriptionEventAttemptStatus } from "./dto/subscription-event-attempt-status";
+export { SubscriptionEventTriggerType } from "./dto/subscription-event-trigger-type";
+export { SubscriptionStatisticsDto } from "./dto/subscription-statistics-dto";
 export { SubscriptionDto } from "./dto/subscription-dto";
 export { SubscriptionSecretDto } from "./dto/subscription-secret-dto";
 export { WebhookEventTypeDto } from "./dto/webhook-event-type.dto";

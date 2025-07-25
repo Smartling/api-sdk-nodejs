@@ -9,6 +9,11 @@ import { WebhookEventTypeDto } from "./dto/webhook-event-type.dto";
 import { CreateSubscriptionParameters } from "./params/create-subscription-parameters";
 import { UpdateSubscriptionParameters } from "./params/update-subscription-parameters";
 import { UpdateSubscriptionSecretParameters } from "./params/update-subscription-secret-parameters";
+import { ScrollableResponse } from "./dto/scrollable-response";
+import { SubscriptionAttemptedEventDto } from "./dto/subscription-attempted-event-dto";
+import { SubscriptionEventDto } from "./dto/subscription-event-dto";
+import { SubscriptionEventAttemptDto } from "./dto/subscription-event-attempt-dto";
+import { GetSubscriptionEventsParameters } from "./params/get-subscription-events-parameters";
 
 export class SmartlingWebhooksApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
@@ -131,13 +136,50 @@ export class SmartlingWebhooksApi extends SmartlingBaseApi {
         );
     }
 
-    // getSubscriptionEvents() {}
+    getSubscriptionEvents(
+        accountUid: string,
+        subscriptionUid: string,
+        params?: GetSubscriptionEventsParameters
+    ): Promise<ScrollableResponse<SubscriptionAttemptedEventDto>> {
+        return this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/subscriptions/${subscriptionUid}/events`,
+            params ? params.export() : undefined
+        );
+    }
 
-    // getSubscriptionEvent() {}
+    getSubscriptionEvent(
+        accountUid: string,
+        subscriptionUid: string,
+        eventId: string
+    ): Promise<SubscriptionEventDto> {
+        return this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/subscriptions/${subscriptionUid}/events/${eventId}`
+        );
+    }
 
-    // sendSubscriptionEvent() {}
+    getSubscriptionEventAttempts(
+        accountUid: string,
+        subscriptionUid: string,
+        eventId: string
+    ): Promise<SmartlingListResponse<SubscriptionEventAttemptDto>> {
+        return this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/subscriptions/${subscriptionUid}/events/${eventId}/attempts`
+        );
+    }
 
-    // getSubscriptionEventAttempts() {}
+    sendSubscriptionEvent(
+        accountUid: string,
+        subscriptionUid: string,
+        eventId: string
+    ): Promise<void> {
+        return this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/subscriptions/${subscriptionUid}/events/${eventId}/send`
+        );
+    }
 
     getAvailableEventTypes(accountUid: string): Promise<WebhookEventTypeDto[]> {
         return this.makeRequest(

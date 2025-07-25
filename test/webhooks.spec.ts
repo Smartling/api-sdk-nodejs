@@ -5,6 +5,8 @@ import {
     CreateSubscriptionParameters,
     UpdateSubscriptionParameters,
     UpdateSubscriptionSecretParameters,
+    GetSubscriptionEventsParameters,
+    SubscriptionEventAttemptStatus,
     SubscriptionEvent
 } from "../api/webhooks";
 import { SmartlingAuthApi } from "../api/auth";
@@ -472,6 +474,136 @@ describe("SmartlingWebhooksApi class tests.", () => {
                     "User-Agent": "test_user_agent"
                 },
                 method: "get"
+            }
+        );
+    });
+
+    describe("getSubscriptionEvents", () => {
+        it("gets a subscription events when no parameters", async () => {
+            const subscriptionUid = "subscriptionUid";
+            await webhooksApi.getSubscriptionEvents(accountUid, subscriptionUid);
+
+            sinon.assert.calledOnce(webhooksApiFetchStub);
+            sinon.assert.calledWithExactly(
+                webhooksApiFetchStub,
+                `https://test.com/webhooks-api/v2/accounts/${accountUid}/subscriptions/${subscriptionUid}/events`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("gets a subscription events when empty parameters", async () => {
+            const subscriptionUid = "subscriptionUid";
+            await webhooksApi.getSubscriptionEvents(
+                accountUid, subscriptionUid, new GetSubscriptionEventsParameters());
+
+            sinon.assert.calledOnce(webhooksApiFetchStub);
+            sinon.assert.calledWithExactly(
+                webhooksApiFetchStub,
+                `https://test.com/webhooks-api/v2/accounts/${accountUid}/subscriptions/${subscriptionUid}/events?`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("gets a subscription events when parameter specified", async () => {
+            const subscriptionUid = "subscriptionUid";
+            const date = new Date();
+            const dateString = encodeURIComponent(`${date.toISOString().split(".")[0]}Z`);
+            const params = new GetSubscriptionEventsParameters()
+                .setLimit(10)
+                .setScrollId("scrollId123")
+                .setAttemptStatus(SubscriptionEventAttemptStatus.SUCCESS)
+                .setCreatedDateBefore(date)
+                .setCreatedDateAfter(date)
+                .setEventTypes(["event1", "event2"]);
+            await webhooksApi.getSubscriptionEvents(accountUid, subscriptionUid, params);
+
+            sinon.assert.calledOnce(webhooksApiFetchStub);
+            sinon.assert.calledWithExactly(
+                webhooksApiFetchStub,
+                `https://test.com/webhooks-api/v2/accounts/${accountUid}/subscriptions/${subscriptionUid}/events?limit=10&scrollId=scrollId123&attemptStatus=SUCCESS&createdDateBefore=${dateString}&createdDateAfter=${dateString}&eventTypes=event1&eventTypes=event2`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+    });
+
+    it("gets a subscription event", async () => {
+        const subscriptionUid = "subscriptionUid";
+        const eventId = "eventId";
+        await webhooksApi.getSubscriptionEvent(accountUid, subscriptionUid, eventId);
+
+        sinon.assert.calledOnce(webhooksApiFetchStub);
+        sinon.assert.calledWithExactly(
+            webhooksApiFetchStub,
+            `https://test.com/webhooks-api/v2/accounts/${accountUid}/subscriptions/${subscriptionUid}/events/${eventId}`,
+            {
+                headers: {
+                    Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                },
+                method: "get"
+            }
+        );
+    });
+
+    it("gets a subscription event attempts", async () => {
+        const subscriptionUid = "subscriptionUid";
+        const eventId = "eventId";
+        await webhooksApi.getSubscriptionEventAttempts(accountUid, subscriptionUid, eventId);
+
+        sinon.assert.calledOnce(webhooksApiFetchStub);
+        sinon.assert.calledWithExactly(
+            webhooksApiFetchStub,
+            `https://test.com/webhooks-api/v2/accounts/${accountUid}/subscriptions/${subscriptionUid}/events/${eventId}/attempts`,
+            {
+                headers: {
+                    Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                },
+                method: "get"
+            }
+        );
+    });
+
+    it("sends a subscription", async () => {
+        const subscriptionUid = "sub-999";
+        const eventId = "event-123";
+
+        await webhooksApi.sendSubscriptionEvent(accountUid, subscriptionUid, eventId);
+
+        sinon.assert.calledOnce(webhooksApiFetchStub);
+        sinon.assert.calledWithExactly(
+            webhooksApiFetchStub,
+            `https://test.com/webhooks-api/v2/accounts/${accountUid}/subscriptions/${subscriptionUid}/events/${eventId}/send`,
+            {
+                headers: {
+                    Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                },
+                method: "post"
             }
         );
     });

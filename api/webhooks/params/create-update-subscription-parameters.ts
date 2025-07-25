@@ -42,7 +42,7 @@ export abstract class CreateUpdateSubscriptionParameters extends BaseParameters 
         return this;
     }
 
-    setRequestHeaders(requestHeaders: SubscriptionRequestHeader[]) {
+    setRequestHeaders(requestHeaders: SubscriptionRequestHeader[]): this {
         if (!requestHeaders.length) {
             throw new SmartlingException("At least one subscription header is required.");
         }
@@ -55,7 +55,7 @@ export abstract class CreateUpdateSubscriptionParameters extends BaseParameters 
         return this;
     }
 
-    setProjectUids(projectUids: string[]) {
+    setProjectUids(projectUids: string[]): this {
         if (!projectUids.length) {
             throw new SmartlingException("At least one project uid is required.");
         }
