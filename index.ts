@@ -124,3 +124,4 @@ export * from "./api/mt/index";
 export * from "./api/mt/params/smartling-mt-parameters";
 export * from "./api/mt/params/source-text-item";
 export * from "./api/mt/dto/translation-text-item-dto";
+export * from "./api/webhooks";
