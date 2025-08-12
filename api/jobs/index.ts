@@ -22,6 +22,10 @@ import { FullSourceFileDto } from "./dto/full-source-file-dto";
 import { AddedFileDto } from "./dto/added-file-dto";
 import { AuthorizeJobParameters } from "./params/authorize-job-parameters";
 import { UpdateJobParameters } from "./params/update-job-parameters";
+import { AddStringsToJobParameters } from "./params/add-strings-to-job-parameters";
+import { RemoveStringsFromJobParameters } from "./params/remove-strings-from-job-parameters";
+import { AddedStringsDto } from "./dto/added-strings-dto";
+import { RemovedStringsDto } from "./dto/removed-strings-dto";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -163,6 +167,26 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         await this.makeRequest(
             "delete",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}`
+        );
+    }
+
+    async addStringsToJob(
+        projectId: string, translationJobUid: string, params: AddStringsToJobParameters
+    ): Promise<AddedStringsDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/strings/add`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async removeStringsFromJob(
+        projectId: string, translationJobUid: string, params: RemoveStringsFromJobParameters
+    ): Promise<RemovedStringsDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/strings/remove`,
+            JSON.stringify(params.export())
         );
     }
 }
