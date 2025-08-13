@@ -16,6 +16,8 @@ import { AddFileParameters } from "../api/jobs/params/add-file-parameters";
 import { AuthorizeJobParameters } from "../api/jobs/params/authorize-job-parameters";
 import { UpdateJobParameters } from "../api/jobs/params/update-job-parameters";
 import { CallbackMethod } from "../api/jobs/params/callback-method";
+import { AddStringsToJobParameters } from "../api/jobs/params/add-strings-to-job-parameters";
+import { RemoveStringsFromJobParameters } from "../api/jobs/params/remove-strings-from-job-parameters";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -408,6 +410,59 @@ describe("SmartlingJobsAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "delete"
+                }
+            );
+        });
+
+        it("Add strings to job", async () => {
+            const params = new AddStringsToJobParameters();
+            const testHashcodes = ["hash1", "hash2", "hash3"];
+            const testTargetLocaleIds = ["fr-FR", "de-DE"];
+
+            params.setHashcodes(testHashcodes)
+                .setMoveEnabled(true)
+                .setTargetLocaleIds(testTargetLocaleIds);
+
+            await jobApi.addStringsToJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/strings/add`,
+                {
+                    body: "{\"hashcodes\":[\"hash1\",\"hash2\",\"hash3\"],\"moveEnabled\":true,\"targetLocaleIds\":[\"fr-FR\",\"de-DE\"]}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Remove strings from job", async () => {
+            const params = new RemoveStringsFromJobParameters();
+            const testHashcodes = ["hash1", "hash2", "hash3"];
+            const testTargetLocaleIds = ["fr-FR", "de-DE"];
+
+            params.setHashcodes(testHashcodes)
+                .setTargetLocaleIds(testTargetLocaleIds);
+
+            await jobApi.removeStringsFromJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/strings/remove`,
+                {
+                    body: "{\"hashcodes\":[\"hash1\",\"hash2\",\"hash3\"],\"targetLocaleIds\":[\"fr-FR\",\"de-DE\"]}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
                 }
             );
         });
