@@ -3,6 +3,7 @@ export * from "./api/auth/dto/access-token-dto";
 export * from "./api/auth/static-access-token-provider";
 export * from "./api/auth/access-token-provider";
 export * from "./api/base/index";
+export * from "./api/base/enum/response-body-type";
 export * from "./api/builder/index";
 export * from "./api/context/index";
 export * from "./api/context/dto/binding/binding-dto";
