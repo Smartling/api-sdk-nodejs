@@ -1,5 +1,5 @@
 import { SmartlingBaseApi } from "../base";
-import { SmartlingAuthApi } from "../auth";
+import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { SubscriptionDto } from "./dto/subscription-dto";
@@ -16,7 +16,7 @@ import { SubscriptionEventAttemptDto } from "./dto/subscription-event-attempt-dt
 import { GetSubscriptionEventsParameters } from "./params/get-subscription-events-parameters";
 
 export class SmartlingWebhooksApi extends SmartlingBaseApi {
-    constructor(smartlingApiBaseUrl: string, authApi: SmartlingAuthApi, logger: Logger) {
+    constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
         this.authApi = authApi;
         this.entrypoint = `${smartlingApiBaseUrl}/webhooks-api/v2`;
