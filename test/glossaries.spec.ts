@@ -4,7 +4,7 @@ import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { SearchGlossariesParameters } from "../api/glossaries/params/search-glossaries-parameters";
 import { ExportEntriesParameters } from "../api/glossaries/params/export-entries-parameters";
-import { ExportFormat, TbxVersion, EntryState, FilterLevel, DateFilterType, LabelType, SortDirection, SortField } from "../api/glossaries/dto/export-entries-enums";
+import { ExportFormat, TbxVersion, EntryState, FilterLevel, SortField, SortDirection, LabelType, DateFilterType } from "../api/glossaries/enums";
 
 describe("SmartlingGlossariesApi class tests.", () => {
     const accountUid = "testAccountUid";
@@ -132,33 +132,12 @@ describe("SmartlingGlossariesApi class tests.", () => {
                 .setFilterReturnFallbackTranslations(false)
                 .setFilterLabels({ type: LabelType.EMPTY })
                 .setFilterDntTermSet(false)
-                .setFilterCreated({
-                    level: FilterLevel.ANY,
-                    date: "2023-02-01T11:45:00.000Z",
-                    type: DateFilterType.AFTER
-                })
-                .setFilterLastModified({
-                    level: FilterLevel.ANY,
-                    date: "2023-02-01T11:45:00.000Z",
-                    type: DateFilterType.AFTER
-                })
-                .setFilterCreatedBy({
-                    level: FilterLevel.ANY,
-                    userIds: ["user1", "user2"]
-                })
-                .setFilterLastModifiedBy({
-                    level: FilterLevel.ANY,
-                    userIds: ["user1", "user2"]
-                })
-                .setFilterPaging({
-                    offset: 0,
-                    limit: 50
-                })
-                .setFilterSorting({
-                    field: SortField.TERM,
-                    direction: SortDirection.DESC,
-                    localeId: "uk-UA"
-                });
+                .setFilterCreated({ level: FilterLevel.ANY, type: DateFilterType.AFTER, date: "2023-02-01T11:45:00.000Z" })
+                .setFilterLastModified({ level: FilterLevel.ANY, type: DateFilterType.AFTER, date: "2023-02-01T11:45:00.000Z" })
+                .setFilterCreatedBy({ level: FilterLevel.ANY, userIds: ["user1", "user2"] })
+                .setFilterLastModifiedBy({ level: FilterLevel.ANY, userIds: ["user1", "user2"] })
+                .setFilterPaging({ offset: 0, limit: 50 })
+                .setFilterSorting({ field: SortField.TERM, direction: SortDirection.DESC, localeId: "uk-UA" });
 
             await glossariesApi.exportGlossaryEntries(accountUid, glossaryUid, parameters);
 

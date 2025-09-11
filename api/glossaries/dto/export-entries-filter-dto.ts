@@ -1,30 +1,9 @@
-import { FilterLevel, DateFilterType, LabelType, SortDirection, SortField, EntryState } from "./export-entries-enums";
-
-export interface LabelTypeDto {
-    type: LabelType;
-}
-
-export interface DateFilterDto {
-    level: FilterLevel;
-    date: string;
-    type: DateFilterType;
-}
-
-export interface UserFilterDto {
-    level: FilterLevel;
-    userIds: Array<string>;
-}
-
-export interface ExportEntriesPaginationDto {
-    offset: number;
-    limit: number;
-}
-
-export interface ExportEntriesSortingDto {
-    field: SortField;
-    direction: SortDirection;
-    localeId: string;
-}
+import { EntryState } from "../enums/entry-state";
+import { LabelTypeDto } from "./label-type-dto";
+import { DateFilterDto } from "./date-filter-dto";
+import { UserFilterDto } from "./user-filter-dto";
+import { PaginationDto } from "./pagination-dto";
+import { EntrySortingDto } from "./entry-sorting-dto";
 
 export interface ExportEntriesFilterDto {
     query?: string;
@@ -41,6 +20,6 @@ export interface ExportEntriesFilterDto {
     lastModified?: DateFilterDto;
     createdBy?: UserFilterDto;
     lastModifiedBy?: UserFilterDto;
-    paging?: ExportEntriesPaginationDto;
-    sorting?: ExportEntriesSortingDto;
+    paging?: PaginationDto;
+    sorting?: EntrySortingDto;
 }

@@ -1,13 +1,13 @@
 import { BaseParameters } from "../../parameters";
-import {
-    ExportEntriesFilterDto,
-    LabelTypeDto,
-    DateFilterDto,
-    UserFilterDto,
-    ExportEntriesPaginationDto,
-    ExportEntriesSortingDto
-} from "../dto/export-entries-filter-dto";
-import { ExportFormat, TbxVersion, EntryState } from "../dto/export-entries-enums";
+import { ExportEntriesFilterDto } from "../dto/export-entries-filter-dto";
+import { ExportFormat } from "../enums/export-format";
+import { TbxVersion } from "../enums/tbx-version";
+import { EntryState } from "../enums/entry-state";
+import { LabelTypeDto } from "../dto/label-type-dto";
+import { DateFilterDto } from "../dto/date-filter-dto";
+import { UserFilterDto } from "../dto/user-filter-dto";
+import { PaginationDto } from "../dto/pagination-dto";
+import { EntrySortingDto } from "../dto/entry-sorting-dto";
 
 export class ExportEntriesParameters extends BaseParameters {
     constructor() {
@@ -144,14 +144,14 @@ export class ExportEntriesParameters extends BaseParameters {
         return this;
     }
 
-    setFilterPaging(paging: ExportEntriesPaginationDto): ExportEntriesParameters {
+    setFilterPaging(paging: PaginationDto): ExportEntriesParameters {
         const filter = this.parameters.filter || {};
         filter.paging = paging;
         this.set("filter", filter);
         return this;
     }
 
-    setFilterSorting(sorting: ExportEntriesSortingDto): ExportEntriesParameters {
+    setFilterSorting(sorting: EntrySortingDto): ExportEntriesParameters {
         const filter = this.parameters.filter || {};
         filter.sorting = sorting;
         this.set("filter", filter);
