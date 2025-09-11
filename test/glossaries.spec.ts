@@ -3,6 +3,8 @@ import { SmartlingGlossariesApi } from "../api/glossaries/index";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { SearchGlossariesParameters } from "../api/glossaries/params/search-glossaries-parameters";
+import { ExportEntriesParameters } from "../api/glossaries/params/export-entries-parameters";
+import { ExportFormat, TbxVersion, EntryState, FilterLevel, DateFilterType, LabelType, SortDirection, SortField } from "../api/glossaries/dto/export-entries-enums";
 
 describe("SmartlingGlossariesApi class tests.", () => {
     const accountUid = "testAccountUid";
@@ -84,6 +86,132 @@ describe("SmartlingGlossariesApi class tests.", () => {
                     method: "get"
                 }
             );
+        });
+
+        it("Export glossary entries with minimal parameters", async () => {
+            const parameters = new ExportEntriesParameters()
+                .setFormat(ExportFormat.CSV)
+                .setLocaleIds(["en-US", "fr-FR"]);
+
+            await glossariesApi.exportGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/download`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        filter: {},
+                        localeIds: ["en-US", "fr-FR"],
+                        format: "CSV"
+                    })
+                }
+            );
+        });
+
+        it("Export glossary entries with full parameters", async () => {
+            const parameters = new ExportEntriesParameters()
+                .setFormat(ExportFormat.TBX)
+                .setTbxVersion(TbxVersion.TBXcoreStructV02)
+                .setLocaleIds(["en-US", "uk-UA"])
+                .setFocusLocaleId("en-US")
+                .setSkipEntries(false)
+                .setFilterQuery("P&G term")
+                .setFilterLocaleIds(["uk-UA", "en", "en-US"])
+                .setFilterEntryUids(["16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd"])
+                .setFilterEntryState(EntryState.ACTIVE)
+                .setFilterMissingTranslationLocaleId("uk-UA")
+                .setFilterPresentTranslationLocaleId("uk-UA")
+                .setFilterDntLocaleId("uk-UA")
+                .setFilterReturnFallbackTranslations(false)
+                .setFilterLabels({ type: LabelType.EMPTY })
+                .setFilterDntTermSet(false)
+                .setFilterCreated({
+                    level: FilterLevel.ANY,
+                    date: "2023-02-01T11:45:00.000Z",
+                    type: DateFilterType.AFTER
+                })
+                .setFilterLastModified({
+                    level: FilterLevel.ANY,
+                    date: "2023-02-01T11:45:00.000Z",
+                    type: DateFilterType.AFTER
+                })
+                .setFilterCreatedBy({
+                    level: FilterLevel.ANY,
+                    userIds: ["user1", "user2"]
+                })
+                .setFilterLastModifiedBy({
+                    level: FilterLevel.ANY,
+                    userIds: ["user1", "user2"]
+                })
+                .setFilterPaging({
+                    offset: 0,
+                    limit: 50
+                })
+                .setFilterSorting({
+                    field: SortField.TERM,
+                    direction: SortDirection.DESC,
+                    localeId: "uk-UA"
+                });
+
+            await glossariesApi.exportGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            const callArgs = glossariesApiFetchStub.getCall(0).args;
+            const body = JSON.parse(callArgs[1].body);
+
+            sinon.assert.match(body, {
+                format: "TBX",
+                tbxVersion: "TBXcoreStructV02",
+                localeIds: ["en-US", "uk-UA"],
+                focusLocaleId: "en-US",
+                skipEntries: false,
+                filter: {
+                    query: "P&G term",
+                    localeIds: ["uk-UA", "en", "en-US"],
+                    entryUids: ["16ed66cc-accc-4bb5-9822-bc84e93429f8", "69dae398-96c2-45f6-9f0d-91470c3464bd"],
+                    entryState: "ACTIVE",
+                    missingTranslationLocaleId: "uk-UA",
+                    presentTranslationLocaleId: "uk-UA",
+                    dntLocaleId: "uk-UA",
+                    returnFallbackTranslations: false,
+                    labels: { type: "empty" },
+                    dntTermSet: false,
+                    created: {
+                        level: "ANY",
+                        date: "2023-02-01T11:45:00.000Z",
+                        type: "after"
+                    },
+                    lastModified: {
+                        level: "ANY",
+                        date: "2023-02-01T11:45:00.000Z",
+                        type: "after"
+                    },
+                    createdBy: {
+                        level: "ANY",
+                        userIds: ["user1", "user2"]
+                    },
+                    lastModifiedBy: {
+                        level: "ANY",
+                        userIds: ["user1", "user2"]
+                    },
+                    paging: {
+                        offset: 0,
+                        limit: 50
+                    },
+                    sorting: {
+                        field: "term",
+                        direction: "DESC",
+                        localeId: "uk-UA"
+                    }
+                }
+            });
         });
     });
 });
