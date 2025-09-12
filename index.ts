@@ -112,7 +112,14 @@ export * from "./api/published-files/params/recently-published-files-parameters"
 export * from "./api/strings/index";
 export * from "./api/strings/dto/source-string-dto";
 export * from "./api/strings/dto/source-string-key-dto";
+export * from "./api/strings/dto/create-strings-response-dto";
+export * from "./api/strings/dto/created-string-item-dto";
+export * from "./api/strings/dto/process-status-dto";
+export * from "./api/strings/dto/process-state-enum";
+export * from "./api/strings/dto/process-statistics-dto";
 export * from "./api/strings/params/fetch-source-strings-parameters";
+export * from "./api/strings/params/create-strings-parameters";
+export * from "./api/strings/params/string-item-parameters";
 export * from "./api/tags/index";
 export * from "./api/tags/dto/tag-dto";
 export * from "./api/tags/dto/project-id-tag-dto";
