@@ -1,7 +1,8 @@
 enum ProcessState {
     OPEN = "OPEN",
     CLOSED = "CLOSED",
-    FAILED = "FAILED"
+    FAILED = "FAILED",
+    COMPLETED = "COMPLETED",
 }
 
 export { ProcessState };

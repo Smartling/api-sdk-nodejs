@@ -634,7 +634,6 @@ describe("Base class tests.", () => {
         });
 
         it("Fail (json parsing failed).", async () => {
-            const error = new Error("Json parse test error.");
             const requestVerb = "POST";
             const requestUri = "https://test.com";
             const payload = {
@@ -646,8 +645,7 @@ describe("Base class tests.", () => {
             };
 
             baseFetchStub.returns(responseMock);
-            responseMockTextStub.onCall(0).throws(error);
-            responseMockTextStub.onCall(1).resolves("error");
+            responseMockTextStub.onCall(0).resolves("invalid json {");
 
             try {
                 await base.makeRequest(requestVerb, requestUri, payload);
@@ -656,7 +654,7 @@ describe("Base class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Couldn't parse response json");
-                assert.deepEqual(e.payload, { statusCode: 200, errorResponse: "error", requestId: "test-request-id" });
+                assert.deepEqual(e.payload, { statusCode: 200, errorResponse: "invalid json {", requestId: "test-request-id" });
             } finally {
                 sinon.assert.calledOnce(baseGetDefaultHeaderSpy);
 
@@ -687,7 +685,7 @@ describe("Base class tests.", () => {
                 });
 
                 sinon.assert.notCalled(authResetTokenStub);
-                sinon.assert.calledTwice(responseMockTextStub);
+                sinon.assert.calledOnce(responseMockTextStub);
             }
         });
     });

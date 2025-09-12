@@ -149,8 +149,9 @@ export class SmartlingBaseApi {
             return response;
         }
 
+        let textResponse: string;
         try {
-            const textResponse = await response.text();
+            textResponse = await response.text();
             const jsonResponse = JSON.parse(textResponse, (key, value) => {
                 const dateProperties = [
                     "created",
@@ -181,7 +182,7 @@ export class SmartlingBaseApi {
 
             throw new SmartlingException("Couldn't parse response json", {
                 statusCode: response.status,
-                errorResponse: await response.text(),
+                errorResponse: textResponse,
                 requestId: response.headers.get("x-sl-requestid")
             });
         }

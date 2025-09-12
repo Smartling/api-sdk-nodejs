@@ -5,6 +5,7 @@ import { GlossaryDto } from "./dto/glossary-dto";
 import { SearchGlossariesParameters } from "./params/search-glossaries-parameters";
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { ExportEntriesParameters } from "./params/export-entries-parameters";
+import { ResponseBodyType } from "../base/enum/response-body-type";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -35,11 +36,12 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         accountUid: string,
         glossaryUid: string,
         parameters: ExportEntriesParameters
-    ): Promise<void> {
-        await this.makeRequest(
+    ): Promise<string> {
+        return this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/download`,
-            JSON.stringify(parameters.export())
+            JSON.stringify(parameters.export()),
+            ResponseBodyType.TEXT
         );
     }
 }
