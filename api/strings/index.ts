@@ -39,7 +39,7 @@ export class SmartlingStringsApi extends SmartlingBaseApi {
     async getCreateStringStatus(
         projectUid: string,
         processUid: string
-    ): Promise<SmartlingListResponse<ProcessStatusDto>> {
+    ): Promise<ProcessStatusDto> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectUid}/processes/${processUid}`
