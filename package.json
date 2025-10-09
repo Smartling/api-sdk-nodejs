@@ -45,7 +45,7 @@
     "ansi-regex": "^5.0.1",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.31.0",
-    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-flowtype": "^2.41.0",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-import": "^2.8.0",
