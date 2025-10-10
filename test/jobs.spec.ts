@@ -59,7 +59,6 @@ describe("SmartlingJobsAPI class tests.", () => {
                 .setTargetLocaleIds(["pt-PT"])
                 .setCallbackUrl("testCallbackUrl");
 
-
             await jobApi.createJob(projectId, params);
 
             sinon.assert.calledOnce(jobServiceApiFetchStub);

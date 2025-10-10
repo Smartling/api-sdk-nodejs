@@ -34,7 +34,8 @@ describe("SmartlingLocalesApi class tests.", () => {
         sinon.assert.calledOnce(localesApiFetchStub);
         sinon.assert.calledWithExactly(
             localesApiFetchStub,
-            "https://test.com/locales-api/v2/dictionary/locales", {
+            "https://test.com/locales-api/v2/dictionary/locales",
+            {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
@@ -55,7 +56,8 @@ describe("SmartlingLocalesApi class tests.", () => {
         sinon.assert.calledOnce(localesApiFetchStub);
         sinon.assert.calledWithExactly(
             localesApiFetchStub,
-            "https://test.com/locales-api/v2/dictionary/locales?localeIds=fr-FR&localeIds=de-DE&supportedOnly=true", {
+            "https://test.com/locales-api/v2/dictionary/locales?localeIds=fr-FR&localeIds=de-DE&supportedOnly=true",
+            {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",

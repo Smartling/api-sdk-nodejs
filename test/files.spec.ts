@@ -217,7 +217,6 @@ describe("SmartlingFilesApi class tests.", () => {
                 params = new DownloadFileAllTranslationsParameters();
             });
 
-
             it("Supports all parameters of single file download", async () => {
                 params
                     .setRetrievalType(RetrievalType.PUBLISHED)

@@ -14,7 +14,7 @@ describe("SmartlingStringsApi class tests.", () => {
     const limit = 25;
     const offset = 0;
     const hashCodes = ["testStringHashCode1", "testStringHashCode2"];
-    const hashCodesParams = hashCodes.map(hashCode => `hashcodes=${hashCode}`).join("&");
+    const hashCodesParams = hashCodes.map((hashCode) => `hashcodes=${hashCode}`).join("&");
     const expectedFetchSourceStringsParams = `${hashCodesParams}&fileUri=${fileUri}&limit=${limit}&offset=${offset}`;
     let stringsApi: SmartlingStringsApi;
     let fetchSourceStringsParameters: FetchSourceStringsParameters;
@@ -77,7 +77,8 @@ describe("SmartlingStringsApi class tests.", () => {
             sinon.assert.calledOnce(stringsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 stringsServiceApiFetchStub,
-                `https://test.com/strings-api/v2/projects/${projectId}`, {
+                `https://test.com/strings-api/v2/projects/${projectId}`,
+                {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -99,7 +100,8 @@ describe("SmartlingStringsApi class tests.", () => {
             sinon.assert.calledOnce(stringsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 stringsServiceApiFetchStub,
-                `https://test.com/strings-api/v2/projects/${projectId}`, {
+                `https://test.com/strings-api/v2/projects/${projectId}`,
+                {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -130,7 +132,8 @@ describe("SmartlingStringsApi class tests.", () => {
             sinon.assert.calledOnce(stringsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 stringsServiceApiFetchStub,
-                `https://test.com/strings-api/v2/projects/${projectId}`, {
+                `https://test.com/strings-api/v2/projects/${projectId}`,
+                {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -157,7 +160,8 @@ describe("SmartlingStringsApi class tests.", () => {
             sinon.assert.calledOnce(stringsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 stringsServiceApiFetchStub,
-                `https://test.com/strings-api/v2/projects/${projectId}`, {
+                `https://test.com/strings-api/v2/projects/${projectId}`,
+                {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -187,7 +191,8 @@ describe("SmartlingStringsApi class tests.", () => {
             sinon.assert.calledOnce(stringsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 stringsServiceApiFetchStub,
-                `https://test.com/strings-api/v2/projects/${projectId}`, {
+                `https://test.com/strings-api/v2/projects/${projectId}`,
+                {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -232,7 +237,8 @@ describe("SmartlingStringsApi class tests.", () => {
             sinon.assert.calledOnce(stringsServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 stringsServiceApiFetchStub,
-                `https://test.com/strings-api/v2/projects/${projectId}/processes/${testProcessUid}`, {
+                `https://test.com/strings-api/v2/projects/${projectId}/processes/${testProcessUid}`,
+                {
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",

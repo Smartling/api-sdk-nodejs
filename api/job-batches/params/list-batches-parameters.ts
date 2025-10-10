@@ -38,4 +38,3 @@ export class ListBatchesParameters extends BaseParameters {
         return this;
     }
 }
-

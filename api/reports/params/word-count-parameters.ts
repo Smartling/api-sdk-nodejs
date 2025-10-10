@@ -1,5 +1,5 @@
 import { formatDate } from "./date-formatter";
-import {BaseParameters} from "../../parameters";
+import { BaseParameters } from "../../parameters";
 
 export class WordCountParameters extends BaseParameters {
     public setStartDate(startDate: Date): WordCountParameters {

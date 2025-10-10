@@ -2,9 +2,9 @@ import { WordCountParameters } from "./params/word-count-parameters";
 import { WordCountDto } from "./dto/word-count-dto";
 import { ReportResponse } from "./dto/report-response";
 import { StepTypeDto } from "./dto/step-types";
-import {SmartlingBaseApi} from "../base";
-import {AccessTokenProvider} from "../auth/access-token-provider";
-import {Logger} from "../logger";
+import { SmartlingBaseApi } from "../base";
+import { AccessTokenProvider } from "../auth/access-token-provider";
+import { Logger } from "../logger";
 
 export class SmartlingReportServiceApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {

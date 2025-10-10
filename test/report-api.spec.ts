@@ -3,7 +3,7 @@ import assert from "assert";
 import { SmartlingReportServiceApi } from "../api/reports";
 import { WordCountParameters } from "../api/reports/params/word-count-parameters";
 import { loggerMock, authMock, responseMock } from "./mock";
-import {SmartlingAuthApi} from "../api/auth";
+import { SmartlingAuthApi } from "../api/auth";
 
 describe("SmartlingReportServiceApi class tests.", () => {
     let reportServiceApi: SmartlingReportServiceApi;
@@ -109,7 +109,7 @@ describe("SmartlingReportServiceApi class tests.", () => {
                 .setAgencyUid("agency123")
                 .setJobUids(["job123"])
                 .setTargetLocaleIds(["fr-FR"])
-                .setWorkflowStepTypes(["TRANSLATION","REVIEW"])
+                .setWorkflowStepTypes(["TRANSLATION", "REVIEW"])
                 .setFields("includeTranslationResource,includeJob,includeFuzzyMatchProfile")
                 .setLimit(100)
                 .setOffset(0);
@@ -119,20 +119,20 @@ describe("SmartlingReportServiceApi class tests.", () => {
             sinon.assert.calledOnce(reportServiceApiFetchStub);
             const callArgs = reportServiceApiFetchStub.getCall(0).args;
 
-            assert.strictEqual(callArgs[0], "https://test.com/reports-api/v3/word-count" +
-                "?startDate=2024-01-01" +
-                "&endDate=2024-12-31" +
-                "&accountUid=account123" +
-                "&projectIds=project123" +
-                "&userUids=user123" +
-                "&agencyUid=agency123" +
-                "&jobUids=job123" +
-                "&targetLocaleIds=fr-FR" +
-                "&workflowStepTypes=TRANSLATION" +
-                "&workflowStepTypes=REVIEW" +
-                "&fields=includeTranslationResource%2CincludeJob%2CincludeFuzzyMatchProfile" +
-                "&limit=100" +
-                "&offset=0");
+            assert.strictEqual(callArgs[0], "https://test.com/reports-api/v3/word-count"
+                + "?startDate=2024-01-01"
+                + "&endDate=2024-12-31"
+                + "&accountUid=account123"
+                + "&projectIds=project123"
+                + "&userUids=user123"
+                + "&agencyUid=agency123"
+                + "&jobUids=job123"
+                + "&targetLocaleIds=fr-FR"
+                + "&workflowStepTypes=TRANSLATION"
+                + "&workflowStepTypes=REVIEW"
+                + "&fields=includeTranslationResource%2CincludeJob%2CincludeFuzzyMatchProfile"
+                + "&limit=100"
+                + "&offset=0");
             assert.strictEqual(callArgs[1].method, "GET");
             assert.deepStrictEqual(callArgs[1].headers, {
                 Authorization: "test_token_type test_access_token",

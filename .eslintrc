@@ -26,6 +26,7 @@
     }
   },
   rules: {
+    "lines-between-class-members": "off",
     "no-return-await": "off",
     "import/extensions": "off",
     "no-shadow": "off",

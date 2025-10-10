@@ -45,7 +45,8 @@ describe("SmartlinMachineTranslationsApi class tests.", () => {
         sinon.assert.calledOnce(mtApiFetchStub);
         sinon.assert.calledWithExactly(
             mtApiFetchStub,
-            `https://test.com/mt-router-api/v2/accounts/${accountUid}/smartling-mt`, {
+            `https://test.com/mt-router-api/v2/accounts/${accountUid}/smartling-mt`,
+            {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",

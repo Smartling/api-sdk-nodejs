@@ -43,7 +43,8 @@ describe("SmartlingPublishedFilesApi class tests.", () => {
         sinon.assert.calledOnce(publishedFilesApiFetchStub);
         sinon.assert.calledWithExactly(
             publishedFilesApiFetchStub,
-            "https://test.com/published-files-api/v2/projects/test_project/files/list/recently-published?publishedAfter=2020-09-24T00%3A00%3A00Z&fileUris%5B%5D=test%3A_1.xml&fileUris%5B%5D=test%2Ffile%26_2.xml&localeIds%5B%5D=fr&localeIds%5B%5D=de&offset=0&limit=100", {
+            "https://test.com/published-files-api/v2/projects/test_project/files/list/recently-published?publishedAfter=2020-09-24T00%3A00%3A00Z&fileUris%5B%5D=test%3A_1.xml&fileUris%5B%5D=test%2Ffile%26_2.xml&localeIds%5B%5D=fr&localeIds%5B%5D=de&offset=0&limit=100",
+            {
                 headers: {
                     Authorization: "test_token_type test_access_token",
                     "Content-Type": "application/json",
