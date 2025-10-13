@@ -143,4 +143,59 @@ describe("SmartlingReportServiceApi class tests.", () => {
             assert.deepStrictEqual(result, payload);
         });
     });
+
+    describe("getWordsCountReportCsv", () => {
+        it("Should call CSV endpoint and return CSV string", async () => {
+            const csvResponse = `projectId,projectName,targetLocaleId,jobUid,jobName,translationResourceName,workflowStepType,wordCount,characterCount
+project123,Test Project,es-ES,job123,Test Job,Test Resource,TRANSLATION,1000,5000
+project123,Test Project,fr-FR,job456,Another Job,Another Resource,REVIEW,500,2500`;
+
+            responseMockTextStub.returns(csvResponse);
+
+            const startDate = new Date("2024-01-01T00:00:00Z");
+            const endDate = new Date("2024-12-31T23:59:59Z");
+
+            const params = new WordCountParameters()
+                .setStartDate(startDate)
+                .setEndDate(endDate)
+                .setAccountUid("account123")
+                .setProjectIds(["project123"])
+                .setUserUids(["user123"])
+                .setAgencyUid("agency123")
+                .setJobUids(["job123"])
+                .setTargetLocaleIds(["fr-FR"])
+                .setWorkflowStepTypes(["TRANSLATION", "REVIEW"])
+                .setFields("projectId,projectName,targetLocaleId,jobUid,jobName,translationResourceName,workflowStepType,wordCount,characterCount")
+                .setLimit(100)
+                .setOffset(0);
+
+            const result = await reportServiceApi.getWordsCountReportCsv(params);
+
+            sinon.assert.calledOnce(reportServiceApiFetchStub);
+            const callArgs = reportServiceApiFetchStub.getCall(0).args;
+
+            assert.strictEqual(callArgs[0], "https://test.com/reports-api/v3/word-count/csv"
+                + "?startDate=2024-01-01"
+                + "&endDate=2024-12-31"
+                + "&accountUid=account123"
+                + "&projectIds=project123"
+                + "&userUids=user123"
+                + "&agencyUid=agency123"
+                + "&jobUids=job123"
+                + "&targetLocaleIds=fr-FR"
+                + "&workflowStepTypes=TRANSLATION"
+                + "&workflowStepTypes=REVIEW"
+                + "&fields=projectId%2CprojectName%2CtargetLocaleId%2CjobUid%2CjobName%2CtranslationResourceName%2CworkflowStepType%2CwordCount%2CcharacterCount"
+                + "&limit=100"
+                + "&offset=0");
+            assert.strictEqual(callArgs[1].method, "GET");
+            assert.deepStrictEqual(callArgs[1].headers, {
+                Authorization: "test_token_type test_access_token",
+                "Content-Type": "application/json",
+                "User-Agent": "test_user_agent"
+            });
+
+            assert.strictEqual(result, csvResponse);
+        });
+    });
 });
