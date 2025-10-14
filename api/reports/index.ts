@@ -38,4 +38,3 @@ export class SmartlingReportServiceApi extends SmartlingBaseApi {
         );
     }
 }
-
