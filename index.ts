@@ -163,6 +163,7 @@ export * from "./api/mt/params/source-text-item";
 export * from "./api/mt/dto/translation-text-item-dto";
 export * from "./api/reports/index";
 export * from "./api/reports/dto/report-response";
+export * from "./api/reports/dto/step-types";
 export * from "./api/reports/dto/word-count-dto";
 export * from "./api/reports/params/word-count-parameters";
 export * from "./api/reports/params/date-formatter";
