@@ -28,4 +28,14 @@ export class SmartlingReportServiceApi extends SmartlingBaseApi {
             params.export()
         );
     }
+
+    async getWordsCountReportCsv(params: WordCountParameters): Promise<string> {
+        return await this.makeRequest(
+            "GET",
+            `${this.entrypoint}/word-count/csv`,
+            params.export(),
+            true
+        );
+    }
 }
+
