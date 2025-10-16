@@ -1,5 +1,5 @@
 import FormData from "form-data";
-import { SmartlingBaseApi } from "../base";
+import { SmartlingBaseFileApi } from "../base";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
 import { FtsUploadedFileDto } from "./dto/fts-uploaded-file-dto";
@@ -9,11 +9,11 @@ import { TranslateFileParameters } from "./params/translate-file-parameters";
 import { TranslationStatusDto } from "./dto/translation-status-dto";
 import { LanguageDetectionDto } from "./dto/language-detection-dto";
 import { LanguageDetectionStatusDto } from "./dto/language-detection-status-dto";
-import { TranslatedFileDto } from "./dto/translated-file-dto";
+import { TranslatedFileDto } from "../dto/translated-file-dto";
 import { ResponseBodyType } from "../base/enum/response-body-type";
 import { LanguageDetectionParameters } from "./params/language-detection-parameters";
 
-export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
+export class SmartlingFileTranslationsApi extends SmartlingBaseFileApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
         this.authApi = authApi;
@@ -81,7 +81,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
     async downloadTranslatedFileWithMetadata(
         accountUid: string, fileUid: string, mtUid: string, localeId: string
     ): Promise<TranslatedFileDto> {
-        return await SmartlingFileTranslationsApi.downloadResponseToTranslatedFileDto(
+        return await SmartlingBaseFileApi.downloadResponseToTranslatedFileDto(
             await this.makeRequest(
                 "get",
                 `${this.entrypoint}/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/${localeId}/file`,
@@ -105,7 +105,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
     async downloadTranslatedFilesWithMetadata(
         accountUid: string, fileUid: string, mtUid: string
     ): Promise<TranslatedFileDto> {
-        return await SmartlingFileTranslationsApi.downloadResponseToTranslatedFileDto(
+        return await SmartlingBaseFileApi.downloadResponseToTranslatedFileDto(
             await this.makeRequest(
                 "get",
                 `${this.entrypoint}/${accountUid}/files/${fileUid}/mt/${mtUid}/locales/all/file/zip`,
@@ -150,24 +150,5 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseApi {
         // eslint-disable-next-line fp/no-delete
         delete headers["content-type"];
         return headers;
-    }
-
-    private static async downloadResponseToTranslatedFileDto(
-        response: Response
-    ): Promise<TranslatedFileDto> {
-        const contentType = response.headers.get("content-type") ?? undefined;
-        const contentDisposition = response.headers.get("content-disposition");
-        let fileName;
-        if (contentDisposition) {
-            const fileNameMatch = contentDisposition.match(/filename="((?:[^"\\]|\\.)*)"/);
-            if (fileNameMatch) {
-                fileName = fileNameMatch[1].replace(/\\"/g, "\"");
-            }
-        }
-        return {
-            fileContent: await response.arrayBuffer(),
-            fileName,
-            contentType
-        };
     }
 }

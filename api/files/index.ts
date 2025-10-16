@@ -1,8 +1,9 @@
 import FormData from "form-data";
-import { SmartlingBaseApi } from "../base/index";
+import { SmartlingBaseFileApi } from "../base";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
 import { DownloadFileParameters } from "./params/download-file-parameters";
+import { DownloadFileWithMetadataParameters } from "./params/download-file-with-metadata-parameters";
 import { UploadFileParameters } from "./params/upload-file-parameters";
 import { FileStatusForAllLocalesDto } from "./dto/file-status-for-all-locales-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
@@ -12,8 +13,9 @@ import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "./params/recently-uploaded-files";
 import { ResponseBodyType } from "../base/enum/response-body-type";
+import { TranslatedFileDto } from "../dto/translated-file-dto";
 
-export class SmartlingFilesApi extends SmartlingBaseApi {
+export class SmartlingFilesApi extends SmartlingBaseFileApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
         this.authApi = authApi;
@@ -52,6 +54,22 @@ export class SmartlingFilesApi extends SmartlingBaseApi {
             `${this.entrypoint}/${projectId}/locales/${locale}/file`,
             Object.assign(params.export(), { fileUri }),
             responseType
+        );
+    }
+
+    async downloadFileWithMetadata(
+        projectId: string,
+        fileUri: string,
+        locale: string,
+        params: DownloadFileWithMetadataParameters
+    ): Promise<TranslatedFileDto> {
+        return await SmartlingBaseFileApi.downloadResponseToTranslatedFileDto(
+            await this.makeRequest(
+                "get",
+                `${this.entrypoint}/${projectId}/locales/${locale}/file`,
+                Object.assign(params.export(), { fileUri }),
+                ResponseBodyType.RAW_RESPONSE
+            )
         );
     }
 
