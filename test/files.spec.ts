@@ -5,12 +5,14 @@ import { SmartlingFilesApi } from "../api/files/index";
 import { authMock, loggerMock, responseMock } from "./mock";
 import { RetrievalType } from "../api/files/params/retrieval-type";
 import { DownloadFileParameters } from "../api/files/params/download-file-parameters";
+import { DownloadFileWithMetadataParameters } from "../api/files/params/download-file-with-metadata-parameters";
 import { UploadFileParameters } from "../api/files/params/upload-file-parameters";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "../api/files/params/recently-uploaded-files";
+import { FileNameMode } from "../api/files/params/filename-mode";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -207,6 +209,276 @@ describe("SmartlingFilesApi class tests.", () => {
                         method: "get"
                     }
                 );
+            });
+        });
+
+        describe("Download file with metadata", () => {
+            let getHeaderStub;
+            const localeId = "fr-FR";
+            let params: DownloadFileWithMetadataParameters;
+
+            beforeEach(() => {
+                params = new DownloadFileWithMetadataParameters();
+                getHeaderStub = sinon.stub(responseMock.headers, "get");
+                getHeaderStub.returns(null);
+            });
+
+            afterEach(() => {
+                getHeaderStub.restore();
+            });
+
+            it("Download file when no headers in response", async () => {
+                const fileWithMetadata = await filesApi.downloadFileWithMetadata(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+
+                assert.ok(fileWithMetadata.contentType === undefined);
+                assert.ok(fileWithMetadata.fileName === undefined);
+                assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+            });
+
+            it("Download file with metadata", async () => {
+                getHeaderStub.onCall(0).returns("application/xml");
+                getHeaderStub.onCall(1).returns("attachment; filename=\"test.xml\"");
+                getHeaderStub.returns(null);
+
+                const fileWithMetadata = await filesApi.downloadFileWithMetadata(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+
+                assert.ok(fileWithMetadata.contentType === "application/xml");
+                assert.ok(fileWithMetadata.fileName === "test.xml");
+                assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+            });
+
+            it("Download file with fileNameMode original", async () => {
+                params.setFileNameMode(FileNameMode.ORIGINAL);
+
+                getHeaderStub.onCall(0).returns("application/xml");
+                getHeaderStub.onCall(1).returns("attachment; filename=\"test.xml\"");
+                getHeaderStub.returns(null);
+
+                const fileWithMetadata = await filesApi.downloadFileWithMetadata(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+
+                assert.ok(fileWithMetadata.contentType === "application/xml");
+                assert.ok(fileWithMetadata.fileName === "test.xml");
+                assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+            });
+
+            it("Download file with fileNameMode transformed", async () => {
+                params.setFileNameMode(FileNameMode.TRANSFORMED);
+
+                getHeaderStub.onCall(0).returns("application/xml");
+                getHeaderStub.onCall(1).returns("attachment; filename=\"test.xml\"");
+                getHeaderStub.returns(null);
+
+                const fileWithMetadata = await filesApi.downloadFileWithMetadata(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?changeFileName=true&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+
+                assert.ok(fileWithMetadata.contentType === "application/xml");
+                assert.ok(fileWithMetadata.fileName === "test.xml");
+                assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+            });
+
+            it("Download file with debugMode enabled and retrievalType published", async () => {
+                params
+                    .setRetrievalType(RetrievalType.PUBLISHED)
+                    .enableDebugMode();
+
+                getHeaderStub.onCall(0).returns("application/json");
+                getHeaderStub.onCall(1).returns("attachment; filename=\"test.json\"");
+                getHeaderStub.returns(null);
+
+                const fileWithMetadata = await filesApi.downloadFileWithMetadata(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&debugMode=1&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+                assert.ok(fileWithMetadata.contentType === "application/json");
+                assert.ok(fileWithMetadata.fileName === "test.json");
+                assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+            });
+
+            it("Download file with debugMode disabled and retrievalType published", async () => {
+                params.setRetrievalType(RetrievalType.PUBLISHED);
+
+                getHeaderStub.onCall(0).returns("application/json");
+                getHeaderStub.onCall(1).returns("attachment; filename=\"test.json\"");
+                getHeaderStub.returns(null);
+
+                const fileWithMetadata = await filesApi.downloadFileWithMetadata(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+                assert.ok(fileWithMetadata.contentType === "application/json");
+                assert.ok(fileWithMetadata.fileName === "test.json");
+                assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+            });
+
+            it("Download file with includeOriginalStrings enabled", async() => {
+                params.setRetrievalType(RetrievalType.PUBLISHED).includeOriginalStrings();
+
+                getHeaderStub.onCall(0).returns("application/json");
+                getHeaderStub.onCall(1).returns("attachment; filename=\"test.json\"");
+                getHeaderStub.returns(null);
+
+                const fileWithMetadata = await filesApi.downloadFileWithMetadata(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&includeOriginalStrings=true&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+                assert.ok(fileWithMetadata.contentType === "application/json");
+                assert.ok(fileWithMetadata.fileName === "test.json");
+                assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+            });
+
+            it("Download file with includeOriginalStrings disabled", async() => {
+                params.setRetrievalType(RetrievalType.PUBLISHED).excludeOriginalStrings();
+
+                getHeaderStub.onCall(0).returns("application/json");
+                getHeaderStub.onCall(1).returns("attachment; filename=\"test.json\"");
+                getHeaderStub.returns(null);
+
+                const fileWithMetadata = await filesApi.downloadFileWithMetadata(
+                    projectId,
+                    fileUri,
+                    localeId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file?retrievalType=published&includeOriginalStrings=false&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+                assert.ok(fileWithMetadata.contentType === "application/json");
+                assert.ok(fileWithMetadata.fileName === "test.json");
+                assert.ok(fileWithMetadata.fileContent.byteLength === 1);
             });
         });
 
