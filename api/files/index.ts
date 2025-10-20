@@ -12,6 +12,7 @@ import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "./params/recently-uploaded-files";
+import { DownloadMultipleFilesTranslationsParameters } from "./params/download-multiple-files-translations-parameters";
 import { ResponseBodyType } from "../base/enum/response-body-type";
 import { TranslatedFileDto } from "../dto/translated-file-dto";
 
@@ -126,6 +127,24 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
             "get",
             `${this.entrypoint}/${projectId}/files/list`,
             params.export()
+        );
+    }
+
+    /**
+     *  Downloads multiple files translations as a ZIP archive.
+     *  @returns ArrayBuffer for zip archive with translated files,
+     *              if files found for the given file filter;
+     *           null, if no files found for the given file filter.
+     */
+    async downloadMultipleFilesTranslations(
+        projectId: string,
+        params: DownloadMultipleFilesTranslationsParameters
+    ): Promise<ArrayBuffer | null> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/files/zip`,
+            JSON.stringify(params.export()),
+            ResponseBodyType.ARRAY_BUFFER
         );
     }
 

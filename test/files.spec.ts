@@ -13,6 +13,12 @@ import { streamToString } from "./stream-to-string";
 import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "../api/files/params/recently-uploaded-files";
 import { FileNameMode } from "../api/files/params/filename-mode";
+import { DownloadMultipleFilesTranslationsParameters } from "../api/files/params/download-multiple-files-translations-parameters";
+import { FileLocales } from "../api/files/params/file-locales";
+import { SmartlingException } from "../api/exception";
+import { TranslationFileNameMode } from "../api/files/params/translation-file-name-mode";
+import { FileLocaleMode } from "../api/files/params/file-locale-mode";
+import { FileFilter } from "../api/files/params/file-filter";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -645,6 +651,107 @@ describe("SmartlingFilesApi class tests.", () => {
                     "utf8"
                 )
             );
+        });
+
+        describe("Download multiple files translations", () => {
+            const localeId = "fr-FR";
+            const anotherLocaleId = "de-DE";
+            const files: FileLocales[] = [
+                {
+                    fileUri,
+                    localeIds: [localeId, anotherLocaleId]
+                }
+            ];
+            let params: DownloadMultipleFilesTranslationsParameters;
+
+            beforeEach(() => {
+                params = new DownloadMultipleFilesTranslationsParameters(files);
+            });
+
+            it("throws error if file is missing", () => {
+                assert.throws(() => {
+                    // eslint-disable-next-line no-new
+                    new DownloadMultipleFilesTranslationsParameters([]);
+                }, SmartlingException);
+            });
+
+            it("throws error if localeId is missing", () => {
+                assert.throws(() => {
+                    // eslint-disable-next-line no-new
+                    new DownloadMultipleFilesTranslationsParameters([{
+                        fileUri,
+                        localeIds: []
+                    }]);
+                }, SmartlingException);
+            });
+
+            it("Download mutliple files translations", async () => {
+                await filesApi.downloadMultipleFilesTranslations(
+                    projectId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/files/zip`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "post",
+                        body: JSON.stringify({
+                            files: [{
+                                fileUri,
+                                localeIds: [localeId, anotherLocaleId]
+                            }]
+                        })
+                    }
+                );
+            });
+
+            it("Download mutliple files translations with parameters", async () => {
+                params
+                    .setRetrievalType(RetrievalType.PUBLISHED)
+                    .includeOriginalStrings()
+                    .setFileNameMode(TranslationFileNameMode.UNCHANGED)
+                    .setFileLocaleMode(FileLocaleMode.LOCALE_IN_PATH)
+                    .setZipFileName("translations.zip")
+                    .setFileFilter(FileFilter.ALL_FILES);
+
+                await filesApi.downloadMultipleFilesTranslations(
+                    projectId,
+                    params
+                );
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/files/zip`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "post",
+                        body: JSON.stringify({
+                            files: [{
+                                fileUri,
+                                localeIds: [localeId, anotherLocaleId]
+                            }],
+                            retrievalType: "published",
+                            includeOriginalStrings: true,
+                            fileNameMode: "unchanged",
+                            localeMode: "locale_in_path",
+                            zipFileName: "translations.zip",
+                            fileFilter: "all_files"
+                        })
+                    }
+                );
+            });
         });
     });
 });
