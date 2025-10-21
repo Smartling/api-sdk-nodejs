@@ -141,7 +141,7 @@ export class SmartlingBaseApi {
 
         // Special case for zip file download - return raw response array buffer.
         if (returnRawResponseBody === ResponseBodyType.ARRAY_BUFFER) {
-            return response.arrayBuffer();
+            return response.status === 204 ? null : response.arrayBuffer();
         }
 
         // Special case for download file with metadata - return raw response.
