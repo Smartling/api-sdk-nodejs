@@ -1,12 +1,11 @@
 import { SmartlingException } from "../../exception";
-import { BaseParameters } from "../../parameters/index";
 import { FileFilter } from "./file-filter";
 import { FileLocaleMode } from "./file-locale-mode";
 import { FileLocales } from "./file-locales";
 import { TranslationFileNameMode } from "./translation-file-name-mode";
-import { RetrievalType } from "./retrieval-type";
+import { DownloadFileBaseParameters } from "./download-file-base-parameters";
 
-export class DownloadMultipleFilesTranslationsParameters extends BaseParameters {
+export class DownloadMultipleFilesTranslationsParameters extends DownloadFileBaseParameters {
     constructor(
         files: FileLocales[]
     ) {
@@ -23,24 +22,6 @@ export class DownloadMultipleFilesTranslationsParameters extends BaseParameters 
         });
 
         this.set("files", files);
-    }
-
-    setRetrievalType(retrievalType: RetrievalType): this {
-        this.set("retrievalType", retrievalType);
-
-        return this;
-    }
-
-    includeOriginalStrings(): this {
-        this.set("includeOriginalStrings", true);
-
-        return this;
-    }
-
-    excludeOriginalStrings(): this {
-        this.set("includeOriginalStrings", false);
-
-        return this;
     }
 
     setFileNameMode(fileNameMode: TranslationFileNameMode): this {
