@@ -13,13 +13,25 @@ Engines support
 * `1.x.x` - node < 18
 * `2.x.x` - node >= 18
 
+Publishing to NPM
+-----------------
+
+1. Make your changes.
+2. Put `*.*.*` semver tag.
+3. Tag triggers `.github/workflows/publish.yml` github action which pushes this package to NPM.
+
+NPM integration setup
+---------------------
+
+1. In [package](https://www.npmjs.com/package/smartling-api-sdk-nodejs) settings at npmjs.com we set up `Trusted Pubkished` integration with github repo.
+2. In repo we have `.github/workflows/publish.yml` github action for publishing.
+
 Bug tracker
 -----------
 
 Have a bug? Please create an issue here on GitHub!
 
 https://github.com/Smartling/api-sdk-nodejs/issues
-
 
 Hacking
 -------
