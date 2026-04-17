@@ -115,7 +115,13 @@ describe("SmartlingBaseApi deep merge", () => {
         });
 
         it("keeps an undefined source value (undefined replaces target)", () => {
-            assert.deepEqual(merge({ a: 1 }, { a: undefined }), { a: undefined });
+            const result = merge<Record<string, unknown>, Record<string, unknown>>(
+                { a: 1 },
+                { a: undefined }
+            );
+
+            assert.ok("a" in result);
+            assert.strictEqual(result.a, undefined);
         });
 
         it("replaces a nested target object with a null source", () => {
