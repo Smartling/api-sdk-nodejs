@@ -1,4 +1,4 @@
-import merge from "merge-deep";
+import deepmerge from "deepmerge";
 import ua from "default-user-agent";
 import FormData from "form-data";
 import fetch from "cross-fetch";
@@ -10,6 +10,21 @@ import { ResponseBodyType } from "./enum/response-body-type";
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const packageJson = require("../../package.json");
+
+// Preserves the ordered-unique-concat (union) array semantics that the
+// previous merge-deep dependency provided, so deep-merging options/headers
+// that contain arrays remains backwards-compatible for existing callers.
+const mergeOptions: deepmerge.Options = {
+    arrayMerge: (target, source) => source.reduce<unknown[]>(
+        (acc, item) => (acc.includes(item) ? acc : [...acc, item]),
+        [...target]
+    )
+};
+
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+export function merge(target: Record<string, unknown>, source: Record<string, unknown>): any {
+    return deepmerge(target, source, mergeOptions);
+}
 
 export class SmartlingBaseApi {
     protected authApi: AccessTokenProvider = undefined;
