@@ -1,15 +1,10 @@
 import assert from "assert";
 import sinon from "sinon";
 import { SmartlingBaseApi } from "../api/base/index";
-import { merge } from "../api/base/base-api";
+import { merge } from "../api/base/merge";
 import { loggerMock, responseMock, authMock } from "./mock";
 
-// CON-2075: pins the deep-merge semantics SmartlingBaseApi relies on across the
-// swap from merge-deep to deepmerge. Library-level cases exercise the exported
-// `merge` helper directly so the tests pin behavior at the same entry point
-// the production code uses.
-
-describe("Deep merge behavior (CON-2075).", () => {
+describe("SmartlingBaseApi deep merge", () => {
     describe("Library-level behavior (direct merge calls)", () => {
         it("overrides a target primitive with the source primitive at the same key", () => {
             assert.deepEqual(merge({ a: 1 }, { a: 2 }), { a: 2 });
@@ -83,21 +78,68 @@ describe("Deep merge behavior (CON-2075).", () => {
             );
         });
 
-        it("de-duplicates overlapping array values while preserving order (merge-deep array-union semantics)", () => {
-            // merge-deep delegates array handling to arr-union, so repeated
-            // values are collapsed. deepmerge does plain concat by default, so
-            // the swap must supply a custom arrayMerge to preserve this.
+        it("de-duplicates overlapping array values while preserving order", () => {
+            // Arrays at the same key are unioned (first occurrence wins, new
+            // items appended), so repeated values don't accumulate when a
+            // caller's option array overlaps the defaults.
             assert.deepEqual(
                 merge({ items: [1, 2, 3] }, { items: [2, 3, 4] }),
                 { items: [1, 2, 3, 4] }
             );
         });
 
-        it("concatenates arrays at nested paths with the same union semantics", () => {
+        it("applies the union semantics to arrays at nested paths", () => {
             assert.deepEqual(
                 merge({ group: { items: [1, 2] } }, { group: { items: [2, 3] } }),
                 { group: { items: [1, 2, 3] } }
             );
+        });
+
+        it("does not dedupe object array elements by structural equality (reference-based)", () => {
+            // Array.prototype.includes uses reference equality, so two
+            // distinct objects with identical fields are both retained.
+            const result = merge({ x: [{ id: 1 }] }, { x: [{ id: 1 }] });
+            assert.deepEqual(result, { x: [{ id: 1 }, { id: 1 }] });
+        });
+
+        it("replaces a target array with a source object at the same key", () => {
+            assert.deepEqual(merge({ a: [1, 2] }, { a: { b: 3 } }), { a: { b: 3 } });
+        });
+
+        it("replaces a target object with a source array at the same key", () => {
+            assert.deepEqual(merge({ a: { b: 3 } }, { a: [1, 2] }), { a: [1, 2] });
+        });
+
+        it("keeps a null source value (null replaces target)", () => {
+            assert.deepEqual(merge({ a: 1 }, { a: null }), { a: null });
+        });
+
+        it("keeps an undefined source value (undefined replaces target)", () => {
+            assert.deepEqual(merge({ a: 1 }, { a: undefined }), { a: undefined });
+        });
+
+        it("replaces a nested target object with a null source", () => {
+            assert.deepEqual(merge({ a: { b: 1 } }, { a: null }), { a: null });
+        });
+
+        it("does not pollute Object.prototype via a __proto__ key in source", () => {
+            const malicious = JSON.parse("{\"__proto__\":{\"polluted\":\"yes\"}}");
+            const result = merge({}, malicious);
+
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            assert.equal(({} as any).polluted, undefined);
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            assert.equal((result as any).polluted, undefined);
+        });
+
+        it("does not pollute Object.prototype via a constructor.prototype key in source", () => {
+            const malicious = JSON.parse(
+                "{\"constructor\":{\"prototype\":{\"polluted\":\"yes\"}}}"
+            );
+            merge({}, malicious);
+
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            assert.equal(({} as any).polluted, undefined);
         });
     });
 
@@ -200,7 +242,35 @@ describe("Deep merge behavior (CON-2075).", () => {
             }
         });
 
-        it("makeRequest: calling setOptions twice does not accumulate stale state on the caller-provided object", async () => {
+        it("makeRequest: array-valued header options are unioned, not duplicated", async () => {
+            const fetchStub = sinon.stub(base, "fetch").returns(responseMock);
+            const textStub = sinon.stub(responseMock, "text").returns("{\"response\": {\"data\": {}}}");
+
+            try {
+                base.setOptions({
+                    headers: { "Accept-Language": ["en", "fr"] }
+                });
+
+                await base.makeRequest(
+                    "POST",
+                    "https://test.com",
+                    { foo: "bar" },
+                    false,
+                    { "Accept-Language": ["en", "de"] }
+                );
+
+                const passedOpts = fetchStub.firstCall.args[1];
+                assert.deepEqual(
+                    passedOpts.headers["Accept-Language"],
+                    ["en", "de", "fr"]
+                );
+            } finally {
+                textStub.restore();
+                fetchStub.restore();
+            }
+        });
+
+        it("makeRequest: calling setOptions does not mutate the caller-provided object", async () => {
             const fetchStub = sinon.stub(base, "fetch").returns(responseMock);
             const textStub = sinon.stub(responseMock, "text").returns("{\"response\": {\"data\": {}}}");
 
@@ -210,8 +280,6 @@ describe("Deep merge behavior (CON-2075).", () => {
 
                 await base.makeRequest("POST", "https://test.com", { foo: "bar" });
 
-                // The object the user passed to setOptions must be unchanged
-                // by the merge the SDK does internally.
                 assert.deepEqual(userOptions, { headers: { "X-Custom": "first" } });
             } finally {
                 textStub.restore();
