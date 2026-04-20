@@ -31,19 +31,20 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^18.19.115",
     "cross-fetch": "^3.1.4",
+    "deepmerge": "^4.3.1",
     "default-user-agent": "^1.0.0",
     "form-data": "^4.0.4",
-    "merge-deep": "^3.0.3",
     "querystring": "^0.2.1",
+    "semver": "^5.7.2",
     "string-to-file-stream": "^2.0.0",
-    "typescript": "^4.9.5",
-    "semver": "^5.7.2"
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
     "ansi-regex": "^5.0.1",
     "babel-eslint": "^10.1.0",
+    "braces": "^3.0.3",
     "eslint": "^7.31.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-flowtype": "^2.41.0",
@@ -52,13 +53,12 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-react": "^7.10.0",
+    "json5": "^1.0.2",
     "mocha": "^10.0.0",
     "mocha-junit-reporter": "^2.0.2",
     "nyc": "^17.1.0",
     "sinon": "^11.1.2",
-    "ts-mocha": "^10.0.0",
-    "braces": "^3.0.3",
-    "json5": "^1.0.2"
+    "ts-mocha": "^10.0.0"
   },
   "nyc": {
     "reporter": [

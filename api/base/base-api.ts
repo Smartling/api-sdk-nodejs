@@ -1,4 +1,3 @@
-import merge from "merge-deep";
 import ua from "default-user-agent";
 import FormData from "form-data";
 import fetch from "cross-fetch";
@@ -7,6 +6,7 @@ import { Logger } from "../logger";
 import { SmartlingException } from "../exception/index";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { ResponseBodyType } from "./enum/response-body-type";
+import { merge } from "./merge";
 
 /* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const packageJson = require("../../package.json");
