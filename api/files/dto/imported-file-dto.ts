@@ -1,12 +1,14 @@
-export interface TranslationImportErrorDto {
+interface TranslationImportErrorDto {
     importKey: string;
     stringHashcode: string;
     fileUri: string;
     messages: string[];
 }
 
-export interface ImportedFileDto {
+interface ImportedFileDto {
     wordCount: number;
     stringCount: number;
     translationImportErrors: TranslationImportErrorDto[];
 }
+
+export { TranslationImportErrorDto, ImportedFileDto };
