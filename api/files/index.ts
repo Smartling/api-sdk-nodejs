@@ -9,6 +9,8 @@ import { FileStatusForAllLocalesDto } from "./dto/file-status-for-all-locales-dt
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
+import { ImportFileParameters } from "./params/import-file-parameters";
+import { ImportedFileDto } from "./dto/imported-file-dto";
 import { FileStatusForProjectDto } from "./dto/file-status-for-project-dto";
 import { DownloadFileAllTranslationsParameters } from "./params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "./params/recently-uploaded-files";
@@ -113,6 +115,26 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/file`,
+            formData,
+            false,
+            SmartlingFilesApi.fixContentTypeHeaderCase(formData)
+        );
+    }
+
+    async importFile(
+        projectId: string,
+        locale: string,
+        parameters: ImportFileParameters
+    ): Promise<ImportedFileDto> {
+        const formData = new FormData();
+        const exported = parameters.export();
+        Object.keys(exported).forEach((key) => {
+            formData.append(key, exported[key]);
+        });
+
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/locales/${locale}/file/import`,
             formData,
             false,
             SmartlingFilesApi.fixContentTypeHeaderCase(formData)
