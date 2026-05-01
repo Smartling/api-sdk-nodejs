@@ -19,6 +19,8 @@ import { SmartlingException } from "../api/exception";
 import { TranslationFileNameMode } from "../api/files/params/translation-file-name-mode";
 import { FileLocaleMode } from "../api/files/params/file-locale-mode";
 import { FileFilter } from "../api/files/params/file-filter";
+import { ImportFileParameters } from "../api/files/params/import-file-parameters";
+import { TranslationState } from "../api/files/params/translation-state";
 
 describe("SmartlingFilesApi class tests.", () => {
     const projectId = "testProjectId";
@@ -750,6 +752,113 @@ describe("SmartlingFilesApi class tests.", () => {
                             fileFilter: "all_files"
                         })
                     }
+                );
+            });
+        });
+
+        describe("Import file", () => {
+            const localeId = "fr-FR";
+
+            it("Import file from disk with all parameters", async () => {
+                const params = new ImportFileParameters();
+
+                params
+                    .setFileFromLocalFilePath("./test/data/file.xml")
+                    .setFileUri("test-file-uri")
+                    .setFileType(FileType.XML)
+                    .setTranslationState(TranslationState.PUBLISHED)
+                    .setOverwrite(true)
+                    .setCallbackUrl("https://callback.url");
+
+                await filesApi.importFile(projectId, localeId, params);
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+
+                assert.equal(
+                    filesApiFetchStub.getCall(0).args[0],
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file/import`
+                );
+
+                assert.equal(
+                    filesApiFetchStub.getCall(0).args[1].method,
+                    "post"
+                );
+
+                assert.equal(
+                    filesApiFetchStub.getCall(0).args[1].headers.Authorization,
+                    "test_token_type test_access_token"
+                );
+
+                assert.equal(
+                    filesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
+                    "test_user_agent"
+                );
+
+                const stringified = JSON.stringify(filesApiFetchStub.getCall(0).args[1].body);
+
+                assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"fileUri\\\"\\r\\n\\r\\n\",\"test-file-uri\""));
+                assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"translationState\\\"\\r\\n\\r\\n\",\"PUBLISHED\""));
+                assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"overwrite\\\"\\r\\n\\r\\n\",\"true\""));
+                assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"fileType\\\"\\r\\n\\r\\n\",\"xml\""));
+                assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"callbackUrl\\\"\\r\\n\\r\\n\",\"https://callback.url\""));
+
+                assert.equal(
+                    // eslint-disable-next-line no-underscore-dangle
+                    await streamToString(filesApiFetchStub.getCall(0).args[1].body._streams[1]),
+                    fs.readFileSync(
+                        fs.realpathSync("./test/data/file.xml"),
+                        "utf8"
+                    )
+                );
+            });
+
+            it("Import file from string content", async () => {
+                const params = new ImportFileParameters();
+
+                params
+                    .setFileContent(fs.readFileSync(
+                        fs.realpathSync("./test/data/file.xml"),
+                        "utf8"
+                    ))
+                    .setFileUri("test-file-uri")
+                    .setFileType(FileType.XML);
+
+                await filesApi.importFile(projectId, localeId, params);
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+
+                assert.equal(
+                    filesApiFetchStub.getCall(0).args[0],
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/${localeId}/file/import`
+                );
+
+                assert.equal(
+                    filesApiFetchStub.getCall(0).args[1].method,
+                    "post"
+                );
+
+                assert.equal(
+                    filesApiFetchStub.getCall(0).args[1].headers.Authorization,
+                    "test_token_type test_access_token"
+                );
+
+                assert.equal(
+                    filesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
+                    "test_user_agent"
+                );
+
+                const stringified = JSON.stringify(filesApiFetchStub.getCall(0).args[1].body);
+
+                assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"fileUri\\\"\\r\\n\\r\\n\",\"test-file-uri\""));
+                assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"fileType\\\"\\r\\n\\r\\n\",\"xml\""));
+
+                assert.equal(
+                    // eslint-disable-next-line no-underscore-dangle
+                    await streamToString(filesApiFetchStub.getCall(0).args[1].body._streams[1]),
+                    fs.readFileSync(
+                        fs.realpathSync("./test/data/file.xml"),
+                        "utf8"
+                    )
                 );
             });
         });
