@@ -179,3 +179,7 @@ export * from "./api/reports/dto/word-count-dto";
 export * from "./api/reports/params/word-count-parameters";
 export * from "./api/reports/params/date-formatter";
 export * from "./api/webhooks";
+export * from "./api/http/smartling-bare-list-response";
+export * from "./api/vendors/index";
+export * from "./api/vendors/dto/content-assignment-dto";
+export * from "./api/vendors/dto/workflow-step-type";

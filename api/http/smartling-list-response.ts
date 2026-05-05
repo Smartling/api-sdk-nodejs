@@ -1,6 +1,7 @@
-interface SmartlingListResponse<T> {
+import { SmartlingBareListResponse } from "./smartling-bare-list-response";
+
+interface SmartlingListResponse<T> extends SmartlingBareListResponse<T> {
     totalCount: number;
-    items: Array<T>;
 }
 
 export { SmartlingListResponse };
