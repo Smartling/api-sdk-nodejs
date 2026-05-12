@@ -193,6 +193,7 @@ export * from "./api/issues/enums/job-filter-presence";
 export * from "./api/issues/enums/issue-sort-field";
 export * from "./api/issues/dto/issue-dto";
 export * from "./api/issues/dto/issue-string-dto";
+export * from "./api/issues/dto/create-issue-string-dto";
 export * from "./api/issues/dto/issue-text-dto";
 export * from "./api/issues/dto/issue-state-dto";
 export * from "./api/issues/dto/issue-answered-dto";

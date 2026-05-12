@@ -3,7 +3,7 @@ import { SmartlingException } from "../../exception";
 import { IssueSeverityLevel } from "../enums/issue-severity-level";
 import { IssueSubType } from "../enums/issue-sub-type";
 import { IssueType } from "../enums/issue-type";
-import { IssueStringDto } from "../dto/issue-string-dto";
+import { CreateIssueStringDto } from "../dto/create-issue-string-dto";
 
 export class CreateIssueParameters extends BaseParameters {
     setIssueText(issueText: string): CreateIssueParameters {
@@ -24,7 +24,7 @@ export class CreateIssueParameters extends BaseParameters {
         return this;
     }
 
-    setString(string: IssueStringDto): CreateIssueParameters {
+    setString(string: CreateIssueStringDto): CreateIssueParameters {
         this.set("string", string);
         return this;
     }
