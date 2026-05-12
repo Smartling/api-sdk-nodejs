@@ -10,6 +10,8 @@ import { CountProjectIssuesParameters } from "../api/issues/params/count-project
 import { JobFilterPresence } from "../api/issues/enums/job-filter-presence";
 import { CreateIssueParameters } from "../api/issues/params/create-issue-parameters";
 import { EditIssueParameters } from "../api/issues/params/edit-issue-parameters";
+import { UpdateIssueStateParameters } from "../api/issues/params/update-issue-state-parameters";
+import { IssueState } from "../api/issues/enums/issue-state";
 import { UpdateIssueAssigneeParameters } from "../api/issues/params/update-issue-assignee-parameters";
 import { CreateIssueCommentParameters } from "../api/issues/params/create-issue-comment-parameters";
 import { EditIssueCommentParameters } from "../api/issues/params/edit-issue-comment-parameters";
@@ -72,6 +74,66 @@ describe("SmartlingIssuesAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "post"
+                }
+            );
+        });
+
+        it("Edit issue", async () => {
+            const params = new EditIssueParameters().setIssueText("Edited issue text.");
+
+            await issuesApi.editIssue(projectId, issueUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/issueText`,
+                {
+                    body: "{\"issueText\":\"Edited issue text.\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
+                }
+            );
+        });
+
+        it("Open or close issue", async () => {
+            const params = new UpdateIssueStateParameters().setIssueState(IssueState.RESOLVED);
+
+            await issuesApi.openOrCloseIssue(projectId, issueUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/state`,
+                {
+                    body: "{\"issueStateCode\":\"RESOLVED\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
+                }
+            );
+        });
+
+        it("Get issue details", async () => {
+            await issuesApi.getIssueDetails(projectId, issueUid);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
                 }
             );
         });
