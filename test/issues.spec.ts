@@ -6,6 +6,8 @@ import { EditIssueParameters } from "../api/issues/params/edit-issue-parameters"
 import { UpdateIssueAssigneeParameters } from "../api/issues/params/update-issue-assignee-parameters";
 import { CreateIssueCommentParameters } from "../api/issues/params/create-issue-comment-parameters";
 import { EditIssueCommentParameters } from "../api/issues/params/edit-issue-comment-parameters";
+import { FindProjectIssuesParameters } from "../api/issues/params/find-project-issues-parameters";
+import { FindAccountIssuesParameters } from "../api/issues/params/find-account-issues-parameters";
 
 describe("SmartlingIssuesAPI class tests.", () => {
     describe("Parameter validation", () => {
@@ -96,6 +98,54 @@ describe("SmartlingIssuesAPI class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "Comment text length must not exceed 4000 characters");
+            }
+        });
+
+        it("FindProjectIssuesParameters should validate limit is non-negative", () => {
+            const params = new FindProjectIssuesParameters();
+
+            try {
+                params.setLimit(-1);
+                throw new Error("Exception is not thrown.");
+            } catch (e) {
+                assert.equal(e.constructor.name, "SmartlingException");
+                assert.equal(e.message, "Limit must be non-negative");
+            }
+        });
+
+        it("FindProjectIssuesParameters should validate offset is non-negative", () => {
+            const params = new FindProjectIssuesParameters();
+
+            try {
+                params.setOffset(-1);
+                throw new Error("Exception is not thrown.");
+            } catch (e) {
+                assert.equal(e.constructor.name, "SmartlingException");
+                assert.equal(e.message, "Offset must be non-negative");
+            }
+        });
+
+        it("FindAccountIssuesParameters should validate limit is non-negative", () => {
+            const params = new FindAccountIssuesParameters();
+
+            try {
+                params.setLimit(-1);
+                throw new Error("Exception is not thrown.");
+            } catch (e) {
+                assert.equal(e.constructor.name, "SmartlingException");
+                assert.equal(e.message, "Limit must be non-negative");
+            }
+        });
+
+        it("FindAccountIssuesParameters should validate offset is non-negative", () => {
+            const params = new FindAccountIssuesParameters();
+
+            try {
+                params.setOffset(-1);
+                throw new Error("Exception is not thrown.");
+            } catch (e) {
+                assert.equal(e.constructor.name, "SmartlingException");
+                assert.equal(e.message, "Offset must be non-negative");
             }
         });
     });
