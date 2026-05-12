@@ -4,6 +4,8 @@ import { JobFilterPresence } from "../api/issues/enums/job-filter-presence";
 import { CreateIssueParameters } from "../api/issues/params/create-issue-parameters";
 import { EditIssueParameters } from "../api/issues/params/edit-issue-parameters";
 import { UpdateIssueAssigneeParameters } from "../api/issues/params/update-issue-assignee-parameters";
+import { CreateIssueCommentParameters } from "../api/issues/params/create-issue-comment-parameters";
+import { EditIssueCommentParameters } from "../api/issues/params/edit-issue-comment-parameters";
 
 describe("SmartlingIssuesAPI class tests.", () => {
     describe("Parameter validation", () => {
@@ -68,6 +70,32 @@ describe("SmartlingIssuesAPI class tests.", () => {
             } catch (e) {
                 assert.equal(e.constructor.name, "SmartlingException");
                 assert.equal(e.message, "assigneeUserUid is required");
+            }
+        });
+
+        it("CreateIssueCommentParameters should validate commentText length", () => {
+            const params = new CreateIssueCommentParameters();
+            const tooLong = "a".repeat(4001);
+
+            try {
+                params.setCommentText(tooLong);
+                throw new Error("Exception is not thrown.");
+            } catch (e) {
+                assert.equal(e.constructor.name, "SmartlingException");
+                assert.equal(e.message, "Comment text length must not exceed 4000 characters");
+            }
+        });
+
+        it("EditIssueCommentParameters should validate commentText length", () => {
+            const params = new EditIssueCommentParameters();
+            const tooLong = "a".repeat(4001);
+
+            try {
+                params.setCommentText(tooLong);
+                throw new Error("Exception is not thrown.");
+            } catch (e) {
+                assert.equal(e.constructor.name, "SmartlingException");
+                assert.equal(e.message, "Comment text length must not exceed 4000 characters");
             }
         });
     });
