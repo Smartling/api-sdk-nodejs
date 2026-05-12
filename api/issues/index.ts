@@ -19,6 +19,11 @@ import { IssueSeverityLevelDto } from "./dto/issue-severity-level-dto";
 import { IssueChangedTypeDto } from "./dto/issue-changed-type-dto";
 import { IssueCommentDto } from "./dto/issue-comment-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
+import { CountProjectIssuesParameters } from "./params/count-project-issues-parameters";
+import { FindProjectIssuesParameters } from "./params/find-project-issues-parameters";
+import { CountAccountIssuesParameters } from "./params/count-account-issues-parameters";
+import { FindAccountIssuesParameters } from "./params/find-account-issues-parameters";
+import { IssuesCountDto } from "./dto/issues-count-dto";
 
 export class SmartlingIssuesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -185,6 +190,50 @@ export class SmartlingIssuesApi extends SmartlingBaseApi {
         await this.makeRequest(
             "delete",
             `${this.entrypoint}/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}`
+        );
+    }
+
+    async findProjectIssues(
+        projectId: string,
+        params: FindProjectIssuesParameters
+    ): Promise<SmartlingListResponse<IssueDto>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/projects/${projectId}/issues/list`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async countProjectIssues(
+        projectId: string,
+        params: CountProjectIssuesParameters
+    ): Promise<IssuesCountDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/projects/${projectId}/issues/count`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async findAccountIssues(
+        accountUid: string,
+        params: FindAccountIssuesParameters
+    ): Promise<SmartlingListResponse<IssueDto>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/issues/list`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async countAccountIssues(
+        accountUid: string,
+        params: CountAccountIssuesParameters
+    ): Promise<IssuesCountDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/issues/count`,
+            JSON.stringify(params.export())
         );
     }
 }

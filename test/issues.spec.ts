@@ -20,6 +20,9 @@ import { FindAccountIssuesParameters } from "../api/issues/params/find-account-i
 import { UpdateIssueAnsweredParameters } from "../api/issues/params/update-issue-answered-parameters";
 import { UpdateIssueSeverityLevelParameters } from "../api/issues/params/update-issue-severity-level-parameters";
 import { UpdateIssueTypeParameters } from "../api/issues/params/update-issue-type-parameters";
+import { CountAccountIssuesParameters } from "../api/issues/params/count-account-issues-parameters";
+import { IssueSortField } from "../api/issues/enums/issue-sort-field";
+import { Order } from "../api/parameters/order";
 
 describe("SmartlingIssuesAPI class tests.", () => {
     const accountUid = "testAccountUid";
@@ -339,6 +342,104 @@ describe("SmartlingIssuesAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "delete"
+                }
+            );
+        });
+
+        it("Find project issues", async () => {
+            const params = new FindProjectIssuesParameters()
+                .setIssueTypeCodes([IssueType.TRANSLATION])
+                .setIssueStateCodes([IssueState.OPENED])
+                .setLimit(50)
+                .setOffset(0)
+                .setSortBy({
+                    items: [{ direction: Order.DESC, fieldName: IssueSortField.CREATED_DATE }]
+                });
+
+            await issuesApi.findProjectIssues(projectId, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/list`,
+                {
+                    body: "{\"issueTypeCodes\":[\"TRANSLATION\"],\"issueStateCodes\":[\"OPENED\"],\"limit\":50,\"offset\":0,\"sortBy\":{\"items\":[{\"direction\":\"DESC\",\"fieldName\":\"createdDate\"}]}}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Count project issues", async () => {
+            const params = new CountProjectIssuesParameters()
+                .setIssueStateCodes([IssueState.OPENED, IssueState.RESOLVED]);
+
+            await issuesApi.countProjectIssues(projectId, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/count`,
+                {
+                    body: "{\"issueStateCodes\":[\"OPENED\",\"RESOLVED\"]}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Find account issues", async () => {
+            const params = new FindAccountIssuesParameters()
+                .setProjectIds(["project1", "project2"])
+                .setIssueTypeCodes([IssueType.SOURCE])
+                .setLimit(30)
+                .setOffset(0);
+
+            await issuesApi.findAccountIssues(accountUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/accounts/${accountUid}/issues/list`,
+                {
+                    body: "{\"projectIds\":[\"project1\",\"project2\"],\"issueTypeCodes\":[\"SOURCE\"],\"limit\":30,\"offset\":0}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Count account issues", async () => {
+            const params = new CountAccountIssuesParameters()
+                .setProjectIds(["project1"])
+                .setAnswered(false);
+
+            await issuesApi.countAccountIssues(accountUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/accounts/${accountUid}/issues/count`,
+                {
+                    body: "{\"projectIds\":[\"project1\"],\"answered\":false}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
                 }
             );
         });
