@@ -17,6 +17,9 @@ import { CreateIssueCommentParameters } from "../api/issues/params/create-issue-
 import { EditIssueCommentParameters } from "../api/issues/params/edit-issue-comment-parameters";
 import { FindProjectIssuesParameters } from "../api/issues/params/find-project-issues-parameters";
 import { FindAccountIssuesParameters } from "../api/issues/params/find-account-issues-parameters";
+import { UpdateIssueAnsweredParameters } from "../api/issues/params/update-issue-answered-parameters";
+import { UpdateIssueSeverityLevelParameters } from "../api/issues/params/update-issue-severity-level-parameters";
+import { UpdateIssueTypeParameters } from "../api/issues/params/update-issue-type-parameters";
 
 describe("SmartlingIssuesAPI class tests.", () => {
     const accountUid = "testAccountUid";
@@ -134,6 +137,112 @@ describe("SmartlingIssuesAPI class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "get"
+                }
+            );
+        });
+
+        it("Update issue answered", async () => {
+            const params = new UpdateIssueAnsweredParameters().setAnswered(true);
+
+            await issuesApi.updateIssueAnswered(projectId, issueUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/answered`,
+                {
+                    body: "{\"answered\":true}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
+                }
+            );
+        });
+
+        it("Update issue assignee", async () => {
+            const params = new UpdateIssueAssigneeParameters().setAssigneeUserUid("661801f19693");
+
+            await issuesApi.updateIssueAssignee(projectId, issueUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/assignee`,
+                {
+                    body: "{\"assigneeUserUid\":\"661801f19693\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
+                }
+            );
+        });
+
+        it("Delete issue assignee", async () => {
+            await issuesApi.deleteIssueAssignee(projectId, issueUid);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/assignee`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
+                }
+            );
+        });
+
+        it("Update issue severity level", async () => {
+            const params = new UpdateIssueSeverityLevelParameters()
+                .setIssueSeverityLevel(IssueSeverityLevel.HIGH);
+
+            await issuesApi.updateIssueSeverityLevel(projectId, issueUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/severity-level`,
+                {
+                    body: "{\"issueSeverityLevelCode\":\"HIGH\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
+                }
+            );
+        });
+
+        it("Update issue type", async () => {
+            const params = new UpdateIssueTypeParameters()
+                .setIssueType(IssueType.TRANSLATION)
+                .setIssueSubType(IssueSubType.POOR_TRANSLATION)
+                .setLocaleId("ru-RU");
+
+            await issuesApi.updateIssueType(projectId, issueUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/change-type`,
+                {
+                    body: "{\"issueTypeCode\":\"TRANSLATION\",\"issueSubTypeCode\":\"POOR_TRANSLATION\",\"localeId\":\"ru-RU\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put"
                 }
             );
         });
