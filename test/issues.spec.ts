@@ -1,4 +1,11 @@
+import * as sinon from "sinon";
 import * as assert from "assert";
+import { loggerMock, authMock, responseMock } from "./mock";
+import { SmartlingIssuesApi } from "../api/issues/index";
+import { SmartlingAuthApi } from "../api/auth/index";
+import { IssueType } from "../api/issues/enums/issue-type";
+import { IssueSubType } from "../api/issues/enums/issue-sub-type";
+import { IssueSeverityLevel } from "../api/issues/enums/issue-severity-level";
 import { CountProjectIssuesParameters } from "../api/issues/params/count-project-issues-parameters";
 import { JobFilterPresence } from "../api/issues/enums/job-filter-presence";
 import { CreateIssueParameters } from "../api/issues/params/create-issue-parameters";
@@ -10,6 +17,66 @@ import { FindProjectIssuesParameters } from "../api/issues/params/find-project-i
 import { FindAccountIssuesParameters } from "../api/issues/params/find-account-issues-parameters";
 
 describe("SmartlingIssuesAPI class tests.", () => {
+    const accountUid = "testAccountUid";
+    const projectId = "testProjectId";
+    const issueUid = "testIssueUid";
+    const issueCommentUid = "testIssueCommentUid";
+    let issuesApi;
+    let issuesServiceApiFetchStub;
+    let issuesServiceApiUaStub;
+    let responseMockJsonStub;
+
+    beforeEach(() => {
+        issuesApi = new SmartlingIssuesApi(
+            "https://test.com",
+            authMock as unknown as SmartlingAuthApi,
+            loggerMock
+        );
+        issuesServiceApiFetchStub = sinon.stub(issuesApi, "fetch");
+        issuesServiceApiUaStub = sinon.stub(issuesApi, "ua");
+        responseMockJsonStub = sinon.stub(responseMock, "json");
+
+        issuesServiceApiUaStub.returns("test_user_agent");
+        issuesServiceApiFetchStub.returns(responseMock);
+        responseMockJsonStub.returns({
+            response: {}
+        });
+    });
+
+    afterEach(() => {
+        issuesServiceApiFetchStub.restore();
+        responseMockJsonStub.restore();
+        issuesServiceApiUaStub.restore();
+    });
+
+    describe("Methods", () => {
+        it("Create issue", async () => {
+            const params = new CreateIssueParameters()
+                .setIssueText("This translation is incorrect.")
+                .setIssueType(IssueType.TRANSLATION)
+                .setIssueSubType(IssueSubType.POOR_TRANSLATION)
+                .setString({ hashcode: "c32c16cddafd63dfa0dc12449372a093", localeId: "ru-RU" })
+                .setIssueSeverityLevel(IssueSeverityLevel.LOW);
+
+            await issuesApi.createIssue(projectId, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues`,
+                {
+                    body: "{\"issueText\":\"This translation is incorrect.\",\"issueTypeCode\":\"TRANSLATION\",\"issueSubTypeCode\":\"POOR_TRANSLATION\",\"string\":{\"hashcode\":\"c32c16cddafd63dfa0dc12449372a093\",\"localeId\":\"ru-RU\"},\"issueSeverityLevelCode\":\"LOW\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+    });
+
     describe("Parameter validation", () => {
         it("BaseIssuesFilterParameters should validate issueNumbers limit", () => {
             const params = new CountProjectIssuesParameters();
