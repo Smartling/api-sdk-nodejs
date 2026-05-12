@@ -164,8 +164,7 @@ export class SmartlingIssuesApi extends SmartlingBaseApi {
         params: EditIssueCommentParameters
     ): Promise<IssueCommentDto> {
         return await this.makeRequest(
-            // Smartling Issues API uses POST (not PUT) for comment updates
-            "post",
+            "put",
             `${this.entrypoint}/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}`,
             JSON.stringify(params.export())
         );

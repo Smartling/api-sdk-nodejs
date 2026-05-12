@@ -305,7 +305,7 @@ describe("SmartlingIssuesAPI class tests.", () => {
                         "Content-Type": "application/json",
                         "User-Agent": "test_user_agent"
                     },
-                    method: "post"
+                    method: "put"
                 }
             );
         });
