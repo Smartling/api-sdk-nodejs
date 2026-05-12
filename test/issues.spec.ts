@@ -246,6 +246,102 @@ describe("SmartlingIssuesAPI class tests.", () => {
                 }
             );
         });
+
+        it("Get issue comments", async () => {
+            await issuesApi.getIssueComments(projectId, issueUid);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Add issue comment", async () => {
+            const params = new CreateIssueCommentParameters().setCommentText("Looks good.");
+
+            await issuesApi.addIssueComment(projectId, issueUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments`,
+                {
+                    body: "{\"commentText\":\"Looks good.\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Update issue comment", async () => {
+            const params = new EditIssueCommentParameters().setCommentText("Updated comment.");
+
+            await issuesApi.updateIssueComment(projectId, issueUid, issueCommentUid, params);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}`,
+                {
+                    body: "{\"commentText\":\"Updated comment.\"}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Get issue comment details", async () => {
+            await issuesApi.getIssueCommentDetails(projectId, issueUid, issueCommentUid);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Delete issue comment", async () => {
+            await issuesApi.deleteIssueComment(projectId, issueUid, issueCommentUid);
+
+            sinon.assert.calledOnce(issuesServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                issuesServiceApiFetchStub,
+                `https://test.com/issues-api/v2/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
+                }
+            );
+        });
     });
 
     describe("Parameter validation", () => {

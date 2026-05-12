@@ -8,6 +8,8 @@ import { UpdateIssueAnsweredParameters } from "./params/update-issue-answered-pa
 import { UpdateIssueAssigneeParameters } from "./params/update-issue-assignee-parameters";
 import { UpdateIssueSeverityLevelParameters } from "./params/update-issue-severity-level-parameters";
 import { UpdateIssueTypeParameters } from "./params/update-issue-type-parameters";
+import { CreateIssueCommentParameters } from "./params/create-issue-comment-parameters";
+import { EditIssueCommentParameters } from "./params/edit-issue-comment-parameters";
 import { IssueDto } from "./dto/issue-dto";
 import { IssueTextDto } from "./dto/issue-text-dto";
 import { IssueStateDto } from "./dto/issue-state-dto";
@@ -15,6 +17,8 @@ import { IssueAnsweredDto } from "./dto/issue-answered-dto";
 import { IssueAssigneeDto } from "./dto/issue-assignee-dto";
 import { IssueSeverityLevelDto } from "./dto/issue-severity-level-dto";
 import { IssueChangedTypeDto } from "./dto/issue-changed-type-dto";
+import { IssueCommentDto } from "./dto/issue-comment-dto";
+import { SmartlingListResponse } from "../http/smartling-list-response";
 
 export class SmartlingIssuesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -123,6 +127,64 @@ export class SmartlingIssuesApi extends SmartlingBaseApi {
             "put",
             `${this.entrypoint}/projects/${projectId}/issues/${issueUid}/change-type`,
             JSON.stringify(params.export())
+        );
+    }
+
+    async getIssueComments(
+        projectId: string,
+        issueUid: string
+    ): Promise<SmartlingListResponse<IssueCommentDto>> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/projects/${projectId}/issues/${issueUid}/comments`
+        );
+    }
+
+    async addIssueComment(
+        projectId: string,
+        issueUid: string,
+        params: CreateIssueCommentParameters
+    ): Promise<IssueCommentDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/projects/${projectId}/issues/${issueUid}/comments`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async updateIssueComment(
+        projectId: string,
+        issueUid: string,
+        issueCommentUid: string,
+        params: EditIssueCommentParameters
+    ): Promise<IssueCommentDto> {
+        return await this.makeRequest(
+            // Smartling Issues API uses POST (not PUT) for comment updates
+            "post",
+            `${this.entrypoint}/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async getIssueCommentDetails(
+        projectId: string,
+        issueUid: string,
+        issueCommentUid: string
+    ): Promise<IssueCommentDto> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}`
+        );
+    }
+
+    async deleteIssueComment(
+        projectId: string,
+        issueUid: string,
+        issueCommentUid: string
+    ): Promise<void> {
+        await this.makeRequest(
+            "delete",
+            `${this.entrypoint}/projects/${projectId}/issues/${issueUid}/comments/${issueCommentUid}`
         );
     }
 }
