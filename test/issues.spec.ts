@@ -584,4 +584,41 @@ describe("SmartlingIssuesAPI class tests.", () => {
             }
         });
     });
+
+    describe("Edge cases", () => {
+        it("Should accept maximum issueText length", () => {
+            const params = new CreateIssueParameters();
+            const maxText = "a".repeat(4000);
+            params.setIssueText(maxText);
+            assert.equal(params.export().issueText, maxText);
+        });
+
+        it("Should accept maximum commentText length", () => {
+            const params = new CreateIssueCommentParameters();
+            const maxText = "a".repeat(4000);
+            params.setCommentText(maxText);
+            assert.equal(params.export().commentText, maxText);
+        });
+
+        it("Should accept maximum issue numbers", () => {
+            const params = new CountProjectIssuesParameters();
+            const maxNumbers = Array(1000).fill(1);
+            params.setIssueNumbers(maxNumbers);
+            assert.deepStrictEqual(params.export().issueNumbers, maxNumbers);
+        });
+
+        it("Should accept maximum jobUids in jobFilter", () => {
+            const params = new CountProjectIssuesParameters();
+            const maxUids = Array(1000).fill("uid");
+            params.setJobFilter({ jobUids: maxUids, presence: JobFilterPresence.HAS_ANY });
+            assert.deepStrictEqual(params.export().jobFilter.jobUids, maxUids);
+        });
+
+        it("Should accept zero limit and offset", () => {
+            const params = new FindProjectIssuesParameters();
+            params.setLimit(0).setOffset(0);
+            assert.equal(params.export().limit, 0);
+            assert.equal(params.export().offset, 0);
+        });
+    });
 });
