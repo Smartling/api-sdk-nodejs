@@ -8,97 +8,95 @@ import { IssueWatchingState } from "../enums/issue-watching-state";
 import { JobFilterDto } from "../dto/job-filter-dto";
 import { StringFilterDto } from "../dto/string-filter-dto";
 
-export abstract class BaseIssuesFilterParameters<
-    T extends BaseIssuesFilterParameters<T>
-> extends BaseParameters {
-    setCreatedDateBefore(date: string): T {
+export abstract class BaseIssuesFilterParameters extends BaseParameters {
+    setCreatedDateBefore(date: string): this {
         this.set("createdDateBefore", date);
-        return this as unknown as T;
+        return this;
     }
 
-    setCreatedDateAfter(date: string): T {
+    setCreatedDateAfter(date: string): this {
         this.set("createdDateAfter", date);
-        return this as unknown as T;
+        return this;
     }
 
-    setResolvedDateBefore(date: string): T {
+    setResolvedDateBefore(date: string): this {
         this.set("resolvedDateBefore", date);
-        return this as unknown as T;
+        return this;
     }
 
-    setResolvedDateAfter(date: string): T {
+    setResolvedDateAfter(date: string): this {
         this.set("resolvedDateAfter", date);
-        return this as unknown as T;
+        return this;
     }
 
-    setAnswered(answered: boolean): T {
+    setAnswered(answered: boolean): this {
         this.set("answered", answered);
-        return this as unknown as T;
+        return this;
     }
 
-    setReopened(reopened: boolean): T {
+    setReopened(reopened: boolean): this {
         this.set("reopened", reopened);
-        return this as unknown as T;
+        return this;
     }
 
-    setHasComments(hasComments: boolean): T {
+    setHasComments(hasComments: boolean): this {
         this.set("hasComments", hasComments);
-        return this as unknown as T;
+        return this;
     }
 
-    setIssueSeverityLevelCodes(codes: Array<IssueSeverityLevel>): T {
+    setIssueSeverityLevelCodes(codes: Array<IssueSeverityLevel>): this {
         this.set("issueSeverityLevelCodes", codes);
-        return this as unknown as T;
+        return this;
     }
 
-    setIssueStateCodes(codes: Array<IssueState>): T {
+    setIssueStateCodes(codes: Array<IssueState>): this {
         this.set("issueStateCodes", codes);
-        return this as unknown as T;
+        return this;
     }
 
-    setIssueSubTypeCodes(codes: Array<IssueSubType>): T {
+    setIssueSubTypeCodes(codes: Array<IssueSubType>): this {
         this.set("issueSubTypeCodes", codes);
-        return this as unknown as T;
+        return this;
     }
 
-    setIssueTypeCodes(codes: Array<IssueType>): T {
+    setIssueTypeCodes(codes: Array<IssueType>): this {
         this.set("issueTypeCodes", codes);
-        return this as unknown as T;
+        return this;
     }
 
-    setIssueWatchingStateCode(code: IssueWatchingState): T {
+    setIssueWatchingStateCode(code: IssueWatchingState): this {
         this.set("issueWatchingStateCode", code);
-        return this as unknown as T;
+        return this;
     }
 
-    setReportedByUserUid(uid: string): T {
+    setReportedByUserUid(uid: string): this {
         this.set("reportedByUserUid", uid);
-        return this as unknown as T;
+        return this;
     }
 
-    setAssigneeUserUid(uid: string): T {
+    setAssigneeUserUid(uid: string): this {
         this.set("assigneeUserUid", uid);
-        return this as unknown as T;
+        return this;
     }
 
-    setIssueNumbers(numbers: Array<number>): T {
+    setIssueNumbers(numbers: Array<number>): this {
         if (numbers && numbers.length > 1000) {
             throw new SmartlingException("Issue numbers array must not exceed 1000 items");
         }
         this.set("issueNumbers", numbers);
-        return this as unknown as T;
+        return this;
     }
 
-    setJobFilter(jobFilter: JobFilterDto): T {
+    setJobFilter(jobFilter: JobFilterDto): this {
         if (jobFilter && jobFilter.jobUids && jobFilter.jobUids.length > 1000) {
             throw new SmartlingException("Job filter jobUids array must not exceed 1000 items");
         }
         this.set("jobFilter", jobFilter);
-        return this as unknown as T;
+        return this;
     }
 
-    setStringFilter(stringFilter: StringFilterDto): T {
+    setStringFilter(stringFilter: StringFilterDto): this {
         this.set("stringFilter", stringFilter);
-        return this as unknown as T;
+        return this;
     }
 }
