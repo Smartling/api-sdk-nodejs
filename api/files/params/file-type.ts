@@ -48,7 +48,5 @@ export enum FileType {
     MDX = "mdx",
     IMAGE_PNG = "image_png",
     IMAGE_JPG = "image_jpg",
-    IMAGE_WEBP = "image_webp",
-    IMAGE_GIF = "image_gif",
-    IMAGE_BMP = "image_bmp"
+    IMAGE_WEBP = "image_webp"
 }
