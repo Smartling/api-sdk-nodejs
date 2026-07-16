@@ -72,6 +72,7 @@ describe("Auth class tests.", () => {
             authTokenExistsStub.returns(true);
             authTokenCanBeRenewedStub.returns(true);
             auth.response = { refreshToken: "test_refresh_token" };
+            authMakeRequestStub.returns({ accessToken: "refreshed_token", refreshExpiresIn: 3600 });
 
             await auth.refreshToken();
 
@@ -88,6 +89,36 @@ describe("Auth class tests.", () => {
             );
 
             sinon.assert.notCalled(authAuthenticateStub);
+        });
+
+        it("Token exists, can be renewed, and refresh returns a normal (non-capped) token: refreshed token is returned as-is.", async () => {
+            authTokenExistsStub.returns(true);
+            authTokenCanBeRenewedStub.returns(true);
+            auth.response = { refreshToken: "test_refresh_token" };
+
+            const refreshedResponse = { accessToken: "refreshed_token", refreshExpiresIn: 3600 };
+            authMakeRequestStub.returns(refreshedResponse);
+
+            const result = await auth.refreshToken();
+
+            sinon.assert.notCalled(authAuthenticateStub);
+            assert.deepEqual(result, refreshedResponse);
+        });
+
+        it("Token exists, can be renewed, but refresh returns a session-capped token: falls through to authenticate.", async () => {
+            authTokenExistsStub.returns(true);
+            authTokenCanBeRenewedStub.returns(true);
+            auth.response = { refreshToken: "test_refresh_token" };
+
+            const cappedResponse = { accessToken: "capped_refreshed_token", refreshExpiresIn: 5 };
+            authMakeRequestStub.returns(cappedResponse);
+            authAuthenticateStub.returns({ accessToken: "reauthed_token" });
+
+            const result = await auth.refreshToken();
+
+            sinon.assert.calledOnce(authMakeRequestStub);
+            sinon.assert.calledOnce(authAuthenticateStub);
+            assert.deepEqual(result, { accessToken: "reauthed_token" });
         });
 
         it("Token exists but can't be renewed.", async () => {
