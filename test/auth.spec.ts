@@ -121,6 +121,20 @@ describe("Auth class tests.", () => {
             assert.deepEqual(result, { accessToken: "reauthed_token" });
         });
 
+        it("Token exists, can be renewed, and refresh returns an offline-type token (refreshExpiresIn: 0): treated as non-capped, not re-authenticated.", async () => {
+            authTokenExistsStub.returns(true);
+            authTokenCanBeRenewedStub.returns(true);
+            auth.response = { refreshToken: "test_refresh_token" };
+
+            const offlineResponse = { accessToken: "offline_refreshed_token", refreshExpiresIn: 0 };
+            authMakeRequestStub.returns(offlineResponse);
+
+            const result = await auth.refreshToken();
+
+            sinon.assert.notCalled(authAuthenticateStub);
+            assert.deepEqual(result, offlineResponse);
+        });
+
         it("Token exists but can't be renewed.", async () => {
             authTokenExistsStub.returns(true);
             authTokenCanBeRenewedStub.returns(false);
