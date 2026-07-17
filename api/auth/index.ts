@@ -41,18 +41,28 @@ export class SmartlingAuthApi extends SmartlingBaseApi implements AccessTokenPro
 
             this.logger.debug(`Refresh token with: ${JSON.stringify(this.response, SmartlingBaseApi.sensitiveReplacer)}`);
 
-            return await this.makeRequest(
+            const refreshedToken: AccessTokenDto = await this.makeRequest(
                 "post",
                 `${this.entrypoint}/authenticate/refresh`,
                 JSON.stringify({
                     refreshToken: this.response.refreshToken
                 })
             );
+
+            if (!this.isSessionCapped(refreshedToken)) {
+                return refreshedToken;
+            }
+
+            this.logger.debug(`Refreshed token has a session-capped lifetime (${refreshedToken.refreshExpiresIn}s); re-authenticating.`);
         }
 
-        this.logger.debug(`Can't refresh, doing re-auth with: ${JSON.stringify(this.response, SmartlingBaseApi.sensitiveReplacer)}`);
+        this.logger.debug(`Falling back to re-auth with: ${JSON.stringify(this.response, SmartlingBaseApi.sensitiveReplacer)}`);
 
         return await this.authenticate();
+    }
+
+    isSessionCapped(response: AccessTokenDto): boolean {
+        return response.refreshExpiresIn > 0 && response.refreshExpiresIn < this.ttlCorrectionSec;
     }
 
     resetRequestTimeStamp(): void {
