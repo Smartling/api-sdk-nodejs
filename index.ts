@@ -183,6 +183,7 @@ export * from "./api/http/smartling-bare-list-response";
 export * from "./api/vendors/index";
 export * from "./api/vendors/dto/content-assignment-dto";
 export * from "./api/vendors/dto/workflow-step-type";
+export * from "./api/vendors/params/content-assignments-parameters";
 export * from "./api/issues/index";
 export * from "./api/issues/enums/issue-type";
 export * from "./api/issues/enums/issue-sub-type";

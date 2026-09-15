@@ -3,6 +3,7 @@ import assert from "assert";
 import { SmartlingVendorsApi } from "../api/vendors";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { WorkflowStepType } from "../api/vendors/dto/workflow-step-type";
+import { ContentAssignmentsParameters } from "../api/vendors/params/content-assignments-parameters";
 import { loggerMock, authMock, responseMock } from "./mock";
 
 describe("SmartlingVendorsApi class tests.", () => {
@@ -45,6 +46,34 @@ describe("SmartlingVendorsApi class tests.", () => {
                 method: "get"
             }
         );
+    });
+
+    it("Get content assignments by account filtered by jobUids", async () => {
+        const params = new ContentAssignmentsParameters().setJobUids(["job1", "job2"]);
+
+        await vendorsApi.getContentAssignmentsByAccount("test_account", params);
+
+        sinon.assert.calledOnce(vendorsApiFetchStub);
+        sinon.assert.calledWithExactly(
+            vendorsApiFetchStub,
+            "https://test.com/vendors-api/v2/accounts/test_account/content-assignments?jobUids=job1&jobUids=job2",
+            {
+                headers: {
+                    Authorization: "test_token_type test_access_token",
+                    "Content-Type": "application/json",
+                    "User-Agent": "test_user_agent"
+                },
+                method: "get"
+            }
+        );
+    });
+
+    it("Throws when jobUids exceeds the max count", () => {
+        const tooManyJobUids = Array.from({ length: 201 }, (_, i) => `job${i}`);
+
+        assert.throws(() => {
+            new ContentAssignmentsParameters().setJobUids(tooManyJobUids);
+        }, /jobUids must contain at most 200 items/);
     });
 
     it("Parses due date fields as Date instances", async () => {
