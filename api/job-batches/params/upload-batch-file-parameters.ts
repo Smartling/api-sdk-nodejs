@@ -52,6 +52,12 @@ export class UploadBatchFileParameters extends BaseParameters {
         return this;
     }
 
+    setFileContentFromBuffer(fileContent: Buffer): UploadBatchFileParameters {
+        this.set("file", fileContent);
+
+        return this;
+    }
+
     setFileUri(fileUri: string): UploadBatchFileParameters {
         this.set("fileUri", fileUri);
 
