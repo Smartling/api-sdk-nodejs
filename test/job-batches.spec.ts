@@ -52,10 +52,23 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             params
                 .setTranslationJobUid(jobUid)
                 .setAuthorize(true)
+                .setRushJob(true)
                 .addFileUri("test_file_uri_1")
                 .addFileUri("test_file_uri_2")
-                .addLocaleWorkflows("fr", "wf1")
-                .addLocaleWorkflows("de", "wf2");
+                .addLocaleWorkflow({
+                    targetLocaleId: "fr",
+                    workflowUid: "wf1",
+                    contentAssignments: [
+                        { workflowStepUid: "step1", userUids: ["user1"] }
+                    ],
+                    translationJobWorkflowStepDueDates: [
+                        { workflowStepUid: "step1", dueDate: "2026-12-31T23:59:59Z" }
+                    ]
+                })
+                .addLocaleWorkflow({
+                    targetLocaleId: "de",
+                    workflowUid: "wf2"
+                });
 
             await jobBatchesApi.createBatch(projectId, params);
 
@@ -64,7 +77,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
                 jobBatchesApiFetchStub,
                 `https://test.com/job-batches-api/v2/projects/${projectId}/batches`,
                 {
-                    body: "{\"fileUris\":[\"test_file_uri_1\",\"test_file_uri_2\"],\"localeWorkflows\":[{\"targetLocaleId\":\"fr\",\"workflowUid\":\"wf1\"},{\"targetLocaleId\":\"de\",\"workflowUid\":\"wf2\"}],\"translationJobUid\":\"testJobUid\",\"authorize\":true}",
+                    body: "{\"fileUris\":[\"test_file_uri_1\",\"test_file_uri_2\"],\"localeWorkflows\":[{\"targetLocaleId\":\"fr\",\"workflowUid\":\"wf1\",\"contentAssignments\":[{\"workflowStepUid\":\"step1\",\"userUids\":[\"user1\"]}],\"translationJobWorkflowStepDueDates\":[{\"workflowStepUid\":\"step1\",\"dueDate\":\"2026-12-31T23:59:59Z\"}]},{\"targetLocaleId\":\"de\",\"workflowUid\":\"wf2\"}],\"translationJobUid\":\"testJobUid\",\"authorize\":true,\"rushJob\":true}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
