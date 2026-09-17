@@ -52,10 +52,23 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             params
                 .setTranslationJobUid(jobUid)
                 .setAuthorize(true)
+                .setRushJob(true)
                 .addFileUri("test_file_uri_1")
                 .addFileUri("test_file_uri_2")
-                .addLocaleWorkflows("fr", "wf1")
-                .addLocaleWorkflows("de", "wf2");
+                .addLocaleWorkflow({
+                    targetLocaleId: "fr",
+                    workflowUid: "wf1",
+                    contentAssignments: [
+                        { workflowStepUid: "step1", userUids: ["user1"] }
+                    ],
+                    translationJobWorkflowStepDueDates: [
+                        { workflowStepUid: "step1", dueDate: "2026-12-31T23:59:59Z" }
+                    ]
+                })
+                .addLocaleWorkflow({
+                    targetLocaleId: "de",
+                    workflowUid: "wf2"
+                });
 
             await jobBatchesApi.createBatch(projectId, params);
 
@@ -64,7 +77,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
                 jobBatchesApiFetchStub,
                 `https://test.com/job-batches-api/v2/projects/${projectId}/batches`,
                 {
-                    body: "{\"fileUris\":[\"test_file_uri_1\",\"test_file_uri_2\"],\"localeWorkflows\":[{\"targetLocaleId\":\"fr\",\"workflowUid\":\"wf1\"},{\"targetLocaleId\":\"de\",\"workflowUid\":\"wf2\"}],\"translationJobUid\":\"testJobUid\",\"authorize\":true}",
+                    body: "{\"fileUris\":[\"test_file_uri_1\",\"test_file_uri_2\"],\"localeWorkflows\":[{\"targetLocaleId\":\"fr\",\"workflowUid\":\"wf1\",\"contentAssignments\":[{\"workflowStepUid\":\"step1\",\"userUids\":[\"user1\"]}],\"translationJobWorkflowStepDueDates\":[{\"workflowStepUid\":\"step1\",\"dueDate\":\"2026-12-31T23:59:59Z\"}]},{\"targetLocaleId\":\"de\",\"workflowUid\":\"wf2\"}],\"translationJobUid\":\"testJobUid\",\"authorize\":true,\"rushJob\":true}",
                     headers: {
                         Authorization: "test_token_type test_access_token",
                         "Content-Type": "application/json",
@@ -246,6 +259,59 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             );
         });
 
+        it("Upload batch file: from buffer", async () => {
+            const params = new UploadBatchFileParameters();
+
+            params
+                .setFileContentFromBuffer(fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml")
+                ))
+                .setFileUri("test-file-uri")
+                .setFileType(FileType.XML)
+                .setDirective("foo", "bar")
+                .setLocalesToApprove(["fr-FR", "de-DE"])
+                .setCallbackUrl("testCallbackUrl")
+                .setClientLibId("clientLibId", "clientLibVersion");
+
+            await jobBatchesApi.uploadBatchFile(projectId, batchUid, params);
+
+            sinon.assert.calledOnce(jobBatchesApiFetchStub);
+
+            assert.equal(
+                jobBatchesApiFetchStub.getCall(0).args[0],
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches/${batchUid}/file`
+            );
+
+            assert.equal(
+                jobBatchesApiFetchStub.getCall(0).args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                jobBatchesApiFetchStub.getCall(0).args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            assert.equal(
+                jobBatchesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
+                "test_user_agent"
+            );
+
+            const expectedBuffer = fs.readFileSync(
+                fs.realpathSync("./test/data/file.xml")
+            );
+
+            assert.ok(
+                // eslint-disable-next-line no-underscore-dangle
+                jobBatchesApiFetchStub.getCall(0).args[1].body._streams[1].equals(expectedBuffer)
+            );
+
+            assert.ok(
+                // eslint-disable-next-line no-underscore-dangle
+                jobBatchesApiFetchStub.getCall(0).args[1].body._streams[0].includes("filename=")
+            );
+        });
+
         it("Get batch status", async () => {
             await jobBatchesApi.getBatchStatus(projectId, batchUid);
 
@@ -279,7 +345,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             sinon.assert.calledOnce(jobBatchesApiFetchStub);
             sinon.assert.calledWithExactly(
                 jobBatchesApiFetchStub,
-                `https://test.com/job-batches-api/v2/projects/${projectId}/batches?translationJobUid=${jobUid}&limit=100&offset=10&status=${BatchStatus.COMPLETED}&sortBy=${sortByParam}&sortDirection=${(Order.ASC).toLowerCase()}`,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches?translationJobUid=${jobUid}&limit=100&offset=10&status=${BatchStatus.COMPLETED}&sortBy=${sortByParam}&orderBy=${Order.ASC}`,
                 {
                     method: "get",
                     headers: {

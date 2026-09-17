@@ -1,5 +1,6 @@
 export enum BatchItemStatus {
     DRAFT = "DRAFT",
+    UPLOADING = "UPLOADING",
     UPLOAD_FAILED = "UPLOAD_FAILED",
     ATTACHING = "ATTACHING",
     ATTACH_FAILED = "ATTACH_FAILED",

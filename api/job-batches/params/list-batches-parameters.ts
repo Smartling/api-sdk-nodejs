@@ -33,7 +33,7 @@ export class ListBatchesParameters extends BaseParameters {
 
     setSort(field: "createdDate" | "status", order: Order): ListBatchesParameters {
         this.set("sortBy", field);
-        this.set("sortDirection", order.toLowerCase());
+        this.set("orderBy", order);
 
         return this;
     }

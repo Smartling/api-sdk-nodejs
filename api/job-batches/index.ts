@@ -31,6 +31,10 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
                     opts.body[key].forEach((value) => {
                         formData.append(`${key}[]`, value);
                     });
+                } else if (key === "file" && Buffer.isBuffer(opts.body[key])) {
+                    formData.append(key, opts.body[key], {
+                        filename: (opts.body as Record<string, string>).fileUri
+                    });
                 } else {
                     formData.append(key, opts.body[key]);
                 }
