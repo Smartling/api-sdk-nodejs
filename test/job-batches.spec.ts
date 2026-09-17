@@ -305,6 +305,11 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
                 // eslint-disable-next-line no-underscore-dangle
                 jobBatchesApiFetchStub.getCall(0).args[1].body._streams[1].equals(expectedBuffer)
             );
+
+            assert.ok(
+                // eslint-disable-next-line no-underscore-dangle
+                jobBatchesApiFetchStub.getCall(0).args[1].body._streams[0].includes("filename=")
+            );
         });
 
         it("Get batch status", async () => {
