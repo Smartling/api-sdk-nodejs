@@ -292,7 +292,7 @@ describe("SmartlingJobBatchesAPI class tests.", () => {
             sinon.assert.calledOnce(jobBatchesApiFetchStub);
             sinon.assert.calledWithExactly(
                 jobBatchesApiFetchStub,
-                `https://test.com/job-batches-api/v2/projects/${projectId}/batches?translationJobUid=${jobUid}&limit=100&offset=10&status=${BatchStatus.COMPLETED}&sortBy=${sortByParam}&sortDirection=${(Order.ASC).toLowerCase()}`,
+                `https://test.com/job-batches-api/v2/projects/${projectId}/batches?translationJobUid=${jobUid}&limit=100&offset=10&status=${BatchStatus.COMPLETED}&sortBy=${sortByParam}&orderBy=${Order.ASC}`,
                 {
                     method: "get",
                     headers: {
