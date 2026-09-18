@@ -566,6 +566,13 @@ describe("SmartlingFilesApi class tests.", () => {
                     }
                 );
             });
+
+            it("Returns an ArrayBuffer", async () => {
+                const result = await filesApi
+                    .downloadFileAllTranslations(projectId, fileUri, params);
+
+                assert.ok(result instanceof ArrayBuffer);
+            });
         });
 
         it("Delete file", async () => {

@@ -80,7 +80,7 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
         projectId: string,
         fileUri: string,
         params: DownloadFileAllTranslationsParameters
-    ): Promise<string> {
+    ): Promise<ArrayBuffer> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/all/file/zip`,
