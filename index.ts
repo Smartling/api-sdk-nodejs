@@ -55,6 +55,7 @@ export * from "./api/files/dto/file-status-for-locale-item-dto";
 export * from "./api/files/dto/last-modified-for-locale-dto";
 export * from "./api/files/dto/uploaded-file-dto";
 export * from "./api/files/dto/imported-file-dto";
+export * from "./api/files/dto/file-status-for-project-dto";
 export * from "./api/glossaries/index";
 export * from "./api/glossaries/dto/glossary-dto";
 export * from "./api/glossaries/dto/fallback-locale-dto";
