@@ -80,7 +80,7 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
         projectId: string,
         fileUri: string,
         params: DownloadFileAllTranslationsParameters
-    ): Promise<string> {
+    ): Promise<ArrayBuffer> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/locales/all/file/zip`,
@@ -97,6 +97,21 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/file/delete`,
+            form,
+            false,
+            SmartlingFilesApi.fixContentTypeHeaderCase(form)
+        );
+    }
+
+    async renameFile(projectId: string, fileUri: string, newFileUri: string): Promise<boolean> {
+        const form = new FormData();
+
+        form.append("fileUri", fileUri);
+        form.append("newFileUri", newFileUri);
+
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/file/rename`,
             form,
             false,
             SmartlingFilesApi.fixContentTypeHeaderCase(form)

@@ -8,7 +8,7 @@ interface BatchListItemDto extends BatchDto {
     projectId: string;
     createdDate: Date
     modifiedDate: Date
-
+    hasError: boolean;
 }
 
 export { BatchListItemDto };

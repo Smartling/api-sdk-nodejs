@@ -12,6 +12,7 @@ import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "../api/files/params/recently-uploaded-files";
+import { FilesOrderBy } from "../api/files/params/files-order-by";
 import { FileNameMode } from "../api/files/params/filename-mode";
 import { DownloadMultipleFilesTranslationsParameters } from "../api/files/params/download-multiple-files-translations-parameters";
 import { FileLocales } from "../api/files/params/file-locales";
@@ -80,6 +81,33 @@ describe("SmartlingFilesApi class tests.", () => {
             sinon.assert.calledWithExactly(
                 filesApiFetchStub,
                 `https://test.com/files-api/v2/projects/${projectId}/files/list?offset=0&limit=99&uriMask=TEST`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get recently uploaded files for project with all filters", async () => {
+            const params = new RecentlyUploadedFilesParameters()
+                .setOffset(0)
+                .setLimit(99)
+                .setUriMask("TEST")
+                .setFileTypes([FileType.JSON, FileType.XML])
+                .setLastUploadedAfter(new Date("2020-01-01T00:00:00.000Z"))
+                .setLastUploadedBefore(new Date("2020-02-01T00:00:00.000Z"))
+                .setOrderBy(FilesOrderBy.LAST_UPLOADED_DESC);
+
+            await filesApi.getRecentlyUploadedFiles(projectId, params);
+
+            sinon.assert.calledOnce(filesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                filesApiFetchStub,
+                `https://test.com/files-api/v2/projects/${projectId}/files/list?offset=0&limit=99&uriMask=TEST&fileTypes%5B%5D=json&fileTypes%5B%5D=xml&lastUploadedAfter=2020-01-01T00%3A00%3A00Z&lastUploadedBefore=2020-02-01T00%3A00%3A00Z&orderBy=lastUploaded_desc`,
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",
@@ -518,6 +546,53 @@ describe("SmartlingFilesApi class tests.", () => {
                     }
                 );
             });
+
+            it("Supports zip file name parameter", async () => {
+                params.setZipFileName("custom-name.zip");
+
+                await filesApi.downloadFileAllTranslations(projectId, fileUri, params);
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file/zip?zipFileName=custom-name.zip&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
+
+            it("Returns an ArrayBuffer", async () => {
+                const result = await filesApi
+                    .downloadFileAllTranslations(projectId, fileUri, params);
+
+                assert.ok(result instanceof ArrayBuffer);
+            });
+
+            it("Supports contextMatchingInstrumented retrieval type", async () => {
+                params.setRetrievalType(RetrievalType.CONTEXT_MATCHING_INSTRUMENTED);
+
+                await filesApi.downloadFileAllTranslations(projectId, fileUri, params);
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file/zip?retrievalType=contextMatchingInstrumented&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
         });
 
         it("Delete file", async () => {
@@ -552,6 +627,34 @@ describe("SmartlingFilesApi class tests.", () => {
 
             assert.equal(
                 filesApiFetchStub.getCall(0).args[1].body.getBuffer().toString().includes(fileUri),
+                true
+            );
+        });
+
+        it("Rename file", async () => {
+            await filesApi.renameFile(projectId, fileUri, "newTestFileUri");
+
+            sinon.assert.calledOnce(filesApiFetchStub);
+
+            assert.equal(
+                filesApiFetchStub.getCall(0).args[0],
+                `https://test.com/files-api/v2/projects/${projectId}/file/rename`
+            );
+
+            assert.equal(
+                filesApiFetchStub.getCall(0).args[1].method,
+                "post"
+            );
+
+            const body = filesApiFetchStub.getCall(0).args[1].body.getBuffer().toString();
+
+            assert.equal(
+                body.includes(`Content-Disposition: form-data; name="fileUri"\r\n\r\n${fileUri}`),
+                true
+            );
+
+            assert.equal(
+                body.includes("Content-Disposition: form-data; name=\"newFileUri\"\r\n\r\nnewTestFileUri"),
                 true
             );
         });
