@@ -573,6 +573,26 @@ describe("SmartlingFilesApi class tests.", () => {
 
                 assert.ok(result instanceof ArrayBuffer);
             });
+
+            it("Supports contextMatchingInstrumented retrieval type", async () => {
+                params.setRetrievalType(RetrievalType.CONTEXT_MATCHING_INSTRUMENTED);
+
+                await filesApi.downloadFileAllTranslations(projectId, fileUri, params);
+
+                sinon.assert.calledOnce(filesApiFetchStub);
+                sinon.assert.calledWithExactly(
+                    filesApiFetchStub,
+                    `https://test.com/files-api/v2/projects/${projectId}/locales/all/file/zip?retrievalType=contextMatchingInstrumented&fileUri=testFileUri`,
+                    {
+                        headers: {
+                            Authorization: "test_token_type test_access_token",
+                            "Content-Type": "application/json",
+                            "User-Agent": "test_user_agent"
+                        },
+                        method: "get"
+                    }
+                );
+            });
         });
 
         it("Delete file", async () => {
