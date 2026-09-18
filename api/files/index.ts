@@ -103,6 +103,21 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
         );
     }
 
+    async renameFile(projectId: string, fileUri: string, newFileUri: string): Promise<boolean> {
+        const form = new FormData();
+
+        form.append("fileUri", fileUri);
+        form.append("newFileUri", newFileUri);
+
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/file/rename`,
+            form,
+            false,
+            SmartlingFilesApi.fixContentTypeHeaderCase(form)
+        );
+    }
+
     async uploadFile(
         projectId: string, parameters: UploadFileParameters
     ): Promise<UploadedFileDto> {

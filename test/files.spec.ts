@@ -631,6 +631,34 @@ describe("SmartlingFilesApi class tests.", () => {
             );
         });
 
+        it("Rename file", async () => {
+            await filesApi.renameFile(projectId, fileUri, "newTestFileUri");
+
+            sinon.assert.calledOnce(filesApiFetchStub);
+
+            assert.equal(
+                filesApiFetchStub.getCall(0).args[0],
+                `https://test.com/files-api/v2/projects/${projectId}/file/rename`
+            );
+
+            assert.equal(
+                filesApiFetchStub.getCall(0).args[1].method,
+                "post"
+            );
+
+            const body = filesApiFetchStub.getCall(0).args[1].body.getBuffer().toString();
+
+            assert.equal(
+                body.includes(`Content-Disposition: form-data; name="fileUri"\r\n\r\n${fileUri}`),
+                true
+            );
+
+            assert.equal(
+                body.includes("Content-Disposition: form-data; name=\"newFileUri\"\r\n\r\nnewTestFileUri"),
+                true
+            );
+        });
+
         it("Upload file: from disk", async () => {
             const params = new UploadFileParameters();
 
