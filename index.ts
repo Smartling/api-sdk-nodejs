@@ -43,6 +43,7 @@ export * from "./api/files/params/file-filter";
 export * from "./api/files/params/file-locale-mode";
 export * from "./api/files/params/file-locales";
 export * from "./api/files/params/recently-uploaded-files";
+export * from "./api/files/params/files-order-by";
 export * from "./api/files/params/retrieval-type";
 export * from "./api/files/params/file-type";
 export * from "./api/files/params/filename-mode";

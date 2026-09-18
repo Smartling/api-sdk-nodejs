@@ -12,6 +12,7 @@ import { FileType } from "../api/files/params/file-type";
 import { streamToString } from "./stream-to-string";
 import { DownloadFileAllTranslationsParameters } from "../api/files/params/download-file-all-translations-parameters";
 import { RecentlyUploadedFilesParameters } from "../api/files/params/recently-uploaded-files";
+import { FilesOrderBy } from "../api/files/params/files-order-by";
 import { FileNameMode } from "../api/files/params/filename-mode";
 import { DownloadMultipleFilesTranslationsParameters } from "../api/files/params/download-multiple-files-translations-parameters";
 import { FileLocales } from "../api/files/params/file-locales";
@@ -80,6 +81,33 @@ describe("SmartlingFilesApi class tests.", () => {
             sinon.assert.calledWithExactly(
                 filesApiFetchStub,
                 `https://test.com/files-api/v2/projects/${projectId}/files/list?offset=0&limit=99&uriMask=TEST`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get recently uploaded files for project with all filters", async () => {
+            const params = new RecentlyUploadedFilesParameters()
+                .setOffset(0)
+                .setLimit(99)
+                .setUriMask("TEST")
+                .setFileTypes([FileType.JSON, FileType.XML])
+                .setLastUploadedAfter(new Date("2020-01-01T00:00:00.000Z"))
+                .setLastUploadedBefore(new Date("2020-02-01T00:00:00.000Z"))
+                .setOrderBy(FilesOrderBy.LAST_UPLOADED_DESC);
+
+            await filesApi.getRecentlyUploadedFiles(projectId, params);
+
+            sinon.assert.calledOnce(filesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                filesApiFetchStub,
+                `https://test.com/files-api/v2/projects/${projectId}/files/list?offset=0&limit=99&uriMask=TEST&fileTypes%5B%5D=json&fileTypes%5B%5D=xml&lastUploadedAfter=2020-01-01T00%3A00%3A00Z&lastUploadedBefore=2020-02-01T00%3A00%3A00Z&orderBy=lastUploaded_desc`,
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",
