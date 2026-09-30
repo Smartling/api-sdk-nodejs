@@ -291,6 +291,30 @@ describe("SmartlingJobsAPI class tests.", () => {
             );
         });
 
+        it("Adds file to job with target locale ids", async () => {
+            const params = new AddFileParameters();
+
+            params.setFileUri(fileUri);
+            params.setTargetLocaleIds(["fr-FR", "de-DE"]);
+
+            await jobApi.addFileToJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/file/add`,
+                {
+                    body: "{\"fileUri\":\"testFileUri.json\",\"targetLocaleIds\":[\"fr-FR\",\"de-DE\"]}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
         it("Authorizes a job", async () => {
             const params = new AuthorizeJobParameters();
             await jobApi.authorizeJob(projectId, jobUid, params);

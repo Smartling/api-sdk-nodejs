@@ -6,4 +6,10 @@ export class AddFileParameters extends BaseParameters {
 
         return this;
     }
+
+    setTargetLocaleIds(targetLocaleIds: string[]): AddFileParameters {
+        this.set("targetLocaleIds", targetLocaleIds);
+
+        return this;
+    }
 }
