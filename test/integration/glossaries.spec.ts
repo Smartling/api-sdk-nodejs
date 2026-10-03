@@ -98,6 +98,24 @@ describe("SmartlingGlossariesApi integration tests.", function integrationSuite(
         assert.equal(updated.glossaryUid, glossaryUid);
     });
 
+    it("archives and restores the glossary", async () => {
+        const archived = await api.archiveGlossaries(
+            accountUid,
+            new ArchiveGlossariesParameters().setGlossaryUids([glossaryUid])
+        );
+
+        logResponse("archiveGlossaries", archived);
+        assert.ok(archived.glossaryUids.includes(glossaryUid));
+
+        const restored = await api.restoreGlossaries(
+            accountUid,
+            new ArchiveGlossariesParameters().setGlossaryUids([glossaryUid])
+        );
+
+        logResponse("restoreGlossaries", restored);
+        assert.ok(restored.glossaryUids.includes(glossaryUid));
+    });
+
     it("searches glossaries", async () => {
         const result = await api.searchGlossaries(
             accountUid,
