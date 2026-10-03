@@ -80,6 +80,7 @@ export * from "./api/glossaries/enums/label-type";
 export * from "./api/glossaries/enums/sort-direction";
 export * from "./api/glossaries/enums/sort-field";
 export * from "./api/glossaries/enums/tbx-version";
+export * from "./api/http/form-data-utils";
 export * from "./api/http/smartling-list-response";
 export * from "./api/job-batches/index";
 export * from "./api/job-batches/dto/batch-dto";
