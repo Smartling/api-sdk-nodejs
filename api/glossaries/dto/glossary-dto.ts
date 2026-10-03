@@ -14,5 +14,4 @@ export interface GlossaryDto {
     localeIds: Array<string>;
     fallbackLocales: Array<FallbackLocaleDto>;
     entriesCount: number;
-    mtOptimized?: boolean;
 }
