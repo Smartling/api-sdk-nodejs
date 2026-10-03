@@ -11,6 +11,8 @@ import { SearchGlossaryCountsParameters } from "../api/glossaries/params/search-
 import { CreateGlossaryEntryParameters } from "../api/glossaries/params/create-glossary-entry-parameters";
 import { SearchGlossaryEntriesParameters } from "../api/glossaries/params/search-glossary-entries-parameters";
 import { PartOfSpeech } from "../api/glossaries/enums/part-of-speech";
+import { EntriesBulkActionParameters } from "../api/glossaries/params/entries-bulk-action-parameters";
+import { EntriesBulkLabelsParameters } from "../api/glossaries/params/entries-bulk-labels-parameters";
 
 describe("SmartlingGlossariesApi class tests.", () => {
     const accountUid = "testAccountUid";
@@ -423,6 +425,125 @@ describe("SmartlingGlossariesApi class tests.", () => {
                         query: "test",
                         entryState: "ACTIVE",
                         paging: { offset: 0, limit: 10 }
+                    })
+                }
+            );
+        });
+
+        it("Archive glossary entries", async () => {
+            const parameters = new EntriesBulkActionParameters().setFilterEntryUids(["entry1", "entry2"]);
+
+            await glossariesApi.archiveGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/archive`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ filter: { entryUids: ["entry1", "entry2"] } })
+                }
+            );
+        });
+
+        it("Restore glossary entries", async () => {
+            const parameters = new EntriesBulkActionParameters().setFilterEntryUids(["entry1"]);
+
+            await glossariesApi.restoreGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/unarchive`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ filter: { entryUids: ["entry1"] } })
+                }
+            );
+        });
+
+        it("Remove glossary entries", async () => {
+            const parameters = new EntriesBulkActionParameters().setFilterEntryUids(["entry1"]);
+
+            await glossariesApi.removeGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/delete`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ filter: { entryUids: ["entry1"] } })
+                }
+            );
+        });
+
+        it("Add labels to glossary entries", async () => {
+            const parameters = new EntriesBulkLabelsParameters()
+                .setFilterEntryUids(["entry1"])
+                .setLabelUids(["label1", "label2"]);
+
+            await glossariesApi.addLabelsToGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/add-labels`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        filter: { entryUids: ["entry1"] },
+                        labelUids: ["label1", "label2"]
+                    })
+                }
+            );
+        });
+
+        it("Remove labels from glossary entries", async () => {
+            const parameters = new EntriesBulkLabelsParameters()
+                .setFilterEntryUids(["entry1"])
+                .setLabelUids(["label1"]);
+
+            await glossariesApi.removeLabelsFromGlossaryEntries(
+                accountUid,
+                glossaryUid,
+                parameters
+            );
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/remove-labels`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        filter: { entryUids: ["entry1"] },
+                        labelUids: ["label1"]
                     })
                 }
             );

@@ -14,6 +14,9 @@ import { GlossaryEntriesCountDto } from "./dto/glossary-entries-count-dto";
 import { CreateGlossaryEntryParameters } from "./params/create-glossary-entry-parameters";
 import { SearchGlossaryEntriesParameters } from "./params/search-glossary-entries-parameters";
 import { GlossaryEntryDto } from "./dto/glossary-entry-dto";
+import { EntriesBulkActionParameters } from "./params/entries-bulk-action-parameters";
+import { EntriesBulkLabelsParameters } from "./params/entries-bulk-labels-parameters";
+import { OperationDto } from "./dto/operation-dto";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -140,6 +143,66 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/search`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async archiveGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkActionParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/archive`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async restoreGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkActionParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/unarchive`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async removeGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkActionParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/delete`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async addLabelsToGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkLabelsParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/add-labels`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async removeLabelsFromGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkLabelsParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/remove-labels`,
             JSON.stringify(parameters.export())
         );
     }
