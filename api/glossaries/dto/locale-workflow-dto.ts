@@ -1,4 +1,4 @@
-export interface LocaleWorkflowDto {
+export interface GlossaryLocaleWorkflowDto {
     localeId: string;
     workflowUid: string;
 }

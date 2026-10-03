@@ -1,6 +1,6 @@
 import { BaseParameters } from "../../parameters/index";
 import { ExportEntriesFilterDto } from "../dto/export-entries-filter-dto";
-import { LocaleWorkflowDto } from "../dto/locale-workflow-dto";
+import { GlossaryLocaleWorkflowDto } from "../dto/locale-workflow-dto";
 
 export class AuthorizeEntriesParameters extends BaseParameters {
     setSourceLocale(sourceLocale: string): AuthorizeEntriesParameters {
@@ -21,7 +21,7 @@ export class AuthorizeEntriesParameters extends BaseParameters {
         return this;
     }
 
-    setLocaleWorkflows(localeWorkflows: Array<LocaleWorkflowDto>): AuthorizeEntriesParameters {
+    setLocaleWorkflows(localeWorkflows: Array<GlossaryLocaleWorkflowDto>): AuthorizeEntriesParameters {
         this.set("localeWorkflows", localeWorkflows);
 
         return this;

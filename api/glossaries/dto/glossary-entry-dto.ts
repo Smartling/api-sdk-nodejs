@@ -1,6 +1,6 @@
 import { PartOfSpeech } from "../enums/part-of-speech";
 import { SuggestionStatus } from "../enums/suggestion-status";
-import { TranslationDto } from "./translation-dto";
+import { GlossaryTranslationDto } from "./translation-dto";
 import { CustomFieldValueDto } from "./custom-field-value-dto";
 import { EntryRequestTranslationStatusDto } from "./entry-request-translation-status-dto";
 
@@ -10,7 +10,7 @@ export interface GlossaryEntryDto {
     definition: string;
     partOfSpeech?: PartOfSpeech;
     labelUids: Array<string>;
-    translations: Array<TranslationDto>;
+    translations: Array<GlossaryTranslationDto>;
     customFieldValues: Array<CustomFieldValueDto>;
     archived: boolean;
     createdByUserUid: string;

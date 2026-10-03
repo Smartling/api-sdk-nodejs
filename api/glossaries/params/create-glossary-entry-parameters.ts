@@ -1,6 +1,6 @@
 import { BaseParameters } from "../../parameters/index";
 import { PartOfSpeech } from "../enums/part-of-speech";
-import { TranslationDto } from "../dto/translation-dto";
+import { GlossaryTranslationDto } from "../dto/translation-dto";
 import { CustomFieldValueDto } from "../dto/custom-field-value-dto";
 
 export class CreateGlossaryEntryParameters extends BaseParameters {
@@ -28,7 +28,7 @@ export class CreateGlossaryEntryParameters extends BaseParameters {
         return this;
     }
 
-    setTranslations(translations: Array<TranslationDto>): CreateGlossaryEntryParameters {
+    setTranslations(translations: Array<GlossaryTranslationDto>): CreateGlossaryEntryParameters {
         this.set("translations", translations);
 
         return this;

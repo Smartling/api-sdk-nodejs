@@ -1,7 +1,7 @@
 import { CustomFieldValueDto } from "./custom-field-value-dto";
 import { TranslationRequestStatusDto } from "./translation-request-status-dto";
 
-export interface TranslationDto {
+export interface GlossaryTranslationDto {
     localeId: string;
     fallbackLocaleId?: string;
     term: string;
