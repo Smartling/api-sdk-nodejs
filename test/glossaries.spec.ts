@@ -1,4 +1,6 @@
 import sinon from "sinon";
+import * as fs from "fs";
+import assert from "assert";
 import { SmartlingGlossariesApi } from "../api/glossaries/index";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAuthApi } from "../api/auth/index";
@@ -14,6 +16,9 @@ import { PartOfSpeech } from "../api/glossaries/enums/part-of-speech";
 import { EntriesBulkActionParameters } from "../api/glossaries/params/entries-bulk-action-parameters";
 import { EntriesBulkLabelsParameters } from "../api/glossaries/params/entries-bulk-labels-parameters";
 import { AuthorizeEntriesParameters } from "../api/glossaries/params/authorize-entries-parameters";
+import { streamToString } from "./stream-to-string";
+import { InitializeImportParameters } from "../api/glossaries/params/initialize-import-parameters";
+import { ImportFileMediaType } from "../api/glossaries/enums/import-file-media-type";
 
 describe("SmartlingGlossariesApi class tests.", () => {
     const accountUid = "testAccountUid";
@@ -578,6 +583,86 @@ describe("SmartlingGlossariesApi class tests.", () => {
                         localeWorkflows: [{ localeId: "fr-FR", workflowUid: "workflow1" }],
                         missingTranslationsOnly: true
                     })
+                }
+            );
+        });
+
+        it("Initialize glossary import", async () => {
+            const parameters = new InitializeImportParameters()
+                .setImportFileContent(fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                ))
+                .setImportFileName("terms.csv")
+                .setImportFileMediaType(ImportFileMediaType.CSV)
+                .setArchiveMode(false);
+
+            await glossariesApi.initializeGlossaryImport(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+
+            assert.equal(
+                glossariesApiFetchStub.getCall(0).args[0],
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/import`
+            );
+
+            assert.equal(
+                glossariesApiFetchStub.getCall(0).args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                glossariesApiFetchStub.getCall(0).args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            assert.equal(
+                glossariesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
+                "test_user_agent"
+            );
+
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                await streamToString(glossariesApiFetchStub.getCall(0).args[1].body._streams[1]),
+                fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                )
+            );
+        });
+
+        it("Get glossary import status", async () => {
+            await glossariesApi.importStatus(accountUid, glossaryUid, "testImportUid");
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/import/testImportUid`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Confirm glossary import", async () => {
+            await glossariesApi.confirmGlossaryImport(accountUid, glossaryUid, "testImportUid");
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/import/testImportUid/confirm`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
                 }
             );
         });

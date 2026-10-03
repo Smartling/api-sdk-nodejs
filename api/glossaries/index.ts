@@ -1,3 +1,4 @@
+import FormData from "form-data";
 import { SmartlingBaseApi } from "../base/index";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
@@ -18,8 +19,37 @@ import { EntriesBulkActionParameters } from "./params/entries-bulk-action-parame
 import { EntriesBulkLabelsParameters } from "./params/entries-bulk-labels-parameters";
 import { OperationDto } from "./dto/operation-dto";
 import { AuthorizeEntriesParameters } from "./params/authorize-entries-parameters";
+import { InitializeImportParameters } from "./params/initialize-import-parameters";
+import { GlossaryImportResultDto } from "./dto/glossary-import-result-dto";
+import { GlossaryImportStatusDto } from "./dto/glossary-import-status-dto";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
+    /* eslint-disable-next-line class-methods-use-this */
+    alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
+        if (uri.match(/glossary-api\/v3\/accounts\/.*\/glossaries\/.*\/import$/g)) {
+            if (!opts.body) {
+                return opts;
+            }
+
+            const formData = new FormData();
+
+            Object.keys(opts.body).forEach((key) => {
+                if (Array.isArray(opts.body[key])) {
+                    opts.body[key].forEach((value) => {
+                        formData.append(`${key}[]`, value);
+                    });
+                } else {
+                    formData.append(key, opts.body[key]);
+                }
+            });
+
+            opts.headers["Content-Type"] = formData.getHeaders()["content-type"];
+            opts.body = formData;
+        }
+
+        return opts;
+    }
+
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
         this.authApi = authApi;
@@ -217,6 +247,40 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
             "post",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/authorization`,
             JSON.stringify(parameters.export())
+        );
+    }
+
+    async initializeGlossaryImport(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: InitializeImportParameters
+    ): Promise<GlossaryImportResultDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/import`,
+            parameters.export()
+        );
+    }
+
+    async importStatus(
+        accountUid: string,
+        glossaryUid: string,
+        importUid: string
+    ): Promise<GlossaryImportStatusDto> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/import/${importUid}`
+        );
+    }
+
+    async confirmGlossaryImport(
+        accountUid: string,
+        glossaryUid: string,
+        importUid: string
+    ): Promise<GlossaryImportStatusDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/import/${importUid}/confirm`
         );
     }
 
