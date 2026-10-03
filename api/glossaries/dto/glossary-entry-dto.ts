@@ -18,5 +18,6 @@ export interface GlossaryEntryDto {
     createdDate: Date;
     modifiedDate: Date;
     requestTranslationStatuses?: Record<string, EntryRequestTranslationStatusDto>;
+    mtOptimizedLabel?: string;
     suggestionStatus?: SuggestionStatus;
 }
