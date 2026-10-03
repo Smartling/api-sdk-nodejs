@@ -13,6 +13,7 @@ import { SearchGlossaryEntriesParameters } from "../api/glossaries/params/search
 import { PartOfSpeech } from "../api/glossaries/enums/part-of-speech";
 import { EntriesBulkActionParameters } from "../api/glossaries/params/entries-bulk-action-parameters";
 import { EntriesBulkLabelsParameters } from "../api/glossaries/params/entries-bulk-labels-parameters";
+import { AuthorizeEntriesParameters } from "../api/glossaries/params/authorize-entries-parameters";
 
 describe("SmartlingGlossariesApi class tests.", () => {
     const accountUid = "testAccountUid";
@@ -544,6 +545,38 @@ describe("SmartlingGlossariesApi class tests.", () => {
                     body: JSON.stringify({
                         filter: { entryUids: ["entry1"] },
                         labelUids: ["label1"]
+                    })
+                }
+            );
+        });
+
+        it("Authorize glossary entries for translation", async () => {
+            const parameters = new AuthorizeEntriesParameters()
+                .setSourceLocale("en-US")
+                .setProjectId("testProjectId")
+                .setFilter({ entryUids: ["entry1"] })
+                .setLocaleWorkflows([{ localeId: "fr-FR", workflowUid: "workflow1" }])
+                .setMissingTranslationsOnly(true);
+
+            await glossariesApi.authorizeEntriesForTranslation(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/authorization`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        sourceLocale: "en-US",
+                        projectId: "testProjectId",
+                        filter: { entryUids: ["entry1"] },
+                        localeWorkflows: [{ localeId: "fr-FR", workflowUid: "workflow1" }],
+                        missingTranslationsOnly: true
                     })
                 }
             );

@@ -17,6 +17,7 @@ import { GlossaryEntryDto } from "./dto/glossary-entry-dto";
 import { EntriesBulkActionParameters } from "./params/entries-bulk-action-parameters";
 import { EntriesBulkLabelsParameters } from "./params/entries-bulk-labels-parameters";
 import { OperationDto } from "./dto/operation-dto";
+import { AuthorizeEntriesParameters } from "./params/authorize-entries-parameters";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -203,6 +204,18 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/remove-labels`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async authorizeEntriesForTranslation(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: AuthorizeEntriesParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/authorization`,
             JSON.stringify(parameters.export())
         );
     }
