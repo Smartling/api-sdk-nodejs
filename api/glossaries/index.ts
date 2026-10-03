@@ -6,6 +6,11 @@ import { SearchGlossariesParameters } from "./params/search-glossaries-parameter
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { ExportEntriesParameters } from "./params/export-entries-parameters";
 import { ResponseBodyType } from "../base/enum/response-body-type";
+import { CreateGlossaryParameters } from "./params/create-glossary-parameters";
+import { ArchiveGlossariesParameters } from "./params/archive-glossaries-parameters";
+import { SearchGlossaryCountsParameters } from "./params/search-glossary-counts-parameters";
+import { GlossaryUidsDto } from "./dto/glossary-uids-dto";
+import { GlossaryEntriesCountDto } from "./dto/glossary-entries-count-dto";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -29,6 +34,62 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}`
+        );
+    }
+
+    async createGlossary(
+        accountUid: string,
+        parameters: CreateGlossaryParameters
+    ): Promise<GlossaryDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async updateGlossary(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: CreateGlossaryParameters
+    ): Promise<GlossaryDto> {
+        return await this.makeRequest(
+            "put",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async archiveGlossaries(
+        accountUid: string,
+        parameters: ArchiveGlossariesParameters
+    ): Promise<GlossaryUidsDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/archive`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async restoreGlossaries(
+        accountUid: string,
+        parameters: ArchiveGlossariesParameters
+    ): Promise<GlossaryUidsDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/unarchive`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async searchGlossariesWithEntriesCounts(
+        accountUid: string,
+        parameters: SearchGlossaryCountsParameters
+    ): Promise<SmartlingListResponse<GlossaryEntriesCountDto>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/search/count`,
+            JSON.stringify(parameters.export())
         );
     }
 
