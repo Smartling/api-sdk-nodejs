@@ -1,0 +1,358 @@
+import dotenv from "dotenv";
+import assert from "assert";
+import { SmartlingApiClientBuilder } from "../../api/builder/index";
+import { SmartlingGlossariesApi } from "../../api/glossaries/index";
+import { CreateGlossaryParameters } from "../../api/glossaries/params/create-glossary-parameters";
+import { ArchiveGlossariesParameters } from "../../api/glossaries/params/archive-glossaries-parameters";
+import { SearchGlossaryCountsParameters } from "../../api/glossaries/params/search-glossary-counts-parameters";
+import { SearchGlossariesParameters } from "../../api/glossaries/params/search-glossaries-parameters";
+import { CreateGlossaryEntryParameters } from "../../api/glossaries/params/create-glossary-entry-parameters";
+import { SearchGlossaryEntriesParameters } from "../../api/glossaries/params/search-glossary-entries-parameters";
+import { EntriesBulkActionParameters } from "../../api/glossaries/params/entries-bulk-action-parameters";
+import { EntriesBulkLabelsParameters } from "../../api/glossaries/params/entries-bulk-labels-parameters";
+import { CreateLabelParameters } from "../../api/glossaries/params/create-label-parameters";
+import { InitializeImportParameters } from "../../api/glossaries/params/initialize-import-parameters";
+import { ExportEntriesParameters } from "../../api/glossaries/params/export-entries-parameters";
+import { ImportFileMediaType } from "../../api/glossaries/enums/import-file-media-type";
+import { ExportFormat } from "../../api/glossaries/enums/export-format";
+
+dotenv.config();
+
+const baseSmartlingApiUrl = process.env.SMARTLING_API_BASE_URL || "https://api.smartling.com";
+const accountUid = process.env.SMARTLING_ACCOUNT_UID as string;
+const userId = process.env.SMARTLING_USER_ID as string;
+const userSecret = process.env.SMARTLING_USER_SECRET as string;
+const hasCredentials = Boolean(accountUid && userId && userSecret);
+const logResponsesEnabled = process.env.SMARTLING_LOG_RESPONSES === "true";
+
+function logResponse(label: string, response: unknown): void {
+    if (!logResponsesEnabled) {
+        return;
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(`\n--- ${label} ---\n${JSON.stringify(response, null, 2)}`);
+}
+
+describe("SmartlingGlossariesApi integration tests.", function integrationSuite() {
+    this.timeout(60000);
+
+    let api: SmartlingGlossariesApi;
+    let glossaryUid: string;
+    let entryUid: string;
+    let labelUid: string;
+
+    before(function skipWithoutCredentials() {
+        if (!hasCredentials) {
+            // eslint-disable-next-line no-console
+            console.log("Skipping Glossaries integration tests: set SMARTLING_ACCOUNT_UID, SMARTLING_USER_ID, SMARTLING_USER_SECRET in .env");
+            this.skip();
+        }
+
+        api = new SmartlingApiClientBuilder()
+            .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
+            .authWithUserIdAndUserSecret(userId, userSecret)
+            .build(SmartlingGlossariesApi);
+    });
+
+    before(async () => {
+        const created = await api.createGlossary(
+            accountUid,
+            new CreateGlossaryParameters()
+                .setGlossaryName(`Integration test glossary ${Date.now()}`)
+                .setLocaleIds(["en-US", "fr-FR"])
+        );
+
+        logResponse("createGlossary", created);
+        ({ glossaryUid } = created);
+    });
+
+    after(async () => {
+        if (glossaryUid) {
+            const archived = await api.archiveGlossaries(
+                accountUid,
+                new ArchiveGlossariesParameters().setGlossaryUids([glossaryUid])
+            );
+
+            logResponse("archiveGlossaries (cleanup)", archived);
+        }
+    });
+
+    it("gets the created glossary", async () => {
+        const glossary = await api.getGlossary(accountUid, glossaryUid);
+
+        logResponse("getGlossary", glossary);
+        assert.equal(glossary.glossaryUid, glossaryUid);
+    });
+
+    it("updates the glossary", async () => {
+        const updatedName = `Integration test glossary ${Date.now()} (updated)`;
+        const updated = await api.updateGlossary(
+            accountUid,
+            glossaryUid,
+            new CreateGlossaryParameters()
+                .setGlossaryName(updatedName)
+                .setLocaleIds(["en-US", "fr-FR"])
+        );
+
+        logResponse("updateGlossary", updated);
+        assert.equal(updated.glossaryUid, glossaryUid);
+        assert.equal(updated.glossaryName, updatedName);
+        assert.equal(updated.localeIds.length, 2);
+        assert.ok(updated.localeIds.includes("en-US"));
+        assert.ok(updated.localeIds.includes("fr-FR"));
+    });
+
+    it("archives and restores the glossary", async () => {
+        const archived = await api.archiveGlossaries(
+            accountUid,
+            new ArchiveGlossariesParameters().setGlossaryUids([glossaryUid])
+        );
+
+        logResponse("archiveGlossaries", archived);
+        assert.ok(archived.glossaryUids.includes(glossaryUid));
+
+        const restored = await api.restoreGlossaries(
+            accountUid,
+            new ArchiveGlossariesParameters().setGlossaryUids([glossaryUid])
+        );
+
+        logResponse("restoreGlossaries", restored);
+        assert.ok(restored.glossaryUids.includes(glossaryUid));
+    });
+
+    it("searches glossaries", async () => {
+        const result = await api.searchGlossaries(
+            accountUid,
+            new SearchGlossariesParameters().setGlossaryUids([glossaryUid])
+        );
+
+        logResponse("searchGlossaries", result);
+        assert.equal(result.items.length, 1);
+    });
+
+    it("searches glossaries with entries counts", async () => {
+        const result = await api.searchGlossariesWithEntriesCounts(
+            accountUid,
+            new SearchGlossaryCountsParameters().setGlossaryUids([glossaryUid])
+        );
+
+        logResponse("searchGlossariesWithEntriesCounts", result);
+        assert.equal(result.items.length, 1);
+    });
+
+    it("creates a glossary entry", async () => {
+        const entry = await api.createGlossaryEntry(
+            accountUid,
+            glossaryUid,
+            new CreateGlossaryEntryParameters()
+                .setDefinition("Integration test term")
+                .setTranslations([{ localeId: "fr-FR", term: "Terme de test" }])
+        );
+
+        logResponse("createGlossaryEntry", entry);
+        ({ entryUid } = entry);
+        assert.ok(entryUid);
+    });
+
+    it("reads the created glossary entry", async () => {
+        const entry = await api.readGlossaryEntry(accountUid, glossaryUid, entryUid);
+
+        logResponse("readGlossaryEntry", entry);
+        assert.equal(entry.entryUid, entryUid);
+    });
+
+    it("updates the glossary entry", async () => {
+        const updatedDefinition = "Integration test term (updated)";
+        const updatedTerm = "Terme de test (modifie)";
+        const entry = await api.updateGlossaryEntry(
+            accountUid,
+            glossaryUid,
+            entryUid,
+            new CreateGlossaryEntryParameters()
+                .setDefinition(updatedDefinition)
+                .setTranslations([{ localeId: "fr-FR", term: updatedTerm }])
+        );
+
+        logResponse("updateGlossaryEntry", entry);
+        assert.equal(entry.entryUid, entryUid);
+        assert.equal(entry.definition, updatedDefinition);
+
+        const frTranslation = entry.translations.find((translation) => translation.localeId === "fr-FR");
+
+        assert.ok(frTranslation);
+        assert.equal(frTranslation.term, updatedTerm);
+    });
+
+    it("searches glossary entries", async () => {
+        const result = await api.searchGlossaryEntries(
+            accountUid,
+            glossaryUid,
+            new SearchGlossaryEntriesParameters().setEntryUids([entryUid])
+        );
+
+        logResponse("searchGlossaryEntries", result);
+        assert.equal(result.items.length, 1);
+    });
+
+    it("creates and reads back a label", async () => {
+        const label = await api.createGlossaryLabel(
+            accountUid,
+            new CreateLabelParameters().setLabelText(`Integration label ${Date.now()}`)
+        );
+
+        logResponse("createGlossaryLabel", label);
+        ({ labelUid } = label);
+
+        const updatedLabelText = `Integration label ${Date.now()} (updated)`;
+        const updatedLabel = await api.updateGlossaryLabel(
+            accountUid,
+            labelUid,
+            new CreateLabelParameters().setLabelText(updatedLabelText)
+        );
+
+        logResponse("updateGlossaryLabel", updatedLabel);
+        assert.equal(updatedLabel.labelUid, labelUid);
+        assert.equal(updatedLabel.labelText, updatedLabelText);
+
+        const allLabels = await api.readAllGlossaryLabels(accountUid);
+
+        logResponse("readAllGlossaryLabels", allLabels);
+
+        const persistedLabel = allLabels.items.find((label2) => label2.labelUid === labelUid);
+
+        assert.ok(persistedLabel);
+        assert.equal(persistedLabel.labelText, updatedLabelText);
+    });
+
+    it("adds and removes a label on the glossary entry", async () => {
+        const addResult = await api.addLabelsToGlossaryEntries(
+            accountUid,
+            glossaryUid,
+            new EntriesBulkLabelsParameters()
+                .setFilterEntryUids([entryUid])
+                .setLabelUids([labelUid])
+        );
+
+        logResponse("addLabelsToGlossaryEntries", addResult);
+        assert.ok(addResult.operationUid);
+
+        const removeResult = await api.removeLabelsFromGlossaryEntries(
+            accountUid,
+            glossaryUid,
+            new EntriesBulkLabelsParameters()
+                .setFilterEntryUids([entryUid])
+                .setLabelUids([labelUid])
+        );
+
+        logResponse("removeLabelsFromGlossaryEntries", removeResult);
+        assert.ok(removeResult.operationUid);
+    });
+
+    it("deletes the label", async () => {
+        await api.deleteGlossaryLabel(accountUid, labelUid);
+    });
+
+    it("archives and restores the glossary entry", async () => {
+        const archiveResult = await api.archiveGlossaryEntries(
+            accountUid,
+            glossaryUid,
+            new EntriesBulkActionParameters().setFilterEntryUids([entryUid])
+        );
+
+        logResponse("archiveGlossaryEntries", archiveResult);
+        assert.ok(archiveResult.operationUid);
+
+        const restoreResult = await api.restoreGlossaryEntries(
+            accountUid,
+            glossaryUid,
+            new EntriesBulkActionParameters().setFilterEntryUids([entryUid])
+        );
+
+        logResponse("restoreGlossaryEntries", restoreResult);
+        assert.ok(restoreResult.operationUid);
+    });
+
+    it("exports glossary entries", async () => {
+        const exported = await api.exportGlossaryEntries(
+            accountUid,
+            glossaryUid,
+            new ExportEntriesParameters().setFormat(ExportFormat.CSV).setLocaleIds(["fr-FR"])
+        );
+
+        logResponse("exportGlossaryEntries (length)", exported.length);
+        assert.ok(exported.length > 0);
+    });
+
+    it("initializes, checks, and confirms a glossary import", async () => {
+        // The real glossary CSV import format requires the exact column-header shape
+        // the export endpoint produces, not a bare "definition,fr-FR" header: every
+        // column must be present (empty string where unused), and each translation
+        // column must be named "{Column} {Locale description} [{localeId}] {localeId}"
+        // (e.g. "Term French (France) [fr-FR] fr-FR") - confirmed against the real
+        // service's GlossaryImportHeaderParser/FormattingUtils.isColumnRecognized,
+        // and against a real exportGlossaryEntries response for this exact locale.
+        const localeColumnSuffix = "French (France) [fr-FR] fr-FR";
+        const importHeader = [
+            "ID", "Definition", "Part Of Speech", "Label Names", "Created By", "Last Modified By",
+            "Created At", "Last Modified At", "Archived", "MT-suitable", "Suggestion-status",
+            `Term ${localeColumnSuffix}`,
+            `Linguistic Variations ${localeColumnSuffix}`,
+            `Notes ${localeColumnSuffix}`,
+            `Case Sensitive ${localeColumnSuffix}`,
+            `Exact Match ${localeColumnSuffix}`,
+            `Do Not Translate ${localeColumnSuffix}`,
+            `Disabled ${localeColumnSuffix}`,
+            `Last Modified By ${localeColumnSuffix}`
+        ];
+        const importRow = new Array(importHeader.length).fill("");
+
+        importRow[1] = "Imported term";
+        importRow[11] = "Terme importe";
+
+        const importCsvContent = `${importHeader.map((column) => `"${column}"`).join(",")}\n`
+            + `${importRow.map((value) => `"${value}"`).join(",")}\n`;
+
+        const importResult = await api.initializeGlossaryImport(
+            accountUid,
+            glossaryUid,
+            new InitializeImportParameters()
+                .setImportFileContent(importCsvContent)
+                .setImportFileName("integration-import.csv")
+                .setImportFileMediaType(ImportFileMediaType.CSV)
+        );
+
+        logResponse("initializeGlossaryImport", importResult);
+        assert.ok(importResult.glossaryImport.importUid);
+        assert.ok(importResult.entryChanges);
+
+        const status = await api.importStatus(
+            accountUid,
+            glossaryUid,
+            importResult.glossaryImport.importUid
+        );
+
+        logResponse("importStatus", status);
+        assert.equal(status.importUid, importResult.glossaryImport.importUid);
+
+        const confirmed = await api.confirmGlossaryImport(
+            accountUid,
+            glossaryUid,
+            importResult.glossaryImport.importUid
+        );
+
+        logResponse("confirmGlossaryImport", confirmed);
+        assert.equal(confirmed.importUid, importResult.glossaryImport.importUid);
+    });
+
+    it("removes the glossary entry", async () => {
+        const result = await api.removeGlossaryEntries(
+            accountUid,
+            glossaryUid,
+            new EntriesBulkActionParameters().setFilterEntryUids([entryUid])
+        );
+
+        logResponse("removeGlossaryEntries", result);
+        assert.ok(result.operationUid);
+    });
+});

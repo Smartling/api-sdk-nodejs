@@ -1,3 +1,5 @@
+import FormData from "form-data";
+import { fixContentTypeHeaderCase } from "../http/form-data-utils";
 import { SmartlingBaseApi } from "../base/index";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
@@ -6,6 +8,23 @@ import { SearchGlossariesParameters } from "./params/search-glossaries-parameter
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { ExportEntriesParameters } from "./params/export-entries-parameters";
 import { ResponseBodyType } from "../base/enum/response-body-type";
+import { CreateGlossaryParameters } from "./params/create-glossary-parameters";
+import { ArchiveGlossariesParameters } from "./params/archive-glossaries-parameters";
+import { SearchGlossaryCountsParameters } from "./params/search-glossary-counts-parameters";
+import { GlossaryUidsDto } from "./dto/glossary-uids-dto";
+import { GlossaryEntriesCountDto } from "./dto/glossary-entries-count-dto";
+import { CreateGlossaryEntryParameters } from "./params/create-glossary-entry-parameters";
+import { SearchGlossaryEntriesParameters } from "./params/search-glossary-entries-parameters";
+import { GlossaryEntryDto } from "./dto/glossary-entry-dto";
+import { EntriesBulkActionParameters } from "./params/entries-bulk-action-parameters";
+import { EntriesBulkLabelsParameters } from "./params/entries-bulk-labels-parameters";
+import { OperationDto } from "./dto/operation-dto";
+import { AuthorizeEntriesParameters } from "./params/authorize-entries-parameters";
+import { InitializeImportParameters } from "./params/initialize-import-parameters";
+import { GlossaryImportResultDto } from "./dto/glossary-import-result-dto";
+import { GlossaryImportStatusDto } from "./dto/glossary-import-status-dto";
+import { CreateLabelParameters } from "./params/create-label-parameters";
+import { LabelDto } from "./dto/label-dto";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -29,6 +48,268 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}`
+        );
+    }
+
+    async createGlossary(
+        accountUid: string,
+        parameters: CreateGlossaryParameters
+    ): Promise<GlossaryDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async updateGlossary(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: CreateGlossaryParameters
+    ): Promise<GlossaryDto> {
+        return await this.makeRequest(
+            "put",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async archiveGlossaries(
+        accountUid: string,
+        parameters: ArchiveGlossariesParameters
+    ): Promise<GlossaryUidsDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/archive`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async restoreGlossaries(
+        accountUid: string,
+        parameters: ArchiveGlossariesParameters
+    ): Promise<GlossaryUidsDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/unarchive`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async searchGlossariesWithEntriesCounts(
+        accountUid: string,
+        parameters: SearchGlossaryCountsParameters
+    ): Promise<SmartlingListResponse<GlossaryEntriesCountDto>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/search/count`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async createGlossaryEntry(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: CreateGlossaryEntryParameters
+    ): Promise<GlossaryEntryDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async readGlossaryEntry(
+        accountUid: string,
+        glossaryUid: string,
+        entryUid: string
+    ): Promise<GlossaryEntryDto> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/${entryUid}`
+        );
+    }
+
+    async updateGlossaryEntry(
+        accountUid: string,
+        glossaryUid: string,
+        entryUid: string,
+        parameters: CreateGlossaryEntryParameters
+    ): Promise<GlossaryEntryDto> {
+        return await this.makeRequest(
+            "put",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/${entryUid}`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async searchGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: SearchGlossaryEntriesParameters
+    ): Promise<SmartlingListResponse<GlossaryEntryDto>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/search`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async archiveGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkActionParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/archive`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async restoreGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkActionParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/unarchive`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async removeGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkActionParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/delete`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async addLabelsToGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkLabelsParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/add-labels`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async removeLabelsFromGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: EntriesBulkLabelsParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/remove-labels`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async authorizeEntriesForTranslation(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: AuthorizeEntriesParameters
+    ): Promise<OperationDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/authorization`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async initializeGlossaryImport(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: InitializeImportParameters
+    ): Promise<GlossaryImportResultDto> {
+        const exported = parameters.export();
+        const formData = new FormData();
+
+        Object.keys(exported).forEach((key) => {
+            if (Array.isArray(exported[key])) {
+                exported[key].forEach((value) => {
+                    formData.append(`${key}[]`, value);
+                });
+            } else {
+                formData.append(key, exported[key]);
+            }
+        });
+
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/import`,
+            formData,
+            false,
+            fixContentTypeHeaderCase(formData)
+        );
+    }
+
+    async importStatus(
+        accountUid: string,
+        glossaryUid: string,
+        importUid: string
+    ): Promise<GlossaryImportStatusDto> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/import/${importUid}`
+        );
+    }
+
+    async confirmGlossaryImport(
+        accountUid: string,
+        glossaryUid: string,
+        importUid: string
+    ): Promise<GlossaryImportStatusDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/import/${importUid}/confirm`
+        );
+    }
+
+    async readAllGlossaryLabels(accountUid: string): Promise<SmartlingListResponse<LabelDto>> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/labels`
+        );
+    }
+
+    async createGlossaryLabel(
+        accountUid: string,
+        parameters: CreateLabelParameters
+    ): Promise<LabelDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/labels`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async updateGlossaryLabel(
+        accountUid: string,
+        labelUid: string,
+        parameters: CreateLabelParameters
+    ): Promise<LabelDto> {
+        return await this.makeRequest(
+            "put",
+            `${this.entrypoint}/accounts/${accountUid}/labels/${labelUid}`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async deleteGlossaryLabel(accountUid: string, labelUid: string): Promise<void> {
+        await this.makeRequest(
+            "delete",
+            `${this.entrypoint}/accounts/${accountUid}/labels/${labelUid}`
         );
     }
 

@@ -166,7 +166,8 @@ export class SmartlingBaseApi {
                     "lastModified",
                     "attemptDate",
                     "translationJobWorkflowStepDueDate",
-                    "translationJobOverallDueDate"
+                    "translationJobOverallDueDate",
+                    "requestDateTime"
                 ];
 
                 if (dateProperties.includes(key) && value) {
