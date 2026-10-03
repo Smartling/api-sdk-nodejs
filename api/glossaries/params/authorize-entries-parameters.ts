@@ -21,7 +21,9 @@ export class AuthorizeEntriesParameters extends BaseParameters {
         return this;
     }
 
-    setLocaleWorkflows(localeWorkflows: Array<GlossaryLocaleWorkflowDto>): AuthorizeEntriesParameters {
+    setLocaleWorkflows(
+        localeWorkflows: Array<GlossaryLocaleWorkflowDto>
+    ): AuthorizeEntriesParameters {
         this.set("localeWorkflows", localeWorkflows);
 
         return this;
