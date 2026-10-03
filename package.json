@@ -10,8 +10,9 @@
     "build:dev": "rm -rf built && tsc --p tsconfig.dev.json && cp -R package.json built",
     "build": "rm -rf built && tsc && cp -R package.json built",
     "pretest": "eslint . --ext .ts",
-    "test": "npm run build:dev && nyc mocha --reporter mocha-junit-reporter --recursive built/test/**/*.spec.js",
-    "test:dev": "npm run build:dev && nyc mocha --recursive built/test/**/*.spec.js"
+    "test": "npm run build:dev && nyc mocha --reporter mocha-junit-reporter --recursive 'built/test/**/*.spec.js' --ignore 'built/test/integration/**'",
+    "test:dev": "npm run build:dev && nyc mocha --recursive 'built/test/**/*.spec.js' --ignore 'built/test/integration/**'",
+    "test:integration": "npm run build:dev && mocha --recursive 'built/test/integration/**/*.spec.js'"
   },
   "repository": {
     "type": "git",
@@ -45,6 +46,7 @@
     "ansi-regex": "^5.0.1",
     "babel-eslint": "^10.1.0",
     "braces": "^3.0.3",
+    "dotenv": "^18.0.5",
     "eslint": "^7.31.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-flowtype": "^2.41.0",
