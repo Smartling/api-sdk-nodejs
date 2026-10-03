@@ -11,6 +11,9 @@ import { ArchiveGlossariesParameters } from "./params/archive-glossaries-paramet
 import { SearchGlossaryCountsParameters } from "./params/search-glossary-counts-parameters";
 import { GlossaryUidsDto } from "./dto/glossary-uids-dto";
 import { GlossaryEntriesCountDto } from "./dto/glossary-entries-count-dto";
+import { CreateGlossaryEntryParameters } from "./params/create-glossary-entry-parameters";
+import { SearchGlossaryEntriesParameters } from "./params/search-glossary-entries-parameters";
+import { GlossaryEntryDto } from "./dto/glossary-entry-dto";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -89,6 +92,54 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/search/count`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async createGlossaryEntry(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: CreateGlossaryEntryParameters
+    ): Promise<GlossaryEntryDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async readGlossaryEntry(
+        accountUid: string,
+        glossaryUid: string,
+        entryUid: string
+    ): Promise<GlossaryEntryDto> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/${entryUid}`
+        );
+    }
+
+    async updateGlossaryEntry(
+        accountUid: string,
+        glossaryUid: string,
+        entryUid: string,
+        parameters: CreateGlossaryEntryParameters
+    ): Promise<GlossaryEntryDto> {
+        return await this.makeRequest(
+            "put",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/${entryUid}`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async searchGlossaryEntries(
+        accountUid: string,
+        glossaryUid: string,
+        parameters: SearchGlossaryEntriesParameters
+    ): Promise<SmartlingListResponse<GlossaryEntryDto>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/entries/search`,
             JSON.stringify(parameters.export())
         );
     }
