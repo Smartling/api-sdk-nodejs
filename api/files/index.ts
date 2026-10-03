@@ -7,6 +7,7 @@ import { DownloadFileWithMetadataParameters } from "./params/download-file-with-
 import { UploadFileParameters } from "./params/upload-file-parameters";
 import { FileStatusForAllLocalesDto } from "./dto/file-status-for-all-locales-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
+import { fixContentTypeHeaderCase } from "../http/form-data-utils";
 import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { ImportFileParameters } from "./params/import-file-parameters";
@@ -99,7 +100,7 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
             `${this.entrypoint}/${projectId}/file/delete`,
             form,
             false,
-            SmartlingFilesApi.fixContentTypeHeaderCase(form)
+            fixContentTypeHeaderCase(form)
         );
     }
 
@@ -114,7 +115,7 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
             `${this.entrypoint}/${projectId}/file/rename`,
             form,
             false,
-            SmartlingFilesApi.fixContentTypeHeaderCase(form)
+            fixContentTypeHeaderCase(form)
         );
     }
 
@@ -132,7 +133,7 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
             `${this.entrypoint}/${projectId}/file`,
             formData,
             false,
-            SmartlingFilesApi.fixContentTypeHeaderCase(formData)
+            fixContentTypeHeaderCase(formData)
         );
     }
 
@@ -152,7 +153,7 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
             `${this.entrypoint}/${projectId}/locales/${locale}/file/import`,
             formData,
             false,
-            SmartlingFilesApi.fixContentTypeHeaderCase(formData)
+            fixContentTypeHeaderCase(formData)
         );
     }
 
@@ -183,14 +184,5 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
             JSON.stringify(params.export()),
             ResponseBodyType.ARRAY_BUFFER
         );
-    }
-
-    static fixContentTypeHeaderCase(form: FormData): Record<string, unknown> {
-        const headers = form.getHeaders();
-
-        headers["Content-Type"] = headers["content-type"];
-        // eslint-disable-next-line fp/no-delete
-        delete headers["content-type"];
-        return headers;
     }
 }

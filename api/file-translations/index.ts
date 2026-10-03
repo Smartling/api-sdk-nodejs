@@ -12,6 +12,7 @@ import { LanguageDetectionStatusDto } from "./dto/language-detection-status-dto"
 import { TranslatedFileDto } from "../dto/translated-file-dto";
 import { ResponseBodyType } from "../base/enum/response-body-type";
 import { LanguageDetectionParameters } from "./params/language-detection-parameters";
+import { fixContentTypeHeaderCase } from "../http/form-data-utils";
 
 export class SmartlingFileTranslationsApi extends SmartlingBaseFileApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -44,7 +45,7 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseFileApi {
             `${this.entrypoint}/${accountUid}/files`,
             formData,
             false,
-            SmartlingFileTranslationsApi.fixContentTypeHeaderCase(formData)
+            fixContentTypeHeaderCase(formData)
         );
     }
 
@@ -141,14 +142,5 @@ export class SmartlingFileTranslationsApi extends SmartlingBaseFileApi {
             "get",
             `${this.entrypoint}/${accountUid}/files/${fileUid}/language-detection/${languageDetectionUid}/status`
         );
-    }
-
-    static fixContentTypeHeaderCase(form: FormData): Record<string, unknown> {
-        const headers = form.getHeaders();
-
-        headers["Content-Type"] = headers["content-type"];
-        // eslint-disable-next-line fp/no-delete
-        delete headers["content-type"];
-        return headers;
     }
 }
