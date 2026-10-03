@@ -86,16 +86,21 @@ describe("SmartlingGlossariesApi integration tests.", function integrationSuite(
     });
 
     it("updates the glossary", async () => {
+        const updatedName = `Integration test glossary ${Date.now()} (updated)`;
         const updated = await api.updateGlossary(
             accountUid,
             glossaryUid,
             new CreateGlossaryParameters()
-                .setGlossaryName(`Integration test glossary ${Date.now()} (updated)`)
+                .setGlossaryName(updatedName)
                 .setLocaleIds(["en-US", "fr-FR"])
         );
 
         logResponse("updateGlossary", updated);
         assert.equal(updated.glossaryUid, glossaryUid);
+        assert.equal(updated.glossaryName, updatedName);
+        assert.equal(updated.localeIds.length, 2);
+        assert.ok(updated.localeIds.includes("en-US"));
+        assert.ok(updated.localeIds.includes("fr-FR"));
     });
 
     it("archives and restores the glossary", async () => {
@@ -158,17 +163,25 @@ describe("SmartlingGlossariesApi integration tests.", function integrationSuite(
     });
 
     it("updates the glossary entry", async () => {
+        const updatedDefinition = "Integration test term (updated)";
+        const updatedTerm = "Terme de test (modifie)";
         const entry = await api.updateGlossaryEntry(
             accountUid,
             glossaryUid,
             entryUid,
             new CreateGlossaryEntryParameters()
-                .setDefinition("Integration test term (updated)")
-                .setTranslations([{ localeId: "fr-FR", term: "Terme de test (modifie)" }])
+                .setDefinition(updatedDefinition)
+                .setTranslations([{ localeId: "fr-FR", term: updatedTerm }])
         );
 
         logResponse("updateGlossaryEntry", entry);
         assert.equal(entry.entryUid, entryUid);
+        assert.equal(entry.definition, updatedDefinition);
+
+        const frTranslation = entry.translations.find((translation) => translation.localeId === "fr-FR");
+
+        assert.ok(frTranslation);
+        assert.equal(frTranslation.term, updatedTerm);
     });
 
     it("searches glossary entries", async () => {
@@ -191,18 +204,25 @@ describe("SmartlingGlossariesApi integration tests.", function integrationSuite(
         logResponse("createGlossaryLabel", label);
         ({ labelUid } = label);
 
+        const updatedLabelText = `Integration label ${Date.now()} (updated)`;
         const updatedLabel = await api.updateGlossaryLabel(
             accountUid,
             labelUid,
-            new CreateLabelParameters().setLabelText(`Integration label ${Date.now()} (updated)`)
+            new CreateLabelParameters().setLabelText(updatedLabelText)
         );
 
         logResponse("updateGlossaryLabel", updatedLabel);
+        assert.equal(updatedLabel.labelUid, labelUid);
+        assert.equal(updatedLabel.labelText, updatedLabelText);
 
         const allLabels = await api.readAllGlossaryLabels(accountUid);
 
         logResponse("readAllGlossaryLabels", allLabels);
-        assert.ok(allLabels.items.some((label2) => label2.labelUid === labelUid));
+
+        const persistedLabel = allLabels.items.find((label2) => label2.labelUid === labelUid);
+
+        assert.ok(persistedLabel);
+        assert.equal(persistedLabel.labelText, updatedLabelText);
     });
 
     it("adds and removes a label on the glossary entry", async () => {
