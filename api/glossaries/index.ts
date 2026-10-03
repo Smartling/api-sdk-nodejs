@@ -22,6 +22,8 @@ import { AuthorizeEntriesParameters } from "./params/authorize-entries-parameter
 import { InitializeImportParameters } from "./params/initialize-import-parameters";
 import { GlossaryImportResultDto } from "./dto/glossary-import-result-dto";
 import { GlossaryImportStatusDto } from "./dto/glossary-import-status-dto";
+import { CreateLabelParameters } from "./params/create-label-parameters";
+import { LabelDto } from "./dto/label-dto";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
     /* eslint-disable-next-line class-methods-use-this */
@@ -281,6 +283,43 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/import/${importUid}/confirm`
+        );
+    }
+
+    async readAllGlossaryLabels(accountUid: string): Promise<SmartlingListResponse<LabelDto>> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/accounts/${accountUid}/labels`
+        );
+    }
+
+    async createGlossaryLabel(
+        accountUid: string,
+        parameters: CreateLabelParameters
+    ): Promise<LabelDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/accounts/${accountUid}/labels`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async updateGlossaryLabel(
+        accountUid: string,
+        labelUid: string,
+        parameters: CreateLabelParameters
+    ): Promise<LabelDto> {
+        return await this.makeRequest(
+            "put",
+            `${this.entrypoint}/accounts/${accountUid}/labels/${labelUid}`,
+            JSON.stringify(parameters.export())
+        );
+    }
+
+    async deleteGlossaryLabel(accountUid: string, labelUid: string): Promise<void> {
+        await this.makeRequest(
+            "delete",
+            `${this.entrypoint}/accounts/${accountUid}/labels/${labelUid}`
         );
     }
 
