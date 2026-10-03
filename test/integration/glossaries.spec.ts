@@ -275,21 +275,26 @@ describe("SmartlingGlossariesApi integration tests.", function integrationSuite(
         );
 
         logResponse("initializeGlossaryImport", importResult);
-        assert.ok(importResult.importUid);
+        assert.ok(importResult.glossaryImport.importUid);
+        assert.ok(importResult.entryChanges);
 
-        const status = await api.importStatus(accountUid, glossaryUid, importResult.importUid);
+        const status = await api.importStatus(
+            accountUid,
+            glossaryUid,
+            importResult.glossaryImport.importUid
+        );
 
         logResponse("importStatus", status);
-        assert.equal(status.importUid, importResult.importUid);
+        assert.equal(status.importUid, importResult.glossaryImport.importUid);
 
         const confirmed = await api.confirmGlossaryImport(
             accountUid,
             glossaryUid,
-            importResult.importUid
+            importResult.glossaryImport.importUid
         );
 
         logResponse("confirmGlossaryImport", confirmed);
-        assert.equal(confirmed.importUid, importResult.importUid);
+        assert.equal(confirmed.importUid, importResult.glossaryImport.importUid);
     });
 
     it("removes the glossary entry", async () => {
