@@ -1,4 +1,5 @@
 import FormData from "form-data";
+import { fixContentTypeHeaderCase } from "../http/form-data-utils";
 import { SmartlingBaseApi } from "../base/index";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
@@ -26,32 +27,6 @@ import { CreateLabelParameters } from "./params/create-label-parameters";
 import { LabelDto } from "./dto/label-dto";
 
 export class SmartlingGlossariesApi extends SmartlingBaseApi {
-    /* eslint-disable-next-line class-methods-use-this */
-    alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
-        if (uri.match(/glossary-api\/v3\/accounts\/.*\/glossaries\/.*\/import$/g)) {
-            if (!opts.body) {
-                return opts;
-            }
-
-            const formData = new FormData();
-
-            Object.keys(opts.body).forEach((key) => {
-                if (Array.isArray(opts.body[key])) {
-                    opts.body[key].forEach((value) => {
-                        formData.append(`${key}[]`, value);
-                    });
-                } else {
-                    formData.append(key, opts.body[key]);
-                }
-            });
-
-            opts.headers["Content-Type"] = formData.getHeaders()["content-type"];
-            opts.body = formData;
-        }
-
-        return opts;
-    }
-
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
         super(logger);
         this.authApi = authApi;
@@ -257,10 +232,25 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         glossaryUid: string,
         parameters: InitializeImportParameters
     ): Promise<GlossaryImportResultDto> {
+        const exported = parameters.export();
+        const formData = new FormData();
+
+        Object.keys(exported).forEach((key) => {
+            if (Array.isArray(exported[key])) {
+                exported[key].forEach((value) => {
+                    formData.append(`${key}[]`, value);
+                });
+            } else {
+                formData.append(key, exported[key]);
+            }
+        });
+
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/accounts/${accountUid}/glossaries/${glossaryUid}/import`,
-            parameters.export()
+            formData,
+            false,
+            fixContentTypeHeaderCase(formData)
         );
     }
 
