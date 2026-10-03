@@ -265,11 +265,39 @@ describe("SmartlingGlossariesApi integration tests.", function integrationSuite(
     });
 
     it("initializes, checks, and confirms a glossary import", async () => {
+        // The real glossary CSV import format requires the exact column-header shape
+        // the export endpoint produces, not a bare "definition,fr-FR" header: every
+        // column must be present (empty string where unused), and each translation
+        // column must be named "{Column} {Locale description} [{localeId}] {localeId}"
+        // (e.g. "Term French (France) [fr-FR] fr-FR") - confirmed against the real
+        // service's GlossaryImportHeaderParser/FormattingUtils.isColumnRecognized,
+        // and against a real exportGlossaryEntries response for this exact locale.
+        const localeColumnSuffix = "French (France) [fr-FR] fr-FR";
+        const importHeader = [
+            "ID", "Definition", "Part Of Speech", "Label Names", "Created By", "Last Modified By",
+            "Created At", "Last Modified At", "Archived", "MT-suitable", "Suggestion-status",
+            `Term ${localeColumnSuffix}`,
+            `Linguistic Variations ${localeColumnSuffix}`,
+            `Notes ${localeColumnSuffix}`,
+            `Case Sensitive ${localeColumnSuffix}`,
+            `Exact Match ${localeColumnSuffix}`,
+            `Do Not Translate ${localeColumnSuffix}`,
+            `Disabled ${localeColumnSuffix}`,
+            `Last Modified By ${localeColumnSuffix}`
+        ];
+        const importRow = new Array(importHeader.length).fill("");
+
+        importRow[1] = "Imported term";
+        importRow[11] = "Terme importe";
+
+        const importCsvContent = `${importHeader.map((column) => `"${column}"`).join(",")}\n`
+            + `${importRow.map((value) => `"${value}"`).join(",")}\n`;
+
         const importResult = await api.initializeGlossaryImport(
             accountUid,
             glossaryUid,
             new InitializeImportParameters()
-                .setImportFileContent("definition,fr-FR\nImported term,Terme importe\n")
+                .setImportFileContent(importCsvContent)
                 .setImportFileName("integration-import.csv")
                 .setImportFileMediaType(ImportFileMediaType.CSV)
         );
