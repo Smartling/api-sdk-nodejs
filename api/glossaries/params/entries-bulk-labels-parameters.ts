@@ -20,129 +20,97 @@ export class EntriesBulkLabelsParameters extends BaseParameters {
     }
 
     setFilterQuery(query: string): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.query = query;
-        this.set("filter", filter);
+        this.parameters.filter.query = query;
 
         return this;
     }
 
     setFilterLocaleIds(localeIds: Array<string>): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.localeIds = localeIds;
-        this.set("filter", filter);
+        this.parameters.filter.localeIds = localeIds;
 
         return this;
     }
 
     setFilterEntryUids(entryUids: Array<string>): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.entryUids = entryUids;
-        this.set("filter", filter);
+        this.parameters.filter.entryUids = entryUids;
 
         return this;
     }
 
     setFilterEntryState(entryState: EntryState): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.entryState = entryState;
-        this.set("filter", filter);
+        this.parameters.filter.entryState = entryState;
 
         return this;
     }
 
     setFilterMissingTranslationLocaleId(localeId: string): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.missingTranslationLocaleId = localeId;
-        this.set("filter", filter);
+        this.parameters.filter.missingTranslationLocaleId = localeId;
 
         return this;
     }
 
     setFilterPresentTranslationLocaleId(localeId: string): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.presentTranslationLocaleId = localeId;
-        this.set("filter", filter);
+        this.parameters.filter.presentTranslationLocaleId = localeId;
 
         return this;
     }
 
     setFilterDntLocaleId(localeId: string): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.dntLocaleId = localeId;
-        this.set("filter", filter);
+        this.parameters.filter.dntLocaleId = localeId;
 
         return this;
     }
 
     setFilterReturnFallbackTranslations(returnFallback: boolean): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.returnFallbackTranslations = returnFallback;
-        this.set("filter", filter);
+        this.parameters.filter.returnFallbackTranslations = returnFallback;
 
         return this;
     }
 
     setFilterLabels(labels: LabelTypeDto): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.labels = labels;
-        this.set("filter", filter);
+        this.parameters.filter.labels = labels;
 
         return this;
     }
 
     setFilterDntTermSet(dntTermSet: boolean): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.dntTermSet = dntTermSet;
-        this.set("filter", filter);
+        this.parameters.filter.dntTermSet = dntTermSet;
 
         return this;
     }
 
     setFilterCreated(created: DateFilterDto): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.created = created;
-        this.set("filter", filter);
+        this.parameters.filter.created = created;
 
         return this;
     }
 
     setFilterLastModified(lastModified: DateFilterDto): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.lastModified = lastModified;
-        this.set("filter", filter);
+        this.parameters.filter.lastModified = lastModified;
 
         return this;
     }
 
     setFilterCreatedBy(createdBy: UserFilterDto): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.createdBy = createdBy;
-        this.set("filter", filter);
+        this.parameters.filter.createdBy = createdBy;
 
         return this;
     }
 
     setFilterLastModifiedBy(lastModifiedBy: UserFilterDto): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.lastModifiedBy = lastModifiedBy;
-        this.set("filter", filter);
+        this.parameters.filter.lastModifiedBy = lastModifiedBy;
 
         return this;
     }
 
     setFilterPaging(paging: PaginationDto): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.paging = paging;
-        this.set("filter", filter);
+        this.parameters.filter.paging = paging;
 
         return this;
     }
 
     setFilterSorting(sorting: EntrySortingDto): EntriesBulkLabelsParameters {
-        const filter = this.parameters.filter || {};
-        filter.sorting = sorting;
-        this.set("filter", filter);
+        this.parameters.filter.sorting = sorting;
 
         return this;
     }
