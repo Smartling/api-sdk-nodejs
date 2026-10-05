@@ -6,3 +6,7 @@ export { DateFilterType } from "./date-filter-type";
 export { LabelType } from "./label-type";
 export { SortDirection } from "./sort-direction";
 export { SortField } from "./sort-field";
+export { PartOfSpeech } from "./part-of-speech";
+export { SuggestionStatus } from "./suggestion-status";
+export { ImportStatus } from "./import-status";
+export { ImportFileMediaType } from "./import-file-media-type";

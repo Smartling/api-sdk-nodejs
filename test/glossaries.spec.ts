@@ -1,10 +1,25 @@
 import sinon from "sinon";
+import * as fs from "fs";
+import assert from "assert";
 import { SmartlingGlossariesApi } from "../api/glossaries/index";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { SearchGlossariesParameters } from "../api/glossaries/params/search-glossaries-parameters";
 import { ExportEntriesParameters } from "../api/glossaries/params/export-entries-parameters";
 import { ExportFormat, TbxVersion, EntryState, FilterLevel, SortField, SortDirection, LabelType, DateFilterType } from "../api/glossaries/enums";
+import { CreateGlossaryParameters } from "../api/glossaries/params/create-glossary-parameters";
+import { ArchiveGlossariesParameters } from "../api/glossaries/params/archive-glossaries-parameters";
+import { SearchGlossaryCountsParameters } from "../api/glossaries/params/search-glossary-counts-parameters";
+import { CreateGlossaryEntryParameters } from "../api/glossaries/params/create-glossary-entry-parameters";
+import { SearchGlossaryEntriesParameters } from "../api/glossaries/params/search-glossary-entries-parameters";
+import { PartOfSpeech } from "../api/glossaries/enums/part-of-speech";
+import { EntriesBulkActionParameters } from "../api/glossaries/params/entries-bulk-action-parameters";
+import { EntriesBulkLabelsParameters } from "../api/glossaries/params/entries-bulk-labels-parameters";
+import { AuthorizeEntriesParameters } from "../api/glossaries/params/authorize-entries-parameters";
+import { streamToString } from "./stream-to-string";
+import { InitializeImportParameters } from "../api/glossaries/params/initialize-import-parameters";
+import { ImportFileMediaType } from "../api/glossaries/enums/import-file-media-type";
+import { CreateLabelParameters } from "../api/glossaries/params/create-label-parameters";
 
 describe("SmartlingGlossariesApi class tests.", () => {
     const accountUid = "testAccountUid";
@@ -191,6 +206,550 @@ describe("SmartlingGlossariesApi class tests.", () => {
                     }
                 }
             });
+        });
+
+        it("Create glossary", async () => {
+            const parameters = new CreateGlossaryParameters()
+                .setGlossaryName("Test glossary")
+                .setDescription("Test description")
+                .setVerificationMode(true)
+                .setLocaleIds(["en-US", "fr-FR"])
+                .setFallbackLocales([{ fallbackLocaleId: "fr-FR", localeIds: ["fr-CA"] }])
+                .setMtOptimized(true);
+
+            await glossariesApi.createGlossary(accountUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        glossaryName: "Test glossary",
+                        description: "Test description",
+                        verificationMode: true,
+                        localeIds: ["en-US", "fr-FR"],
+                        fallbackLocales: [{ fallbackLocaleId: "fr-FR", localeIds: ["fr-CA"] }],
+                        mtOptimized: true
+                    })
+                }
+            );
+        });
+
+        it("Update glossary", async () => {
+            const parameters = new CreateGlossaryParameters()
+                .setGlossaryName("Updated glossary")
+                .setLocaleIds(["en-US"]);
+
+            await glossariesApi.updateGlossary(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put",
+                    body: JSON.stringify({
+                        glossaryName: "Updated glossary",
+                        localeIds: ["en-US"]
+                    })
+                }
+            );
+        });
+
+        it("Archive glossaries", async () => {
+            const parameters = new ArchiveGlossariesParameters().setGlossaryUids(["uid1", "uid2"]);
+
+            await glossariesApi.archiveGlossaries(accountUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/archive`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ glossaryUids: ["uid1", "uid2"] })
+                }
+            );
+        });
+
+        it("Restore glossaries", async () => {
+            const parameters = new ArchiveGlossariesParameters().setGlossaryUids(["uid1"]);
+
+            await glossariesApi.restoreGlossaries(accountUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/unarchive`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ glossaryUids: ["uid1"] })
+                }
+            );
+        });
+
+        it("Search glossaries with entries counts", async () => {
+            const parameters = new SearchGlossaryCountsParameters()
+                .setQuery("test")
+                .setGlossaryState("ACTIVE")
+                .setPaging({ offset: 0, limit: 10 });
+
+            await glossariesApi.searchGlossariesWithEntriesCounts(accountUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/search/count`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        query: "test",
+                        glossaryState: "ACTIVE",
+                        paging: { offset: 0, limit: 10 }
+                    })
+                }
+            );
+        });
+
+        it("Create glossary entry", async () => {
+            const parameters = new CreateGlossaryEntryParameters()
+                .setDefinition("A test term")
+                .setPartOfSpeech(PartOfSpeech.NOUN)
+                .setLabelUids(["label1"])
+                .setSkipMissingTranslations(false)
+                .setSuggestion(true);
+
+            await glossariesApi.createGlossaryEntry(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        definition: "A test term",
+                        partOfSpeech: "NOUN",
+                        labelUids: ["label1"],
+                        skipMissingTranslations: false,
+                        suggestion: true
+                    })
+                }
+            );
+        });
+
+        it("Read glossary entry", async () => {
+            await glossariesApi.readGlossaryEntry(accountUid, glossaryUid, "testEntryUid");
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/testEntryUid`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Update glossary entry", async () => {
+            const parameters = new CreateGlossaryEntryParameters().setDefinition("Updated term");
+
+            await glossariesApi.updateGlossaryEntry(accountUid, glossaryUid, "testEntryUid", parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/testEntryUid`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put",
+                    body: JSON.stringify({ definition: "Updated term" })
+                }
+            );
+        });
+
+        it("Search glossary entries", async () => {
+            const parameters = new SearchGlossaryEntriesParameters()
+                .setQuery("test")
+                .setEntryState(EntryState.ACTIVE)
+                .setPaging({ offset: 0, limit: 10 });
+
+            await glossariesApi.searchGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/search`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        query: "test",
+                        entryState: "ACTIVE",
+                        paging: { offset: 0, limit: 10 }
+                    })
+                }
+            );
+        });
+
+        it("Archive glossary entries", async () => {
+            const parameters = new EntriesBulkActionParameters().setFilterEntryUids(["entry1", "entry2"]);
+
+            await glossariesApi.archiveGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/archive`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ filter: { entryUids: ["entry1", "entry2"] } })
+                }
+            );
+        });
+
+        it("Restore glossary entries", async () => {
+            const parameters = new EntriesBulkActionParameters().setFilterEntryUids(["entry1"]);
+
+            await glossariesApi.restoreGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/unarchive`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ filter: { entryUids: ["entry1"] } })
+                }
+            );
+        });
+
+        it("Remove glossary entries", async () => {
+            const parameters = new EntriesBulkActionParameters().setFilterEntryUids(["entry1"]);
+
+            await glossariesApi.removeGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/delete`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ filter: { entryUids: ["entry1"] } })
+                }
+            );
+        });
+
+        it("Add labels to glossary entries", async () => {
+            const parameters = new EntriesBulkLabelsParameters()
+                .setFilterEntryUids(["entry1"])
+                .setLabelUids(["label1", "label2"]);
+
+            await glossariesApi.addLabelsToGlossaryEntries(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/add-labels`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        filter: { entryUids: ["entry1"] },
+                        labelUids: ["label1", "label2"]
+                    })
+                }
+            );
+        });
+
+        it("Remove labels from glossary entries", async () => {
+            const parameters = new EntriesBulkLabelsParameters()
+                .setFilterEntryUids(["entry1"])
+                .setLabelUids(["label1"]);
+
+            await glossariesApi.removeLabelsFromGlossaryEntries(
+                accountUid,
+                glossaryUid,
+                parameters
+            );
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/remove-labels`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        filter: { entryUids: ["entry1"] },
+                        labelUids: ["label1"]
+                    })
+                }
+            );
+        });
+
+        it("Authorize glossary entries for translation", async () => {
+            const parameters = new AuthorizeEntriesParameters()
+                .setSourceLocale("en-US")
+                .setProjectId("testProjectId")
+                .setFilter({ entryUids: ["entry1"] })
+                .setLocaleWorkflows([{ localeId: "fr-FR", workflowUid: "workflow1" }])
+                .setMissingTranslationsOnly(true);
+
+            await glossariesApi.authorizeEntriesForTranslation(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/entries/authorization`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({
+                        sourceLocale: "en-US",
+                        projectId: "testProjectId",
+                        filter: { entryUids: ["entry1"] },
+                        localeWorkflows: [{ localeId: "fr-FR", workflowUid: "workflow1" }],
+                        missingTranslationsOnly: true
+                    })
+                }
+            );
+        });
+
+        it("Initialize glossary import", async () => {
+            const parameters = new InitializeImportParameters()
+                .setImportFileContent(fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                ))
+                .setImportFileName("terms.csv")
+                .setImportFileMediaType(ImportFileMediaType.CSV)
+                .setArchiveMode(false);
+
+            await glossariesApi.initializeGlossaryImport(accountUid, glossaryUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+
+            assert.equal(
+                glossariesApiFetchStub.getCall(0).args[0],
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/import`
+            );
+
+            assert.equal(
+                glossariesApiFetchStub.getCall(0).args[1].method,
+                "post"
+            );
+
+            assert.equal(
+                glossariesApiFetchStub.getCall(0).args[1].headers.Authorization,
+                "test_token_type test_access_token"
+            );
+
+            assert.equal(
+                glossariesApiFetchStub.getCall(0).args[1].headers["User-Agent"],
+                "test_user_agent"
+            );
+
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                await streamToString(glossariesApiFetchStub.getCall(0).args[1].body._streams[1]),
+                fs.readFileSync(
+                    fs.realpathSync("./test/data/file.xml"),
+                    "utf8"
+                )
+            );
+
+            const stringified = JSON.stringify(glossariesApiFetchStub.getCall(0).args[1].body);
+
+            assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"importFileName\\\"\\r\\n\\r\\n\",\"terms.csv\""));
+            assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"importFileMediaType\\\"\\r\\n\\r\\n\",\"text/csv\""));
+            assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"archiveMode\\\"\\r\\n\\r\\n\",false"));
+        });
+
+        it("Get glossary import status", async () => {
+            await glossariesApi.importStatus(accountUid, glossaryUid, "testImportUid");
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/import/testImportUid`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Confirm glossary import", async () => {
+            await glossariesApi.confirmGlossaryImport(accountUid, glossaryUid, "testImportUid");
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/glossaries/${glossaryUid}/import/testImportUid/confirm`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Read all glossary labels", async () => {
+            await glossariesApi.readAllGlossaryLabels(accountUid);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/labels`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Create glossary label", async () => {
+            const parameters = new CreateLabelParameters().setLabelText("Important");
+
+            await glossariesApi.createGlossaryLabel(accountUid, parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/labels`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post",
+                    body: JSON.stringify({ labelText: "Important" })
+                }
+            );
+        });
+
+        it("Update glossary label", async () => {
+            const parameters = new CreateLabelParameters().setLabelText("Renamed");
+
+            await glossariesApi.updateGlossaryLabel(accountUid, "testLabelUid", parameters);
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/labels/testLabelUid`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "put",
+                    body: JSON.stringify({ labelText: "Renamed" })
+                }
+            );
+        });
+
+        it("Delete glossary label", async () => {
+            await glossariesApi.deleteGlossaryLabel(accountUid, "testLabelUid");
+
+            sinon.assert.calledOnce(glossariesApiFetchStub);
+            sinon.assert.calledWithExactly(
+                glossariesApiFetchStub,
+                `https://test.com/glossary-api/v3/accounts/${accountUid}/labels/testLabelUid`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
+                }
+            );
         });
     });
 });

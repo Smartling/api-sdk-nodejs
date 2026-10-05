@@ -47,114 +47,82 @@ export class ExportEntriesParameters extends BaseParameters {
     }
 
     setFilterQuery(query: string): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.query = query;
-        this.set("filter", filter);
+        this.parameters.filter.query = query;
         return this;
     }
 
     setFilterLocaleIds(localeIds: Array<string>): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.localeIds = localeIds;
-        this.set("filter", filter);
+        this.parameters.filter.localeIds = localeIds;
         return this;
     }
 
     setFilterEntryUids(entryUids: Array<string>): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.entryUids = entryUids;
-        this.set("filter", filter);
+        this.parameters.filter.entryUids = entryUids;
         return this;
     }
 
     setFilterEntryState(entryState: EntryState): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.entryState = entryState;
-        this.set("filter", filter);
+        this.parameters.filter.entryState = entryState;
         return this;
     }
 
     setFilterMissingTranslationLocaleId(localeId: string): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.missingTranslationLocaleId = localeId;
-        this.set("filter", filter);
+        this.parameters.filter.missingTranslationLocaleId = localeId;
         return this;
     }
 
     setFilterPresentTranslationLocaleId(localeId: string): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.presentTranslationLocaleId = localeId;
-        this.set("filter", filter);
+        this.parameters.filter.presentTranslationLocaleId = localeId;
         return this;
     }
 
     setFilterDntLocaleId(localeId: string): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.dntLocaleId = localeId;
-        this.set("filter", filter);
+        this.parameters.filter.dntLocaleId = localeId;
         return this;
     }
 
     setFilterReturnFallbackTranslations(returnFallback: boolean): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.returnFallbackTranslations = returnFallback;
-        this.set("filter", filter);
+        this.parameters.filter.returnFallbackTranslations = returnFallback;
         return this;
     }
 
     setFilterLabels(labels: LabelTypeDto): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.labels = labels;
-        this.set("filter", filter);
+        this.parameters.filter.labels = labels;
         return this;
     }
 
     setFilterDntTermSet(dntTermSet: boolean): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.dntTermSet = dntTermSet;
-        this.set("filter", filter);
+        this.parameters.filter.dntTermSet = dntTermSet;
         return this;
     }
 
     setFilterCreated(created: DateFilterDto): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.created = created;
-        this.set("filter", filter);
+        this.parameters.filter.created = created;
         return this;
     }
 
     setFilterLastModified(lastModified: DateFilterDto): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.lastModified = lastModified;
-        this.set("filter", filter);
+        this.parameters.filter.lastModified = lastModified;
         return this;
     }
 
     setFilterCreatedBy(createdBy: UserFilterDto): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.createdBy = createdBy;
-        this.set("filter", filter);
+        this.parameters.filter.createdBy = createdBy;
         return this;
     }
 
     setFilterLastModifiedBy(lastModifiedBy: UserFilterDto): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.lastModifiedBy = lastModifiedBy;
-        this.set("filter", filter);
+        this.parameters.filter.lastModifiedBy = lastModifiedBy;
         return this;
     }
 
     setFilterPaging(paging: PaginationDto): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.paging = paging;
-        this.set("filter", filter);
+        this.parameters.filter.paging = paging;
         return this;
     }
 
     setFilterSorting(sorting: EntrySortingDto): ExportEntriesParameters {
-        const filter = this.parameters.filter || {};
-        filter.sorting = sorting;
-        this.set("filter", filter);
+        this.parameters.filter.sorting = sorting;
         return this;
     }
 }
