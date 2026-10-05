@@ -53,5 +53,19 @@ describe("SmartlingBaseFileApi class tests.", () => {
             assert.ok(fileWithMetadata.fileName === "test - \"phase 1\".xml");
             assert.ok(fileWithMetadata.fileContent.byteLength === 1);
         });
+
+        it("Convert response to dto when file name is RFC 5987 encoded (filename*=)", async () => {
+            mockResponse.headers.get.onCall(0).returns("application/octet-stream");
+            mockResponse.headers.get.onCall(1).returns("attachment; filename*=UTF-8''style%20guide.pdf");
+            mockResponse.headers.get.returns(null);
+
+            const fileWithMetadata = await SmartlingBaseFileApi.downloadResponseToTranslatedFileDto(
+                mockResponse as Response
+            );
+
+            assert.ok(fileWithMetadata.contentType === "application/octet-stream");
+            assert.ok(fileWithMetadata.fileName === "style guide.pdf");
+            assert.ok(fileWithMetadata.fileContent.byteLength === 1);
+        });
     });
 });

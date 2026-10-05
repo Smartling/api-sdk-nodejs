@@ -9,9 +9,14 @@ export class SmartlingBaseFileApi extends SmartlingBaseApi {
         const contentDisposition = response.headers.get("content-disposition");
         let fileName;
         if (contentDisposition) {
-            const fileNameMatch = contentDisposition.match(/filename="((?:[^"\\]|\\.)*)"/);
-            if (fileNameMatch) {
-                fileName = fileNameMatch[1].replace(/\\"/g, "\"");
+            const encodedFileNameMatch = contentDisposition.match(/filename\*=[^']*''([^;]+)/);
+            if (encodedFileNameMatch) {
+                fileName = decodeURIComponent(encodedFileNameMatch[1]);
+            } else {
+                const fileNameMatch = contentDisposition.match(/filename="((?:[^"\\]|\\.)*)"/);
+                if (fileNameMatch) {
+                    fileName = fileNameMatch[1].replace(/\\"/g, "\"");
+                }
             }
         }
         return {
