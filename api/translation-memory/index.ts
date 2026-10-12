@@ -70,7 +70,10 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
 
     /* eslint-disable-next-line class-methods-use-this */
     alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
-        if (uri.match(/tm-tmx-api\/v2\/accounts\/.*\/tmx\/file$/g)) {
+        // Guard against re-converting an already-built FormData body: makeRequest() calls
+        // alterRequestData() again on a 401 retry, reusing the same opts object.
+        if (!(opts.body instanceof FormData)
+            && uri.match(/tm-tmx-api\/v2\/accounts\/.*\/tmx\/file$/g)) {
             const formData = new FormData();
 
             Object.keys(opts.body).forEach((key) => {

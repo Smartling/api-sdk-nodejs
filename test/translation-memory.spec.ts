@@ -71,6 +71,38 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             );
         });
 
+        it("Import TMX file: as string", async () => {
+            const params = new ImportTmxFileParameters()
+                .setFileContent(fs.readFileSync(fs.realpathSync("./test/data/file.xml"), "utf8"))
+                .setFileUri("test/file.tmx")
+                .setTmUid("j45v1uvsi3tx");
+
+            await translationMemoryApi.importTmxFile(accountUid, params);
+
+            sinon.assert.calledOnce(fetchStub);
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                await streamToString(fetchStub.getCall(0).args[1].body._streams[1]),
+                fs.readFileSync(fs.realpathSync("./test/data/file.xml"), "utf8")
+            );
+        });
+
+        it("Import TMX file: from buffer", async () => {
+            const fileBuffer = fs.readFileSync(fs.realpathSync("./test/data/file.xml"));
+            const params = new ImportTmxFileParameters()
+                .setFileContentFromBuffer(fileBuffer)
+                .setFileUri("test/file.tmx")
+                .setTmUid("j45v1uvsi3tx");
+
+            await translationMemoryApi.importTmxFile(accountUid, params);
+
+            sinon.assert.calledOnce(fetchStub);
+            assert.ok(
+                // eslint-disable-next-line no-underscore-dangle
+                fetchStub.getCall(0).args[1].body._streams[1].equals(fileBuffer)
+            );
+        });
+
         it("Download TMX file", async () => {
             const downloadResponseMock = {
                 status: 200,

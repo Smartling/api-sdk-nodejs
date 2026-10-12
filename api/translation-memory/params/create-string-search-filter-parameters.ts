@@ -190,6 +190,8 @@ export class CreateStringSearchFilterParameters extends BaseParameters {
         return this;
     }
 
+    // After/Before (rather than this file's usual Start/End) matches the GraphQL schema's
+    // own field names for these two filters.
     setLastTranslatedRange(after?: Date, before?: Date): CreateStringSearchFilterParameters {
         this.set("lastTranslatedAfter", after);
         this.set("lastTranslatedBefore", before);
