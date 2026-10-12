@@ -165,6 +165,9 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
             });
 
             assert.ok(downloaded.fileContent.byteLength > 0);
+        } else {
+            // eslint-disable-next-line no-console
+            console.warn("WARNING: bulkExportTmStrings completed but returned no tmxDownloadKey - skipping the downloadTmxFile assertion.");
         }
     });
 });
