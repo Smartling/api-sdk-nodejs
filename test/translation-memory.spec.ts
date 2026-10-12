@@ -144,6 +144,34 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             );
         });
 
+        it("Import TMX file: FormData body is not reconverted on a 401 retry", async () => {
+            const params = new ImportTmxFileParameters()
+                .setFileFromLocalFilePath("./test/data/file.xml")
+                .setFileUri("test/file.tmx")
+                .setTmUid("j45v1uvsi3tx");
+
+            fetchStub.onCall(0).returns({ status: 401 });
+            fetchStub.onCall(1).returns(responseMock);
+
+            await translationMemoryApi.importTmxFile(accountUid, params);
+
+            sinon.assert.calledTwice(fetchStub);
+
+            // alterRequestData() runs again on the retry with the same opts object - the guard
+            // must recognize the body is already a FormData instance and leave it untouched,
+            // rather than re-running Object.keys()/forEach() over FormData's own internals.
+            assert.strictEqual(
+                fetchStub.getCall(0).args[1].body,
+                fetchStub.getCall(1).args[1].body
+            );
+
+            assert.equal(
+                // eslint-disable-next-line no-underscore-dangle
+                await streamToString(fetchStub.getCall(1).args[1].body._streams[1]),
+                fs.readFileSync(fs.realpathSync("./test/data/file.xml"), "utf8")
+            );
+        });
+
         it("Download TMX file", async () => {
             const downloadResponseMock = {
                 status: 200,
