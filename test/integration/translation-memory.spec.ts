@@ -78,17 +78,22 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
     });
 
     it("Updates the TM", async () => {
+        const updatedName = `api-sdk-nodejs integration test TM (updated) ${Date.now()}`;
+        const updatedDescription = "Updated by the api-sdk-nodejs integration suite";
+
         const updated = await api.updateTm(
             accountUid,
             new UpdateTmParameters()
                 .setTmUid(tmUid)
-                .setName(`api-sdk-nodejs integration test TM (updated) ${Date.now()}`)
-                .setDescription("Updated by the api-sdk-nodejs integration suite")
+                .setName(updatedName)
+                .setDescription(updatedDescription)
         );
 
         logResponse("updateTm", updated);
 
         assert.equal(updated.tmUid, tmUid);
+        assert.equal(updated.name, updatedName);
+        assert.equal(updated.description, updatedDescription);
         assert.ok(updated.created instanceof Date);
         assert.ok(updated.lastModified instanceof Date);
     });
