@@ -1,8 +1,8 @@
 interface TmLocaleDto {
     localeId: string;
     localeDescription: string;
-    rtlLanguage?: boolean;
-    wordSpacing?: boolean;
+    rtlLanguage?: boolean | null;
+    wordSpacing?: boolean | null;
 }
 
 export { TmLocaleDto };

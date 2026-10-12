@@ -4,7 +4,7 @@ import { LocaleSummaryDto } from "./locale-summary-dto";
 import { TranslationQualityType } from "../params/translation-quality-type";
 
 interface TmDto {
-    tmUid: string;
+    tmUid?: string | null;
     name: string;
     description?: string | null;
     sourceLocaleId: string;
