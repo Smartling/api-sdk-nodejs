@@ -34,7 +34,10 @@ function delay(milliseconds: number): Promise<void> {
 }
 
 describe("SmartlingTranslationMemoryApi integration tests.", function integrationSuite() {
-    this.timeout(120000);
+    // The export test's two polling loops (search-indexing + export-status) can each run close
+    // to their own deadline back to back, plus real network latency on top - give enough room
+    // that Mocha's own timeout doesn't fire before those loops give up on their own.
+    this.timeout(240000);
 
     let api: SmartlingTranslationMemoryApi;
     let tmUid: string;

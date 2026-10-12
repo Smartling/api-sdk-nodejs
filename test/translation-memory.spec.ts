@@ -14,12 +14,16 @@ import { UpdateTmParameters } from "../api/translation-memory/params/update-tm-p
 import { TranslationQualityType } from "../api/translation-memory/params/translation-quality-type";
 import { streamToString } from "./stream-to-string";
 
+const noRequestIdHeaders = { get: (): string | null => null };
+
 function tmGraphQlResponseMock(operationName: string, tm: Record<string, unknown>): {
     status: number;
+    headers: { get: (name: string) => string | null };
     text: () => Promise<string>;
 } {
     return {
         status: 200,
+        headers: noRequestIdHeaders,
         text: async (): Promise<string> => JSON.stringify({
             data: {
                 [operationName]: tm
@@ -183,6 +187,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
         it("Create string search", async () => {
             const graphQlResponseMock = {
                 status: 200,
+                headers: noRequestIdHeaders,
                 text: async (): Promise<string> => JSON.stringify({
                     data: {
                         createStringSearch: {
@@ -227,6 +232,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
         it("Create string search: GraphQL error is thrown", async () => {
             const graphQlResponseMock = {
                 status: 200,
+                headers: noRequestIdHeaders,
                 text: async (): Promise<string> => JSON.stringify({
                     errors: [{ message: "tmUids is required" }]
                 })
@@ -241,9 +247,38 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             );
         });
 
+        it("Create string search: malformed JSON response throws", async () => {
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => "not json"
+            });
+
+            await assert.rejects(
+                translationMemoryApi.createStringSearch(
+                    accountUid, new CreateStringSearchFilterParameters()
+                )
+            );
+        });
+
+        it("Create string search: response missing data throws", async () => {
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({})
+            });
+
+            await assert.rejects(
+                translationMemoryApi.createStringSearch(
+                    accountUid, new CreateStringSearchFilterParameters()
+                )
+            );
+        });
+
         it("Bulk export TM strings", async () => {
             const graphQlResponseMock = {
                 status: 200,
+                headers: noRequestIdHeaders,
                 text: async (): Promise<string> => JSON.stringify({
                     data: {
                         bulkExportTmStrings: {
@@ -285,6 +320,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
         it("Get bulk export TM strings status", async () => {
             const graphQlResponseMock = {
                 status: 200,
+                headers: noRequestIdHeaders,
                 text: async (): Promise<string> => JSON.stringify({
                     data: {
                         bulkExportTmStringsStatus: {

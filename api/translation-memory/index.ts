@@ -250,22 +250,47 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
             ResponseBodyType.RAW_RESPONSE
         );
 
+        const requestId = response.headers.get("x-sl-requestid");
         const textResponse = await response.text();
-        const jsonResponse = JSON.parse(textResponse, (key, value) => {
-            if ((key === "created" || key === "lastModified") && value) {
-                return new Date(value);
-            }
+        let jsonResponse: { data?: Record<string, unknown>; errors?: unknown };
 
-            return value;
-        });
+        try {
+            // The date reviver only matches these bare key names, not a path - harmless today
+            // since no nested field in this domain's DTOs shares them, but worth keeping in mind
+            // if a future field reuses "created"/"lastModified" for a non-Date value.
+            jsonResponse = JSON.parse(textResponse, (key, value) => {
+                if ((key === "created" || key === "lastModified") && value) {
+                    return new Date(value);
+                }
+
+                return value;
+            });
+        } catch (e) {
+            this.logger.error(`Couldn't parse GraphQL response json: ${e.toString()}`);
+
+            throw new SmartlingException("Couldn't parse GraphQL response json", {
+                statusCode: response.status,
+                errorResponse: textResponse,
+                requestId
+            });
+        }
+
+        this.logger.debug(`Received GraphQL response for operation "${operationName}": ${JSON.stringify(jsonResponse)}`);
 
         if (jsonResponse.errors) {
             throw new SmartlingException(
                 `GraphQL request for operation "${operationName}" failed`,
-                { errors: jsonResponse.errors }
+                { errors: jsonResponse.errors, requestId }
             );
         }
 
-        return jsonResponse.data[operationName];
+        if (!jsonResponse.data || !(operationName in jsonResponse.data)) {
+            throw new SmartlingException(
+                `GraphQL response for operation "${operationName}" is missing data`,
+                { response: jsonResponse, requestId }
+            );
+        }
+
+        return jsonResponse.data[operationName] as T;
     }
 }
