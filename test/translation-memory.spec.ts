@@ -9,7 +9,44 @@ import { EscapeSmpUnicodeParserDirective } from "../api/translation-memory/param
 import { CreateStringSearchFilterParameters } from "../api/translation-memory/params/create-string-search-filter-parameters";
 import { BulkExportTmStringsParameters } from "../api/translation-memory/params/bulk-export-tm-strings-parameters";
 import { ExtendedExportMetadataType } from "../api/translation-memory/params/extended-export-metadata-type";
+import { CreateTmParameters } from "../api/translation-memory/params/create-tm-parameters";
+import { UpdateTmParameters } from "../api/translation-memory/params/update-tm-parameters";
+import { TranslationQualityType } from "../api/translation-memory/params/translation-quality-type";
 import { streamToString } from "./stream-to-string";
+
+function tmGraphQlResponseMock(operationName: string, tm: Record<string, unknown>): {
+    status: number;
+    text: () => Promise<string>;
+} {
+    return {
+        status: 200,
+        text: async (): Promise<string> => JSON.stringify({
+            data: {
+                [operationName]: tm
+            }
+        })
+    };
+}
+
+const sampleTm = {
+    tmUid: "j45v1uvsi3tx",
+    name: "Integration test TM",
+    description: "Created by the SDK test suite",
+    sourceLocaleId: "en-US",
+    sourceLocale: {
+        localeId: "en-US",
+        localeDescription: "English (United States)",
+        rtlLanguage: false,
+        wordSpacing: true
+    },
+    creator: { userUid: "creatorUid", name: "Creator Name" },
+    created: "2026-06-17T00:09:44Z",
+    lastModifier: { userUid: "modifierUid", name: "Modifier Name" },
+    lastModified: "2026-06-17T00:09:44Z",
+    localeSummary: [],
+    translationQuality: "TRANSLATION",
+    managedWordsEnabled: false
+};
 
 describe("SmartlingTranslationMemoryApi class tests.", () => {
     const accountUid = "testAccountUid";
@@ -146,7 +183,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
         it("Create string search", async () => {
             const graphQlResponseMock = {
                 status: 200,
-                json: async (): Promise<unknown> => ({
+                text: async (): Promise<string> => JSON.stringify({
                     data: {
                         createStringSearch: {
                             searchUid: "2z68632hdvw2",
@@ -190,7 +227,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
         it("Create string search: GraphQL error is thrown", async () => {
             const graphQlResponseMock = {
                 status: 200,
-                json: async (): Promise<unknown> => ({
+                text: async (): Promise<string> => JSON.stringify({
                     errors: [{ message: "tmUids is required" }]
                 })
             };
@@ -207,7 +244,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
         it("Bulk export TM strings", async () => {
             const graphQlResponseMock = {
                 status: 200,
-                json: async (): Promise<unknown> => ({
+                text: async (): Promise<string> => JSON.stringify({
                     data: {
                         bulkExportTmStrings: {
                             actionUid: "d23eb702-7358-11ea-bc55-0242ac130003",
@@ -248,7 +285,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
         it("Get bulk export TM strings status", async () => {
             const graphQlResponseMock = {
                 status: 200,
-                json: async (): Promise<unknown> => ({
+                text: async (): Promise<string> => JSON.stringify({
                     data: {
                         bulkExportTmStringsStatus: {
                             actionUid: "d23eb702-7358-11ea-bc55-0242ac130003",
@@ -277,6 +314,73 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
 
             assert.equal(result.tmxDownloadKey, "ZGpoaDczaGRqc2o6MA==");
             assert.equal(result.executionComplete, true);
+        });
+
+        it("Create TM", async () => {
+            fetchStub.returns(tmGraphQlResponseMock("createTm", sampleTm));
+
+            const params = new CreateTmParameters()
+                .setName("Integration test TM")
+                .setDescription("Created by the SDK test suite")
+                .setSourceLocaleId("en-US")
+                .setTranslationQuality(TranslationQualityType.TRANSLATION);
+
+            const result = await translationMemoryApi.createTm(accountUid, params);
+
+            sinon.assert.calledOnce(fetchStub);
+            assert.equal(
+                fetchStub.getCall(0).args[0],
+                `https://test.com/tm-graphql-api/v2/accounts/${accountUid}/graphql`
+            );
+
+            const sentBody = JSON.parse(fetchStub.getCall(0).args[1].body);
+            assert.deepEqual(sentBody.variables, {
+                createTm: {
+                    name: "Integration test TM",
+                    description: "Created by the SDK test suite",
+                    sourceLocaleId: "en-US",
+                    translationQuality: "TRANSLATION"
+                }
+            });
+
+            assert.equal(result.tmUid, "j45v1uvsi3tx");
+            assert.ok(result.created instanceof Date);
+            assert.ok(result.lastModified instanceof Date);
+        });
+
+        it("Update TM", async () => {
+            fetchStub.returns(tmGraphQlResponseMock("updateTm", sampleTm));
+
+            const params = new UpdateTmParameters()
+                .setTmUid("j45v1uvsi3tx")
+                .setName("Renamed TM")
+                .setDescription("Updated description");
+
+            const result = await translationMemoryApi.updateTm(accountUid, params);
+
+            const sentBody = JSON.parse(fetchStub.getCall(0).args[1].body);
+            assert.deepEqual(sentBody.variables, {
+                updateTm: {
+                    tmUid: "j45v1uvsi3tx",
+                    name: "Renamed TM",
+                    description: "Updated description"
+                }
+            });
+
+            assert.equal(result.tmUid, "j45v1uvsi3tx");
+        });
+
+        it("Delete TM", async () => {
+            fetchStub.returns(tmGraphQlResponseMock("deleteTm", sampleTm));
+
+            const result = await translationMemoryApi.deleteTm(accountUid, "j45v1uvsi3tx");
+
+            const sentBody = JSON.parse(fetchStub.getCall(0).args[1].body);
+            assert.deepEqual(sentBody.variables, {
+                deleteTm: { tmUid: "j45v1uvsi3tx" }
+            });
+
+            assert.equal(result.tmUid, "j45v1uvsi3tx");
         });
     });
 });

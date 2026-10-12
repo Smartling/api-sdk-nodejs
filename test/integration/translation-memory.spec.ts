@@ -5,6 +5,9 @@ import { SmartlingTranslationMemoryApi } from "../../api/translation-memory/inde
 import { ImportTmxFileParameters } from "../../api/translation-memory/params/import-tmx-file-parameters";
 import { CreateStringSearchFilterParameters } from "../../api/translation-memory/params/create-string-search-filter-parameters";
 import { BulkExportTmStringsParameters } from "../../api/translation-memory/params/bulk-export-tm-strings-parameters";
+import { CreateTmParameters } from "../../api/translation-memory/params/create-tm-parameters";
+import { UpdateTmParameters } from "../../api/translation-memory/params/update-tm-parameters";
+import { TranslationQualityType } from "../../api/translation-memory/params/translation-quality-type";
 
 dotenv.config();
 
@@ -12,8 +15,7 @@ const baseSmartlingApiUrl = process.env.SMARTLING_API_BASE_URL || "https://api.s
 const accountUid = process.env.SMARTLING_ACCOUNT_UID as string;
 const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
-const tmUid = process.env.SMARTLING_TM_UID as string;
-const hasCredentials = Boolean(accountUid && userId && userSecret && tmUid);
+const hasCredentials = Boolean(accountUid && userId && userSecret);
 const logResponsesEnabled = process.env.SMARTLING_LOG_RESPONSES === "true";
 
 function logResponse(label: string, response: unknown): void {
@@ -35,11 +37,12 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
     this.timeout(120000);
 
     let api: SmartlingTranslationMemoryApi;
+    let tmUid: string;
 
     before(function skipWithoutCredentials() {
         if (!hasCredentials) {
             // eslint-disable-next-line no-console
-            console.log("Skipping Translation Memory integration tests: set SMARTLING_ACCOUNT_UID, SMARTLING_USER_ID, SMARTLING_USER_SECRET, SMARTLING_TM_UID in .env");
+            console.log("Skipping Translation Memory integration tests: set SMARTLING_ACCOUNT_UID, SMARTLING_USER_ID, SMARTLING_USER_SECRET in .env");
             this.skip();
         }
 
@@ -47,6 +50,44 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
             .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
             .authWithUserIdAndUserSecret(userId, userSecret)
             .build(SmartlingTranslationMemoryApi);
+    });
+
+    before(async () => {
+        const created = await api.createTm(
+            accountUid,
+            new CreateTmParameters()
+                .setName(`api-sdk-nodejs integration test TM ${Date.now()}`)
+                .setDescription("Created by the api-sdk-nodejs integration suite")
+                .setSourceLocaleId("en-US")
+                .setTranslationQuality(TranslationQualityType.TRANSLATION)
+        );
+
+        logResponse("createTm", created);
+        ({ tmUid } = created);
+    });
+
+    after(async () => {
+        if (tmUid) {
+            const deleted = await api.deleteTm(accountUid, tmUid);
+
+            logResponse("deleteTm (cleanup)", deleted);
+        }
+    });
+
+    it("Updates the TM", async () => {
+        const updated = await api.updateTm(
+            accountUid,
+            new UpdateTmParameters()
+                .setTmUid(tmUid)
+                .setName(`api-sdk-nodejs integration test TM (updated) ${Date.now()}`)
+                .setDescription("Updated by the api-sdk-nodejs integration suite")
+        );
+
+        logResponse("updateTm", updated);
+
+        assert.equal(updated.tmUid, tmUid);
+        assert.ok(updated.created instanceof Date);
+        assert.ok(updated.lastModified instanceof Date);
     });
 
     it("Imports a TMX file", async () => {
@@ -68,13 +109,22 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
     });
 
     it("Creates a string search, bulk-exports it, polls status, and downloads the TMX", async () => {
-        const searchResult = await api.createStringSearch(
-            accountUid,
-            new CreateStringSearchFilterParameters().setTmUids([tmUid])
-        );
+        // A just-imported TMX string isn't immediately searchable: createStringSearch can
+        // briefly return stringCount: 0 right after import, so retry until it's indexed.
+        const searchFilter = new CreateStringSearchFilterParameters().setTmUids([tmUid]);
+        let searchResult = await api.createStringSearch(accountUid, searchFilter);
+        const searchDeadline = Date.now() + 30000;
+
+        while (!searchResult.stringCount && Date.now() < searchDeadline) {
+            /* eslint-disable-next-line no-await-in-loop */
+            await delay(2000);
+            /* eslint-disable-next-line no-await-in-loop */
+            searchResult = await api.createStringSearch(accountUid, searchFilter);
+        }
 
         logResponse("createStringSearch", searchResult);
         assert.ok(searchResult.searchUid);
+        assert.ok(searchResult.stringCount);
 
         const exportResult = await api.bulkExportTmStrings(
             accountUid,

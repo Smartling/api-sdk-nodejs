@@ -12,6 +12,69 @@ import { CreateStringSearchResultDto } from "./dto/create-string-search-result-d
 import { BulkExportTmStringsParameters } from "./params/bulk-export-tm-strings-parameters";
 import { AsyncActionResultDto } from "./dto/async-action-result-dto";
 import { StringsExportAsyncActionResultDto } from "./dto/strings-export-async-action-result-dto";
+import { CreateTmParameters } from "./params/create-tm-parameters";
+import { UpdateTmParameters } from "./params/update-tm-parameters";
+import { TmDto } from "./dto/tm-dto";
+
+const TM_FIELDS = `
+    tmUid
+    name
+    description
+    sourceLocaleId
+    sourceLocale {
+        localeId
+        localeDescription
+        rtlLanguage
+        wordSpacing
+    }
+    creator {
+        userUid
+        name
+    }
+    created
+    lastModifier {
+        userUid
+        name
+    }
+    lastModified
+    localeSummary {
+        translationLocaleId
+        translationLocale {
+            localeId
+            localeDescription
+            rtlLanguage
+            wordSpacing
+        }
+        stringCount
+        wordCount
+    }
+    translationQuality
+    managedWordsEnabled
+`;
+
+const CREATE_TM_QUERY = `
+    mutation createTm($createTm: CreateTm!) {
+        createTm(createTm: $createTm) {
+            ${TM_FIELDS}
+        }
+    }
+`;
+
+const UPDATE_TM_QUERY = `
+    mutation updateTm($updateTm: UpdateTm!) {
+        updateTm(updateTm: $updateTm) {
+            ${TM_FIELDS}
+        }
+    }
+`;
+
+const DELETE_TM_QUERY = `
+    mutation deleteTm($deleteTm: DeleteTm!) {
+        deleteTm(deleteTm: $deleteTm) {
+            ${TM_FIELDS}
+        }
+    }
+`;
 
 const CREATE_STRING_SEARCH_QUERY = `
     mutation createStringSearch($createStringSearchFilter: CreateStringSearchFilter!) {
@@ -147,6 +210,33 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         );
     }
 
+    async createTm(accountUid: string, params: CreateTmParameters): Promise<TmDto> {
+        return await this.executeGraphQl(
+            accountUid,
+            CREATE_TM_QUERY,
+            { createTm: params.export() },
+            "createTm"
+        );
+    }
+
+    async updateTm(accountUid: string, params: UpdateTmParameters): Promise<TmDto> {
+        return await this.executeGraphQl(
+            accountUid,
+            UPDATE_TM_QUERY,
+            { updateTm: params.export() },
+            "updateTm"
+        );
+    }
+
+    async deleteTm(accountUid: string, tmUid: string): Promise<TmDto> {
+        return await this.executeGraphQl(
+            accountUid,
+            DELETE_TM_QUERY,
+            { deleteTm: { tmUid } },
+            "deleteTm"
+        );
+    }
+
     private async executeGraphQl<T>(
         accountUid: string,
         query: string,
@@ -160,7 +250,14 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
             ResponseBodyType.RAW_RESPONSE
         );
 
-        const jsonResponse = await response.json();
+        const textResponse = await response.text();
+        const jsonResponse = JSON.parse(textResponse, (key, value) => {
+            if ((key === "created" || key === "lastModified") && value) {
+                return new Date(value);
+            }
+
+            return value;
+        });
 
         if (jsonResponse.errors) {
             throw new SmartlingException(
