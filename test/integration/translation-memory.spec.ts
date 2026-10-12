@@ -154,20 +154,16 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
 
         logResponse("getBulkExportTmStringsStatus", status);
         assert.equal(status.executionComplete, true);
+        assert.ok(status.tmxDownloadKey, "bulkExportTmStrings completed but returned no tmxDownloadKey - can't exercise downloadTmxFile");
 
-        if (status.tmxDownloadKey) {
-            const downloaded = await api.downloadTmxFile(accountUid, status.tmxDownloadKey);
+        const downloaded = await api.downloadTmxFile(accountUid, status.tmxDownloadKey);
 
-            logResponse("downloadTmxFile", {
-                fileName: downloaded.fileName,
-                contentType: downloaded.contentType,
-                byteLength: downloaded.fileContent.byteLength
-            });
+        logResponse("downloadTmxFile", {
+            fileName: downloaded.fileName,
+            contentType: downloaded.contentType,
+            byteLength: downloaded.fileContent.byteLength
+        });
 
-            assert.ok(downloaded.fileContent.byteLength > 0);
-        } else {
-            // eslint-disable-next-line no-console
-            console.warn("WARNING: bulkExportTmStrings completed but returned no tmxDownloadKey - skipping the downloadTmxFile assertion.");
-        }
+        assert.ok(downloaded.fileContent.byteLength > 0);
     });
 });
