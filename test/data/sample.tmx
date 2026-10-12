@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tmx SYSTEM "tmx14.dtd">
+<tmx version="1.4">
+    <header creationtool="Smartling" creationtoolversion="1.1" srclang="en-US" datatype="xml" segtype="block" adminlang="en-US" o-tmf="Smartling" />
+    <body>
+        <tu tuid="integration-test-tu-1" segtype="block">
+            <prop type="x-segment-id">0</prop>
+            <tuv xml:lang="en-US"><seg>Hello</seg></tuv>
+            <tuv xml:lang="fr-FR"><seg>Bonjour</seg></tuv>
+        </tu>
+    </body>
+</tmx>
