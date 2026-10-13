@@ -6,6 +6,12 @@ import { TuTranslationQualityType } from "./tu-translation-quality-type";
 import { StringSearchTags } from "./string-search-tags";
 import { CreateStringSearchOptions } from "./create-string-search-options";
 
+// Nested GraphQL input shapes in this domain (SearchKeyword, StringSearchTags,
+// CreateStringSearchOptions) use optional (`field?:`) rather than nullable (`field: T | null`)
+// fields - unlike this domain's response DTOs, which use `field: T | null` throughout. This is
+// deliberate, not an inconsistency: omitting an input field from the GraphQL variables payload
+// (what an optional TS field lets you do - JSON.stringify drops `undefined` keys) means "don't
+// filter on this" to the server, which is a different request than explicitly sending `null`.
 export class CreateStringSearchFilterParameters extends BaseParameters {
     setTmUids(tmUids: Array<string>): CreateStringSearchFilterParameters {
         this.set("tmUids", tmUids);

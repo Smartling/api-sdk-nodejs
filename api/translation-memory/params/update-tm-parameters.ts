@@ -13,7 +13,9 @@ export class UpdateTmParameters extends BaseParameters {
         return this;
     }
 
-    setDescription(description: string): UpdateTmParameters {
+    // null explicitly clears an existing description, per the real UpdateTm input
+    // (description: String, nullable - distinct from simply not calling this setter at all).
+    setDescription(description: string | null): UpdateTmParameters {
         this.set("description", description);
 
         return this;

@@ -194,6 +194,77 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             );
         });
 
+        it("Import TMX file: warns when the response has partial import errors", async () => {
+            const warnStub = sinon.stub(loggerMock, "warn");
+
+            fetchStub.returns({
+                status: 200,
+                text: async (): Promise<string> => JSON.stringify({
+                    response: {
+                        data: {
+                            message: null,
+                            wordCount: 10,
+                            stringCount: 5,
+                            translationMemoryImportErrors: [
+                                { messages: ["bad string"], line: 3, column: 1 }
+                            ],
+                            parsingErrors: null,
+                            jobUid: "job-1",
+                            tmxUid: "tmx-1"
+                        }
+                    }
+                })
+            });
+
+            const params = new ImportTmxFileParameters()
+                .setFileContentFromBuffer(Buffer.from("<tmx/>"))
+                .setFileUri("test/file.tmx")
+                .setTmUid("j45v1uvsi3tx");
+
+            const result = await translationMemoryApi.importTmxFile(accountUid, params);
+
+            assert.equal(result.jobUid, "job-1");
+            assert.equal(result.tmxUid, "tmx-1");
+            assert.equal(result.wordCount, 10);
+            assert.equal(result.stringCount, 5);
+            sinon.assert.calledOnce(warnStub);
+            assert.ok(warnStub.getCall(0).args[0].includes("bad string"));
+
+            warnStub.restore();
+        });
+
+        it("Import TMX file: does not warn when error arrays are merely empty", async () => {
+            const warnStub = sinon.stub(loggerMock, "warn");
+
+            fetchStub.returns({
+                status: 200,
+                text: async (): Promise<string> => JSON.stringify({
+                    response: {
+                        data: {
+                            message: null,
+                            wordCount: 10,
+                            stringCount: 5,
+                            translationMemoryImportErrors: [],
+                            parsingErrors: [],
+                            jobUid: "job-1",
+                            tmxUid: "tmx-1"
+                        }
+                    }
+                })
+            });
+
+            const params = new ImportTmxFileParameters()
+                .setFileContentFromBuffer(Buffer.from("<tmx/>"))
+                .setFileUri("test/file.tmx")
+                .setTmUid("j45v1uvsi3tx");
+
+            await translationMemoryApi.importTmxFile(accountUid, params);
+
+            sinon.assert.notCalled(warnStub);
+
+            warnStub.restore();
+        });
+
         it("Download TMX file", async () => {
             const downloadResponseMock = {
                 status: 200,
@@ -215,11 +286,13 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
 
             fetchStub.returns(downloadResponseMock);
 
-            const result = await translationMemoryApi.downloadTmxFile(accountUid, "testTmxFileKey");
+            // A real tmxDownloadKey is base64 and can contain "+"/"/"/"=" - all of which must be
+            // percent-encoded or they'd be misread as URL path/query syntax.
+            const result = await translationMemoryApi.downloadTmxFile(accountUid, "a+b/c==");
 
             sinon.assert.calledOnceWithExactly(
                 fetchStub,
-                `https://test.com/tm-tmx-api/v2/accounts/${accountUid}/tmx/file/testTmxFileKey`,
+                `https://test.com/tm-tmx-api/v2/accounts/${accountUid}/tmx/file/a%2Bb%2Fc%3D%3D`,
                 {
                     method: "get",
                     headers: {
@@ -275,8 +348,13 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                 }
             });
             assert.ok(sentBody.query.includes("createStringSearch"));
-            assert.ok(sentBody.query.includes("duplicateStrings"));
-            assert.ok(sentBody.query.includes("offlineReportUid"));
+            [
+                "searchUid", "stringCount", "wordCount", "duplicateStrings", "duplicateKey",
+                "count", "srcText", "srcLocale", "translationLocale", "duplicateSearch",
+                "actionUid", "offlineReportUid"
+            ].forEach((field) => {
+                assert.ok(sentBody.query.includes(field), `query is missing field "${field}"`);
+            });
 
             assert.equal(result.searchUid, "2z68632hdvw2");
             assert.equal(result.stringCount, 10);
@@ -385,7 +463,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             );
         });
 
-        it("Create string search: response missing data throws", async () => {
+        it("Create string search: response missing data entirely throws", async () => {
             fetchStub.returns({
                 status: 200,
                 headers: noRequestIdHeaders,
@@ -398,11 +476,60 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                 ),
                 (e: SmartlingException) => {
                     assert.ok(e instanceof SmartlingException);
-                    assert.ok(e.message.includes("is missing data"));
+                    assert.ok(e.message.includes("is missing the expected field"));
 
                     return true;
                 }
             );
+        });
+
+        it("Create string search: data present but missing the operation's own key throws", async () => {
+            // Distinct from a present-but-null value (handled by the "null result" test above) -
+            // this is the key itself being entirely absent, e.g. schema drift or a typo'd
+            // operationName, which should fail loudly rather than being coerced to null.
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({
+                    data: { someOtherOperation: { searchUid: "abc" } }
+                })
+            });
+
+            await assert.rejects(
+                translationMemoryApi.createStringSearch(
+                    accountUid, new CreateStringSearchFilterParameters()
+                ),
+                (e: SmartlingException) => {
+                    assert.ok(e instanceof SmartlingException);
+                    assert.ok(e.message.includes("is missing the expected field"));
+
+                    return true;
+                }
+            );
+        });
+
+        it("Create string search: a non-array errors field logs a warning and does not throw", async () => {
+            const warnStub = sinon.stub(loggerMock, "warn");
+
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({
+                    errors: { message: "unexpected shape" },
+                    data: { createStringSearch: { searchUid: "2z68632hdvw2" } }
+                })
+            });
+
+            const result = await translationMemoryApi.createStringSearch(
+                accountUid, new CreateStringSearchFilterParameters()
+            );
+
+            assert.ok(result);
+            assert.equal(result.searchUid, "2z68632hdvw2");
+            sinon.assert.calledOnce(warnStub);
+            assert.ok(warnStub.getCall(0).args[0].includes("unexpected"));
+
+            warnStub.restore();
         });
 
         it("Bulk export TM strings", async () => {
@@ -442,6 +569,9 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                     includeAllVariants: true
                 }
             });
+            assert.ok(sentBody.query.includes("bulkExportTmStrings"));
+            assert.ok(sentBody.query.includes("executionComplete"));
+            assert.ok(sentBody.query.includes("actionStatus"));
 
             assert.ok(result);
             assert.equal(result.actionUid, "d23eb702-7358-11ea-bc55-0242ac130003");
@@ -449,6 +579,8 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
         });
 
         it("Get bulk export TM strings status", async () => {
+            const debugStub = sinon.stub(loggerMock, "debug");
+
             const graphQlResponseMock = {
                 status: 200,
                 headers: noRequestIdHeaders,
@@ -478,10 +610,56 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             assert.deepEqual(sentBody.variables, {
                 actionUid: "d23eb702-7358-11ea-bc55-0242ac130003"
             });
+            assert.ok(sentBody.query.includes("bulkExportTmStringsStatus"));
+            assert.ok(sentBody.query.includes("tmxDownloadKey"));
+            assert.ok(sentBody.query.includes("expired"));
 
             assert.ok(result);
             assert.equal(result.tmxDownloadKey, "ZGpoaDczaGRqc2o6MA==");
             assert.equal(result.executionComplete, true);
+
+            // tmxDownloadKey is a bearer-style download token - it must never reach the debug log
+            // verbatim, only redacted.
+            sinon.assert.calledOnce(debugStub);
+            const loggedText = debugStub.getCall(0).args[0];
+
+            assert.ok(loggedText.includes("[REDACTED]"));
+            assert.ok(!loggedText.includes("ZGpoaDczaGRqc2o6MA=="));
+
+            debugStub.restore();
+        });
+
+        it("Get bulk export TM strings status: tmxDownloadKey is redacted in a thrown exception's payload too", async () => {
+            // A field-level error can accompany otherwise-populated partial data (see the
+            // "GraphQL error is thrown" test) - the live download token must not leak through
+            // that path either, not just the debug log.
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({
+                    errors: [{ message: "partial failure" }],
+                    data: {
+                        bulkExportTmStringsStatus: {
+                            actionUid: "d23eb702-7358-11ea-bc55-0242ac130003",
+                            tmxDownloadKey: "ZGpoaDczaGRqc2o6MA=="
+                        }
+                    }
+                })
+            });
+
+            await assert.rejects(
+                translationMemoryApi.getBulkExportTmStringsStatus(
+                    accountUid, "d23eb702-7358-11ea-bc55-0242ac130003"
+                ),
+                (e: SmartlingException) => {
+                    const payloadText = JSON.stringify(e.getPayload());
+
+                    assert.ok(payloadText.includes("[REDACTED]"));
+                    assert.ok(!payloadText.includes("ZGpoaDczaGRqc2o6MA=="));
+
+                    return true;
+                }
+            );
         });
 
         it("Create TM", async () => {
@@ -510,9 +688,18 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                     translationQuality: "TRANSLATION"
                 }
             });
+            // Every field this domain's TmDto declares must actually be requested by TM_FIELDS -
+            // a typo in either one would silently desync the query from the DTO it populates.
             assert.ok(sentBody.query.includes("createTm"));
-            assert.ok(sentBody.query.includes("managedWordsEnabled"));
-            assert.ok(sentBody.query.includes("localeSummary"));
+            [
+                "tmUid", "name", "description", "sourceLocaleId", "sourceLocale", "localeId",
+                "localeDescription", "rtlLanguage", "wordSpacing", "creator", "userUid", "created",
+                "lastModifier", "lastModified", "localeSummary", "translationLocaleId",
+                "translationLocale", "stringCount", "wordCount", "translationQuality",
+                "managedWordsEnabled"
+            ].forEach((field) => {
+                assert.ok(sentBody.query.includes(field), `query is missing field "${field}"`);
+            });
 
             assert.ok(result);
             assert.equal(result.tmUid, "j45v1uvsi3tx");

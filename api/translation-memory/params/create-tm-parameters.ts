@@ -8,7 +8,7 @@ export class CreateTmParameters extends BaseParameters {
         return this;
     }
 
-    setDescription(description: string): CreateTmParameters {
+    setDescription(description: string | null): CreateTmParameters {
         this.set("description", description);
 
         return this;

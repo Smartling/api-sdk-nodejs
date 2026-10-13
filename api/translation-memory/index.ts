@@ -159,10 +159,12 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
     // A 401-triggered retry is not guaranteed byte-safe for a streamed upload
     // (setFileFromLocalFilePath/setFileContent): the underlying Node stream is a one-shot
     // resource, so if it was already partially or fully read by the first attempt, the retried
-    // request can go out empty or truncated. This is a pre-existing limitation shared by every
-    // alterRequestData-based upload in this SDK (api/job-batches, api/context), not something
-    // specific to this method; use setFileContentFromBuffer for a retry-safe upload (a Buffer
-    // can be re-read).
+    // request can go out empty or truncated. The underlying one-shot-stream problem is shared by
+    // every alterRequestData-based upload in this SDK (api/job-batches, api/context), not
+    // something specific to this method; use setFileContentFromBuffer for a retry-safe upload
+    // here (a Buffer can be re-read, and this file's alterRequestData guards against reusing an
+    // already-built FormData on retry). job-batches/context lack that FormData guard, so a
+    // buffer alone would not make their uploads retry-safe too.
     async importTmxFile(
         accountUid: string, params: ImportTmxFileParameters
     ): Promise<TmxImportSummaryDto> {
@@ -172,7 +174,7 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
             params.export()
         );
 
-        if (result.translationMemoryImportErrors || result.parsingErrors) {
+        if (result.translationMemoryImportErrors?.length || result.parsingErrors?.length) {
             this.logger.warn(`importTmxFile completed with partial errors: ${JSON.stringify({
                 translationMemoryImportErrors: result.translationMemoryImportErrors,
                 parsingErrors: result.parsingErrors
@@ -259,6 +261,11 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         );
     }
 
+    // makeRequest()'s own JSON handling assumes the REST envelope shape ({response: {data}}) and
+    // unwraps it automatically - a GraphQL response's {data, errors} envelope doesn't match that,
+    // so this method requests the raw Response via ResponseBodyType.RAW_RESPONSE and parses the
+    // GraphQL envelope itself instead, mirroring makeRequest's own error-handling shape as closely
+    // as the different envelope allows.
     private async executeGraphQl<T>(
         accountUid: string,
         query: string,
@@ -273,10 +280,11 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         );
 
         const requestId = response.headers.get("x-sl-requestid");
+        let textResponse: string;
         let jsonResponse: { data?: Record<string, unknown>; errors?: Array<unknown> };
 
         try {
-            const textResponse = await response.text();
+            textResponse = await response.text();
 
             // The date reviver only matches these bare key names, not a path - harmless today
             // since no nested field in this domain's DTOs shares them, but worth keeping in mind
@@ -306,20 +314,26 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
 
             throw new SmartlingException("Couldn't parse GraphQL response json", {
                 statusCode: response.status,
+                errorResponse: textResponse,
                 requestId
             }, e);
         }
 
-        // Redact tmxDownloadKey - it's a bearer-style download token, not safe to log verbatim.
+        // tmxDownloadKey is a bearer-style download token - redact it everywhere this response
+        // gets surfaced (the debug log below, and the error payload further down), not just one
+        // of the two.
         const redactTmxDownloadKey = (key: string, value: unknown): unknown => (
             key === "tmxDownloadKey" && value ? "[REDACTED]" : value
         );
+        const redactedJsonResponse = JSON.parse(JSON.stringify(jsonResponse, redactTmxDownloadKey));
 
         this.logger.debug(
-            `Received GraphQL response for operation "${operationName}": ${JSON.stringify(jsonResponse, redactTmxDownloadKey)}`
+            `Received GraphQL response for operation "${operationName}": ${JSON.stringify(redactedJsonResponse)}`
         );
 
-        if (Array.isArray(jsonResponse.errors) && jsonResponse.errors.length > 0) {
+        if (jsonResponse.errors && !Array.isArray(jsonResponse.errors)) {
+            this.logger.warn(`GraphQL response for operation "${operationName}" has an unexpected "errors" shape: ${JSON.stringify(jsonResponse.errors)}`);
+        } else if (Array.isArray(jsonResponse.errors) && jsonResponse.errors.length > 0) {
             const firstMessage = (jsonResponse.errors[0] as { message?: string })?.message;
             const suffix = firstMessage ? `: ${firstMessage}` : "";
 
@@ -328,26 +342,27 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
                 {
                     errors: jsonResponse.errors,
                     // Partial data can still be present alongside errors (a nested field-level
-                    // resolver error doesn't necessarily mean the mutation's side effect - e.g. a
-                    // TM actually being created - didn't happen), so surface it for recovery
-                    // rather than discarding it.
-                    data: jsonResponse.data,
+                    // resolver error doesn't necessarily mean the mutation's side effect - e.g.
+                    // a TM actually being created - didn't happen), so surface it for recovery
+                    // rather than discarding it. Redacted the same as the debug log above.
+                    data: redactedJsonResponse.data,
                     statusCode: response.status,
                     requestId
                 }
             );
         }
 
-        if (!jsonResponse.data) {
+        if (!jsonResponse.data || !(operationName in jsonResponse.data)) {
             throw new SmartlingException(
-                `GraphQL response for operation "${operationName}" is missing data`,
-                { response: jsonResponse, statusCode: response.status, requestId }
+                `GraphQL response for operation "${operationName}" is missing the expected field`,
+                { response: redactedJsonResponse, statusCode: response.status, requestId }
             );
         }
 
         // The operation's result is itself nullable per the real GraphQL schema (none of this
-        // domain's Mutation/Query root fields are declared non-null) - null is a legitimate result,
-        // not a malformed response, so it's returned as-is rather than thrown.
-        return (jsonResponse.data[operationName] ?? null) as T | null;
+        // domain's Mutation/Query root fields are declared non-null) - a present-but-null value
+        // is a legitimate result, not a malformed response, so it's returned as-is rather than
+        // thrown. Only a genuinely absent key (checked above) is treated as malformed.
+        return jsonResponse.data[operationName] as T | null;
     }
 }
