@@ -1,0 +1,5 @@
+export enum TranslationQualityType {
+    TRANSLATION = "TRANSLATION",
+    TRANSCREATION = "TRANSCREATION",
+    MACHINE_GENERATED = "MACHINE_GENERATED"
+}

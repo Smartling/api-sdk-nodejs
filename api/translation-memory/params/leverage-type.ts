@@ -1,0 +1,5 @@
+export enum LeverageType {
+    PUBLISHED = "PUBLISHED",
+    PRE_PUBLISHED = "PRE_PUBLISHED",
+    TRANSLATED_ONLY = "TRANSLATED_ONLY"
+}
