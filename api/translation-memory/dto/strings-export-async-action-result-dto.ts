@@ -1,14 +1,8 @@
-import { AsyncActionStatus } from "./async-action-status";
+import { AsyncActionResultDto } from "./async-action-result-dto";
 
-interface StringsExportAsyncActionResultDto {
-    actionUid: string;
-    totalCount: number;
-    processedCount: number;
-    errorCount: number;
-    executionComplete: boolean;
-    tmxDownloadKey?: string | null;
+interface StringsExportAsyncActionResultDto extends AsyncActionResultDto {
+    tmxDownloadKey: string | null;
     expired: boolean;
-    actionStatus: AsyncActionStatus;
 }
 
 export { StringsExportAsyncActionResultDto };

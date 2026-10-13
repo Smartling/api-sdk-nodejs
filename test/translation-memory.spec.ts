@@ -12,7 +12,17 @@ import { ExtendedExportMetadataType } from "../api/translation-memory/params/ext
 import { CreateTmParameters } from "../api/translation-memory/params/create-tm-parameters";
 import { UpdateTmParameters } from "../api/translation-memory/params/update-tm-parameters";
 import { TranslationQualityType } from "../api/translation-memory/params/translation-quality-type";
+import { LeverageType } from "../api/translation-memory/params/leverage-type";
+import { SourceType } from "../api/translation-memory/params/source-type";
+import { TuTranslationQualityType } from "../api/translation-memory/params/tu-translation-quality-type";
+import { KeywordSearchType } from "../api/translation-memory/params/keyword-search-type";
+import { SmartlingException } from "../api/exception/index";
 import { streamToString } from "./stream-to-string";
+
+function formDataText(formData: { _streams: Array<unknown> }): string {
+    // eslint-disable-next-line no-underscore-dangle
+    return formData._streams.filter((entry) => typeof entry === "string").join("");
+}
 
 const noRequestIdHeaders = { get: (): string | null => null };
 
@@ -110,6 +120,18 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                 await streamToString(fetchStub.getCall(0).args[1].body._streams[1]),
                 fs.readFileSync(fs.realpathSync("./test/data/file.xml"), "utf8")
             );
+
+            const fields = formDataText(fetchStub.getCall(0).args[1].body);
+
+            assert.ok(fields.includes("name=\"file\""));
+            assert.ok(fields.includes("name=\"fileUri\"") && fields.includes("test/file.tmx"));
+            assert.ok(fields.includes("name=\"tmUid\"") && fields.includes("j45v1uvsi3tx"));
+            assert.ok(fields.includes("name=\"description\"") && fields.includes("Integration test import"));
+            assert.ok(fields.includes("name=\"translatorNameLocation\"") && fields.includes("@tu.changeid"));
+            assert.ok(fields.includes("name=\"translationDateLocation\"") && fields.includes("@tu.creationdate"));
+            assert.ok(fields.includes("name=\"variantLocation\"") && fields.includes("@prop.type.x-SID:SingleString"));
+            assert.ok(fields.includes("name=\"fileUriLocation\"") && fields.includes("@prop.type.x-idiom-source-ipath"));
+            assert.ok(fields.includes("name=\"escapeSmpUnicodeParserDirective\"") && fields.includes("on"));
         });
 
         it("Import TMX file: as string", async () => {
@@ -252,6 +274,9 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                     sourceLocaleIds: ["en-US"]
                 }
             });
+            assert.ok(sentBody.query.includes("createStringSearch"));
+            assert.ok(sentBody.query.includes("duplicateStrings"));
+            assert.ok(sentBody.query.includes("offlineReportUid"));
 
             assert.equal(result.searchUid, "2z68632hdvw2");
             assert.equal(result.stringCount, 10);
@@ -271,7 +296,71 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             await assert.rejects(
                 translationMemoryApi.createStringSearch(
                     accountUid, new CreateStringSearchFilterParameters()
-                )
+                ),
+                (e: SmartlingException) => {
+                    assert.ok(e instanceof SmartlingException);
+                    assert.ok(e.message.includes("tmUids is required"));
+                    assert.deepEqual(
+                        e.getPayload().errors,
+                        [{ message: "tmUids is required" }]
+                    );
+
+                    return true;
+                }
+            );
+        });
+
+        it("Create string search: an empty errors array does not throw", async () => {
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({
+                    errors: [],
+                    data: { createStringSearch: { searchUid: "2z68632hdvw2" } }
+                })
+            });
+
+            const result = await translationMemoryApi.createStringSearch(
+                accountUid, new CreateStringSearchFilterParameters()
+            );
+
+            assert.equal(result.searchUid, "2z68632hdvw2");
+        });
+
+        it("Create string search: a null result is returned as null, not thrown", async () => {
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({
+                    data: { createStringSearch: null }
+                })
+            });
+
+            const result = await translationMemoryApi.createStringSearch(
+                accountUid, new CreateStringSearchFilterParameters()
+            );
+
+            assert.equal(result, null);
+        });
+
+        it("Create string search: requestId is propagated into the thrown exception", async () => {
+            fetchStub.returns({
+                status: 200,
+                headers: { get: (name: string): string | null => (name === "x-sl-requestid" ? "test-request-id" : null) },
+                text: async (): Promise<string> => JSON.stringify({
+                    errors: [{ message: "tmUids is required" }]
+                })
+            });
+
+            await assert.rejects(
+                translationMemoryApi.createStringSearch(
+                    accountUid, new CreateStringSearchFilterParameters()
+                ),
+                (e: SmartlingException) => {
+                    assert.equal(e.getPayload().requestId, "test-request-id");
+
+                    return true;
+                }
             );
         });
 
@@ -285,7 +374,14 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             await assert.rejects(
                 translationMemoryApi.createStringSearch(
                     accountUid, new CreateStringSearchFilterParameters()
-                )
+                ),
+                (e: SmartlingException) => {
+                    assert.ok(e instanceof SmartlingException);
+                    assert.ok(e.message.includes("Couldn't parse GraphQL response json"));
+                    assert.ok(e.getNestedException() instanceof Error);
+
+                    return true;
+                }
             );
         });
 
@@ -299,7 +395,13 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
             await assert.rejects(
                 translationMemoryApi.createStringSearch(
                     accountUid, new CreateStringSearchFilterParameters()
-                )
+                ),
+                (e: SmartlingException) => {
+                    assert.ok(e instanceof SmartlingException);
+                    assert.ok(e.message.includes("is missing data"));
+
+                    return true;
+                }
             );
         });
 
@@ -341,6 +443,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                 }
             });
 
+            assert.ok(result);
             assert.equal(result.actionUid, "d23eb702-7358-11ea-bc55-0242ac130003");
             assert.equal(result.actionStatus, "QUEUEING");
         });
@@ -376,6 +479,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                 actionUid: "d23eb702-7358-11ea-bc55-0242ac130003"
             });
 
+            assert.ok(result);
             assert.equal(result.tmxDownloadKey, "ZGpoaDczaGRqc2o6MA==");
             assert.equal(result.executionComplete, true);
         });
@@ -406,10 +510,28 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                     translationQuality: "TRANSLATION"
                 }
             });
+            assert.ok(sentBody.query.includes("createTm"));
+            assert.ok(sentBody.query.includes("managedWordsEnabled"));
+            assert.ok(sentBody.query.includes("localeSummary"));
 
+            assert.ok(result);
             assert.equal(result.tmUid, "j45v1uvsi3tx");
             assert.ok(result.created instanceof Date);
             assert.ok(result.lastModified instanceof Date);
+        });
+
+        it("Create TM: a null result is returned as null, not thrown", async () => {
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({ data: { createTm: null } })
+            });
+
+            const result = await translationMemoryApi.createTm(
+                accountUid, new CreateTmParameters()
+            );
+
+            assert.equal(result, null);
         });
 
         it("Update TM", async () => {
@@ -431,6 +553,7 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                 }
             });
 
+            assert.ok(result);
             assert.equal(result.tmUid, "j45v1uvsi3tx");
         });
 
@@ -444,7 +567,115 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                 deleteTm: { tmUid: "j45v1uvsi3tx" }
             });
 
+            assert.ok(result);
             assert.equal(result.tmUid, "j45v1uvsi3tx");
+        });
+
+        it("Create string search: exercises every CreateStringSearchFilterParameters setter", () => {
+            const translationDateRangeStart = new Date("2026-01-01T00:00:00Z");
+            const translationDateRangeEnd = new Date("2026-02-01T00:00:00Z");
+            const editDateRangeStart = new Date("2026-01-02T00:00:00Z");
+            const editDateRangeEnd = new Date("2026-02-02T00:00:00Z");
+            const reviewDateRangeStart = new Date("2026-01-03T00:00:00Z");
+            const reviewDateRangeEnd = new Date("2026-02-03T00:00:00Z");
+            const authorizationDateRangeStart = new Date("2026-01-04T00:00:00Z");
+            const authorizationDateRangeEnd = new Date("2026-02-04T00:00:00Z");
+            const ingestedDateRangeStart = new Date("2026-01-05T00:00:00Z");
+            const ingestedDateRangeEnd = new Date("2026-02-05T00:00:00Z");
+            const lastTranslatedAfter = new Date("2026-01-06T00:00:00Z");
+            const lastTranslatedBefore = new Date("2026-02-06T00:00:00Z");
+            const firstTranslatedAfter = new Date("2026-01-07T00:00:00Z");
+            const firstTranslatedBefore = new Date("2026-02-07T00:00:00Z");
+            const keyword = { searchText: "year", caseSensitive: true, entireStringMatch: false, searchType: KeywordSearchType.BASIC };
+            const sourceKeyword = { searchText: "src", searchType: KeywordSearchType.EXACT_MATCH };
+            const translationKeyword = { searchText: "tgt", searchType: KeywordSearchType.REGEX };
+            const tags = { tags: ["tag1"], matchAllTags: true, noTags: false };
+            const searchOptions = {
+                highlightMatches: false,
+                searchDuplicates: true,
+                translationEqSource: false,
+                requestedResultsCount: 500
+            };
+
+            const filter = new CreateStringSearchFilterParameters()
+                .setTmUids(["tm1"])
+                .setSourceLocaleIds(["en-US"])
+                .setTranslationLocaleIds(["fr-FR"])
+                .setKeyword(keyword)
+                .setSourceKeyword(sourceKeyword)
+                .setTranslationKeyword(translationKeyword)
+                .setLeverageType(LeverageType.PUBLISHED)
+                .setHashcodes(["hash1"])
+                .setSmtHashcodes(["smt1"])
+                .setTranslatorUids(["translator1"])
+                .setTranslationDateRange(translationDateRangeStart, translationDateRangeEnd)
+                .setEditorUids(["editor1"])
+                .setEditDateRange(editDateRangeStart, editDateRangeEnd)
+                .setReviewerUids(["reviewer1"])
+                .setReviewDateRange(reviewDateRangeStart, reviewDateRangeEnd)
+                .setAuthorizerUids(["authorizer1"])
+                .setAuthorizationDateRange(authorizationDateRangeStart, authorizationDateRangeEnd)
+                .setIngestedDateRange(ingestedDateRangeStart, ingestedDateRangeEnd)
+                .setVariants(["variant1"])
+                .setProjectUids(["project1"])
+                .setExternalStep(true)
+                .setUrls(["https://example.com"])
+                .setFileNames(["file1.xml"])
+                .setKeys(["key1"])
+                .setDomains(["domain1"])
+                .setTmxFileNames(["tmx1.tmx"])
+                .setSources([SourceType.TMX])
+                .setTranslationQualities([TuTranslationQualityType.HUMAN])
+                .setFirstTranslatorUids(["firstTranslator1"])
+                .setLastTranslatedRange(lastTranslatedAfter, lastTranslatedBefore)
+                .setFirstTranslatedRange(firstTranslatedAfter, firstTranslatedBefore)
+                .setTags(tags)
+                .setOfflineReportUids(["offlineReport1"])
+                .setSearchOptions(searchOptions);
+
+            assert.deepEqual(filter.export(), {
+                tmUids: ["tm1"],
+                sourceLocaleIds: ["en-US"],
+                translationLocaleIds: ["fr-FR"],
+                keyword,
+                sourceKeyword,
+                translationKeyword,
+                leverageType: "PUBLISHED",
+                hashcodes: ["hash1"],
+                smtHashcodes: ["smt1"],
+                translatorUids: ["translator1"],
+                translationDateRangeStart,
+                translationDateRangeEnd,
+                editorUids: ["editor1"],
+                editDateRangeStart,
+                editDateRangeEnd,
+                reviewerUids: ["reviewer1"],
+                reviewDateRangeStart,
+                reviewDateRangeEnd,
+                authorizerUids: ["authorizer1"],
+                authorizationDateRangeStart,
+                authorizationDateRangeEnd,
+                ingestedDateRangeStart,
+                ingestedDateRangeEnd,
+                variants: ["variant1"],
+                projectUids: ["project1"],
+                externalStep: true,
+                urls: ["https://example.com"],
+                fileNames: ["file1.xml"],
+                keys: ["key1"],
+                domains: ["domain1"],
+                tmxFileNames: ["tmx1.tmx"],
+                sources: ["TMX"],
+                translationQualities: ["HUMAN"],
+                firstTranslatorUids: ["firstTranslator1"],
+                lastTranslatedAfter,
+                lastTranslatedBefore,
+                firstTranslatedAfter,
+                firstTranslatedBefore,
+                tags,
+                offlineReportUids: ["offlineReport1"],
+                searchOptions
+            });
         });
     });
 });

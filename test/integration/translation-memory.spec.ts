@@ -66,6 +66,7 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
         );
 
         logResponse("createTm", created);
+        assert.ok(created, "createTm returned null");
         ({ tmUid } = created);
     });
 
@@ -91,6 +92,7 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
 
         logResponse("updateTm", updated);
 
+        assert.ok(updated, "updateTm returned null");
         assert.equal(updated.tmUid, tmUid);
         assert.equal(updated.name, updatedName);
         assert.equal(updated.description, updatedDescription);
@@ -123,7 +125,7 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
         let searchResult = await api.createStringSearch(accountUid, searchFilter);
         const searchDeadline = Date.now() + 30000;
 
-        while (!searchResult.stringCount && Date.now() < searchDeadline) {
+        while (!searchResult?.stringCount && Date.now() < searchDeadline) {
             /* eslint-disable-next-line no-await-in-loop */
             await delay(2000);
             /* eslint-disable-next-line no-await-in-loop */
@@ -131,6 +133,7 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
         }
 
         logResponse("createStringSearch", searchResult);
+        assert.ok(searchResult, "createStringSearch returned null");
         assert.ok(searchResult.searchUid);
         assert.ok(searchResult.stringCount);
 
@@ -140,12 +143,20 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
         );
 
         logResponse("bulkExportTmStrings", exportResult);
+        assert.ok(exportResult, "bulkExportTmStrings returned null");
         assert.ok(exportResult.actionUid);
 
+        // executionComplete alone isn't a success signal: a CANCELED/STOPPED action is
+        // "finished" in the sense that it won't progress further, so poll until the status
+        // reaches any terminal state, not just until executionComplete flips true.
+        const terminalStatuses = ["SUCCESS", "FAILURE", "CANCELED", "STOPPED"];
         let status = await api.getBulkExportTmStringsStatus(accountUid, exportResult.actionUid);
         const deadline = Date.now() + 90000;
 
-        while (!status.executionComplete && Date.now() < deadline) {
+        while (
+            !(status?.executionComplete || terminalStatuses.includes(status?.actionStatus))
+            && Date.now() < deadline
+        ) {
             /* eslint-disable-next-line no-await-in-loop */
             await delay(2000);
             /* eslint-disable-next-line no-await-in-loop */
@@ -153,6 +164,8 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
         }
 
         logResponse("getBulkExportTmStringsStatus", status);
+        assert.ok(status, "getBulkExportTmStringsStatus returned null");
+        assert.equal(status.actionStatus, "SUCCESS");
         assert.equal(status.executionComplete, true);
         assert.ok(status.tmxDownloadKey, "bulkExportTmStrings completed but returned no tmxDownloadKey - can't exercise downloadTmxFile");
 

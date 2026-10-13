@@ -156,21 +156,39 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         return opts;
     }
 
+    // A 401-triggered retry is not guaranteed byte-safe for a streamed upload
+    // (setFileFromLocalFilePath/setFileContent): the underlying Node stream is a one-shot
+    // resource, so if it was already partially or fully read by the first attempt, the retried
+    // request can go out empty or truncated. This is a pre-existing limitation shared by every
+    // alterRequestData-based upload in this SDK (api/job-batches, api/context), not something
+    // specific to this method; use setFileContentFromBuffer for a retry-safe upload (a Buffer
+    // can be re-read).
     async importTmxFile(
         accountUid: string, params: ImportTmxFileParameters
     ): Promise<TmxImportSummaryDto> {
-        return await this.makeRequest(
+        const result: TmxImportSummaryDto = await this.makeRequest(
             "post",
             `${this.entrypoint}/tm-tmx-api/v2/accounts/${accountUid}/tmx/file`,
             params.export()
         );
+
+        if (result.translationMemoryImportErrors || result.parsingErrors) {
+            this.logger.warn(`importTmxFile completed with partial errors: ${JSON.stringify({
+                translationMemoryImportErrors: result.translationMemoryImportErrors,
+                parsingErrors: result.parsingErrors
+            })}`);
+        }
+
+        return result;
     }
 
     async downloadTmxFile(accountUid: string, tmxFileKey: string): Promise<TranslatedFileDto> {
+        const encodedTmxFileKey = encodeURIComponent(tmxFileKey);
+
         return await SmartlingBaseFileApi.downloadResponseToTranslatedFileDto(
             await this.makeRequest(
                 "get",
-                `${this.entrypoint}/tm-tmx-api/v2/accounts/${accountUid}/tmx/file/${tmxFileKey}`,
+                `${this.entrypoint}/tm-tmx-api/v2/accounts/${accountUid}/tmx/file/${encodedTmxFileKey}`,
                 null,
                 ResponseBodyType.RAW_RESPONSE
             )
@@ -179,7 +197,7 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
 
     async createStringSearch(
         accountUid: string, filter: CreateStringSearchFilterParameters
-    ): Promise<CreateStringSearchResultDto> {
+    ): Promise<CreateStringSearchResultDto | null> {
         return await this.executeGraphQl(
             accountUid,
             CREATE_STRING_SEARCH_QUERY,
@@ -190,7 +208,7 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
 
     async bulkExportTmStrings(
         accountUid: string, params: BulkExportTmStringsParameters
-    ): Promise<AsyncActionResultDto> {
+    ): Promise<AsyncActionResultDto | null> {
         return await this.executeGraphQl(
             accountUid,
             BULK_EXPORT_TM_STRINGS_QUERY,
@@ -201,7 +219,7 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
 
     async getBulkExportTmStringsStatus(
         accountUid: string, actionUid: string
-    ): Promise<StringsExportAsyncActionResultDto> {
+    ): Promise<StringsExportAsyncActionResultDto | null> {
         return await this.executeGraphQl(
             accountUid,
             BULK_EXPORT_TM_STRINGS_STATUS_QUERY,
@@ -210,7 +228,7 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         );
     }
 
-    async createTm(accountUid: string, params: CreateTmParameters): Promise<TmDto> {
+    async createTm(accountUid: string, params: CreateTmParameters): Promise<TmDto | null> {
         return await this.executeGraphQl(
             accountUid,
             CREATE_TM_QUERY,
@@ -219,7 +237,7 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         );
     }
 
-    async updateTm(accountUid: string, params: UpdateTmParameters): Promise<TmDto> {
+    async updateTm(accountUid: string, params: UpdateTmParameters): Promise<TmDto | null> {
         return await this.executeGraphQl(
             accountUid,
             UPDATE_TM_QUERY,
@@ -228,7 +246,11 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         );
     }
 
-    async deleteTm(accountUid: string, tmUid: string): Promise<TmDto> {
+    // deleteTm isn't documented on the public GraphQL reference site, but it exists in the real
+    // backend schema (tmm.graphqls) with the same non-internal-only doc comment as
+    // createTm/updateTm ("Deletes a translation memory"), so it's included here per
+    // source-code-wins reconciliation.
+    async deleteTm(accountUid: string, tmUid: string): Promise<TmDto | null> {
         return await this.executeGraphQl(
             accountUid,
             DELETE_TM_QUERY,
@@ -242,7 +264,7 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         query: string,
         variables: Record<string, unknown>,
         operationName: string
-    ): Promise<T> {
+    ): Promise<T | null> {
         const response: Response = await this.makeRequest(
             "post",
             `${this.entrypoint}/tm-graphql-api/v2/accounts/${accountUid}/graphql`,
@@ -251,46 +273,81 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         );
 
         const requestId = response.headers.get("x-sl-requestid");
-        const textResponse = await response.text();
-        let jsonResponse: { data?: Record<string, unknown>; errors?: unknown };
+        let jsonResponse: { data?: Record<string, unknown>; errors?: Array<unknown> };
 
         try {
+            const textResponse = await response.text();
+
             // The date reviver only matches these bare key names, not a path - harmless today
             // since no nested field in this domain's DTOs shares them, but worth keeping in mind
             // if a future field reuses "created"/"lastModified" for a non-Date value.
-            jsonResponse = JSON.parse(textResponse, (key, value) => {
+            const parsed = JSON.parse(textResponse, (key, value) => {
                 if ((key === "created" || key === "lastModified") && value) {
                     return new Date(value);
                 }
 
                 return value;
             });
+
+            if (!parsed || typeof parsed !== "object") {
+                throw new SmartlingException(
+                    `GraphQL response for operation "${operationName}" is not a JSON object`,
+                    { statusCode: response.status, errorResponse: textResponse, requestId }
+                );
+            }
+
+            jsonResponse = parsed;
         } catch (e) {
+            if (e instanceof SmartlingException) {
+                throw e;
+            }
+
             this.logger.error(`Couldn't parse GraphQL response json: ${e.toString()}`);
 
             throw new SmartlingException("Couldn't parse GraphQL response json", {
                 statusCode: response.status,
-                errorResponse: textResponse,
                 requestId
-            });
+            }, e);
         }
 
-        this.logger.debug(`Received GraphQL response for operation "${operationName}": ${JSON.stringify(jsonResponse)}`);
+        // Redact tmxDownloadKey - it's a bearer-style download token, not safe to log verbatim.
+        const redactTmxDownloadKey = (key: string, value: unknown): unknown => (
+            key === "tmxDownloadKey" && value ? "[REDACTED]" : value
+        );
 
-        if (jsonResponse.errors) {
+        this.logger.debug(
+            `Received GraphQL response for operation "${operationName}": ${JSON.stringify(jsonResponse, redactTmxDownloadKey)}`
+        );
+
+        if (Array.isArray(jsonResponse.errors) && jsonResponse.errors.length > 0) {
+            const firstMessage = (jsonResponse.errors[0] as { message?: string })?.message;
+            const suffix = firstMessage ? `: ${firstMessage}` : "";
+
             throw new SmartlingException(
-                `GraphQL request for operation "${operationName}" failed`,
-                { errors: jsonResponse.errors, requestId }
+                `GraphQL request for operation "${operationName}" failed${suffix}`,
+                {
+                    errors: jsonResponse.errors,
+                    // Partial data can still be present alongside errors (a nested field-level
+                    // resolver error doesn't necessarily mean the mutation's side effect - e.g. a
+                    // TM actually being created - didn't happen), so surface it for recovery
+                    // rather than discarding it.
+                    data: jsonResponse.data,
+                    statusCode: response.status,
+                    requestId
+                }
             );
         }
 
-        if (!jsonResponse.data || !(operationName in jsonResponse.data)) {
+        if (!jsonResponse.data) {
             throw new SmartlingException(
                 `GraphQL response for operation "${operationName}" is missing data`,
-                { response: jsonResponse, requestId }
+                { response: jsonResponse, statusCode: response.status, requestId }
             );
         }
 
-        return jsonResponse.data[operationName] as T;
+        // The operation's result is itself nullable per the real GraphQL schema (none of this
+        // domain's Mutation/Query root fields are declared non-null) - null is a legitimate result,
+        // not a malformed response, so it's returned as-is rather than thrown.
+        return (jsonResponse.data[operationName] ?? null) as T | null;
     }
 }

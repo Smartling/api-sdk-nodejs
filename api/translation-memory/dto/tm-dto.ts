@@ -4,16 +4,16 @@ import { LocaleSummaryDto } from "./locale-summary-dto";
 import { TranslationQualityType } from "../params/translation-quality-type";
 
 interface TmDto {
-    tmUid?: string | null;
+    tmUid: string | null;
     name: string;
-    description?: string | null;
+    description: string | null;
     sourceLocaleId: string;
     sourceLocale: TmLocaleDto;
     creator: UserDto;
     created: Date;
     lastModifier: UserDto;
     lastModified: Date;
-    localeSummary?: Array<LocaleSummaryDto> | null;
+    localeSummary: Array<LocaleSummaryDto> | null;
     translationQuality: TranslationQualityType;
     managedWordsEnabled: boolean;
 }
