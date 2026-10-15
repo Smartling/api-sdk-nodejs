@@ -214,8 +214,7 @@ describe("SmartlingGlossariesApi class tests.", () => {
                 .setDescription("Test description")
                 .setVerificationMode(true)
                 .setLocaleIds(["en-US", "fr-FR"])
-                .setFallbackLocales([{ fallbackLocaleId: "fr-FR", localeIds: ["fr-CA"] }])
-                .setMtOptimized(true);
+                .setFallbackLocales([{ fallbackLocaleId: "fr-FR", localeIds: ["fr-CA"] }]);
 
             await glossariesApi.createGlossary(accountUid, parameters);
 
@@ -235,8 +234,7 @@ describe("SmartlingGlossariesApi class tests.", () => {
                         description: "Test description",
                         verificationMode: true,
                         localeIds: ["en-US", "fr-FR"],
-                        fallbackLocales: [{ fallbackLocaleId: "fr-FR", localeIds: ["fr-CA"] }],
-                        mtOptimized: true
+                        fallbackLocales: [{ fallbackLocaleId: "fr-FR", localeIds: ["fr-CA"] }]
                     })
                 }
             );

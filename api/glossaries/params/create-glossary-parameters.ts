@@ -31,10 +31,4 @@ export class CreateGlossaryParameters extends BaseParameters {
 
         return this;
     }
-
-    setMtOptimized(mtOptimized: boolean): CreateGlossaryParameters {
-        this.set("mtOptimized", mtOptimized);
-
-        return this;
-    }
 }
