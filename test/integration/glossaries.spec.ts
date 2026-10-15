@@ -15,6 +15,7 @@ import { InitializeImportParameters } from "../../api/glossaries/params/initiali
 import { ExportEntriesParameters } from "../../api/glossaries/params/export-entries-parameters";
 import { ImportFileMediaType } from "../../api/glossaries/enums/import-file-media-type";
 import { ExportFormat } from "../../api/glossaries/enums/export-format";
+import { logResponse } from "./helpers/log-response";
 
 dotenv.config();
 
@@ -23,16 +24,6 @@ const accountUid = process.env.SMARTLING_ACCOUNT_UID as string;
 const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
 const hasCredentials = Boolean(accountUid && userId && userSecret);
-const logResponsesEnabled = process.env.SMARTLING_LOG_RESPONSES === "true";
-
-function logResponse(label: string, response: unknown): void {
-    if (!logResponsesEnabled) {
-        return;
-    }
-
-    // eslint-disable-next-line no-console
-    console.log(`\n--- ${label} ---\n${JSON.stringify(response, null, 2)}`);
-}
 
 describe("SmartlingGlossariesApi integration tests.", function integrationSuite() {
     this.timeout(60000);

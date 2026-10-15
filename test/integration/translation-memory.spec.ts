@@ -8,6 +8,7 @@ import { BulkExportTmStringsParameters } from "../../api/translation-memory/para
 import { CreateTmParameters } from "../../api/translation-memory/params/create-tm-parameters";
 import { UpdateTmParameters } from "../../api/translation-memory/params/update-tm-parameters";
 import { TranslationQualityType } from "../../api/translation-memory/params/translation-quality-type";
+import { logResponse } from "./helpers/log-response";
 
 dotenv.config();
 
@@ -16,16 +17,6 @@ const accountUid = process.env.SMARTLING_ACCOUNT_UID as string;
 const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
 const hasCredentials = Boolean(accountUid && userId && userSecret);
-const logResponsesEnabled = process.env.SMARTLING_LOG_RESPONSES === "true";
-
-function logResponse(label: string, response: unknown): void {
-    if (!logResponsesEnabled) {
-        return;
-    }
-
-    // eslint-disable-next-line no-console
-    console.log(`\n--- ${label} ---\n${JSON.stringify(response, null, 2)}`);
-}
 
 function delay(milliseconds: number): Promise<void> {
     return new Promise((resolve) => {
