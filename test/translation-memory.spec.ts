@@ -815,11 +815,11 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
                     translationQuality: "TRANSLATION"
                 }
             });
-            assert.ok(sentBody.query.includes("searchTms"));
+            assert.ok(sentBody.query.includes("searchTms(searchTmFilter: $searchTmFilter)"));
 
             assert.ok(result);
             assert.equal(result.length, 1);
-            assert.equal(result[0].tmUid, "j45v1uvsi3tx");
+            assert.equal(result?.[0]?.tmUid, "j45v1uvsi3tx");
         });
 
         it("Search TMs: a null result is returned as null, not thrown", async () => {

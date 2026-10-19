@@ -287,9 +287,11 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
         );
     }
 
+    // Array<TmDto | null> (not Array<TmDto>): the real schema's searchTms(...): [TM] has no "!"
+    // on the inner TM, so an individual list entry is nullable too, not just the list itself.
     async searchTms(
         accountUid: string, params: SearchTmsParameters
-    ): Promise<Array<TmDto> | null> {
+    ): Promise<Array<TmDto | null> | null> {
         return await this.executeGraphQl(
             accountUid,
             SEARCH_TMS_QUERY,

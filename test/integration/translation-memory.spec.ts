@@ -88,16 +88,17 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
 
         logResponse("updateTm", updated);
 
+        // Keep tmName in sync with the TM's current name before any assertion below can throw,
+        // so a later nameFilter-based searchTms lookup (see "Finds the TM via searchTms") still
+        // matches the renamed TM even if one of those assertions fails.
+        tmName = updatedName;
+
         assert.ok(updated, "updateTm returned null");
         assert.equal(updated.tmUid, tmUid);
         assert.equal(updated.name, updatedName);
         assert.equal(updated.description, updatedDescription);
         assert.ok(updated.created instanceof Date);
         assert.ok(updated.lastModified instanceof Date);
-
-        // Keep tmName in sync with the TM's current name so a later nameFilter-based
-        // searchTms lookup (see "Finds the TM via searchTms") matches the renamed TM.
-        tmName = updatedName;
     });
 
     it("Gets the TM by UID", async () => {
@@ -126,7 +127,7 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
         const deadline = Date.now() + 30000;
 
         while (
-            !found?.some((tm) => tm.tmUid === expectedTmUid)
+            !found?.some((tm) => tm?.tmUid === expectedTmUid)
             && Date.now() < deadline
         ) {
             /* eslint-disable-next-line no-await-in-loop */
@@ -138,7 +139,7 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
         logResponse("searchTms", found);
 
         assert.ok(found, "searchTms returned null");
-        assert.ok(found.some((tm) => tm.tmUid === expectedTmUid), "searchTms did not return the TM created by this suite");
+        assert.ok(found.some((tm) => tm?.tmUid === expectedTmUid), "searchTms did not return the TM created by this suite");
     });
 
     it("Imports a TMX file", async () => {
