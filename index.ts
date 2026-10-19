@@ -283,6 +283,8 @@ export * from "./api/translation-memory/params/bulk-export-tm-strings-parameters
 export * from "./api/translation-memory/params/extended-export-metadata-type";
 export * from "./api/translation-memory/params/create-tm-parameters";
 export * from "./api/translation-memory/params/update-tm-parameters";
+export * from "./api/translation-memory/params/search-tms-parameters";
+export * from "./api/translation-memory/params/tm-sorting";
 export * from "./api/translation-memory/params/translation-quality-type";
 export * from "./api/translation-memory/dto/tm-dto";
 export * from "./api/translation-memory/dto/user-dto";

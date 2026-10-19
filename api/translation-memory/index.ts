@@ -14,6 +14,7 @@ import { AsyncActionResultDto } from "./dto/async-action-result-dto";
 import { StringsExportAsyncActionResultDto } from "./dto/strings-export-async-action-result-dto";
 import { CreateTmParameters } from "./params/create-tm-parameters";
 import { UpdateTmParameters } from "./params/update-tm-parameters";
+import { SearchTmsParameters } from "./params/search-tms-parameters";
 import { TmDto } from "./dto/tm-dto";
 
 const TM_FIELDS = `
@@ -71,6 +72,22 @@ const UPDATE_TM_QUERY = `
 const DELETE_TM_QUERY = `
     mutation deleteTm($deleteTm: DeleteTm!) {
         deleteTm(deleteTm: $deleteTm) {
+            ${TM_FIELDS}
+        }
+    }
+`;
+
+const GET_TM_QUERY = `
+    query tm($tmUid: ID!) {
+        tm(tmUid: $tmUid) {
+            ${TM_FIELDS}
+        }
+    }
+`;
+
+const SEARCH_TMS_QUERY = `
+    query searchTms($searchTmFilter: SearchTmFilter!) {
+        searchTms(searchTmFilter: $searchTmFilter) {
             ${TM_FIELDS}
         }
     }
@@ -258,6 +275,28 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
             DELETE_TM_QUERY,
             { deleteTm: { tmUid } },
             "deleteTm"
+        );
+    }
+
+    async getTm(accountUid: string, tmUid: string): Promise<TmDto | null> {
+        return await this.executeGraphQl(
+            accountUid,
+            GET_TM_QUERY,
+            { tmUid },
+            "tm"
+        );
+    }
+
+    // Array<TmDto | null> (not Array<TmDto>): the real schema's searchTms(...): [TM] has no "!"
+    // on the inner TM, so an individual list entry is nullable too, not just the list itself.
+    async searchTms(
+        accountUid: string, params: SearchTmsParameters
+    ): Promise<Array<TmDto | null> | null> {
+        return await this.executeGraphQl(
+            accountUid,
+            SEARCH_TMS_QUERY,
+            { searchTmFilter: params.export() },
+            "searchTms"
         );
     }
 
