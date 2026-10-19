@@ -11,6 +11,8 @@ import { BulkExportTmStringsParameters } from "../api/translation-memory/params/
 import { ExtendedExportMetadataType } from "../api/translation-memory/params/extended-export-metadata-type";
 import { CreateTmParameters } from "../api/translation-memory/params/create-tm-parameters";
 import { UpdateTmParameters } from "../api/translation-memory/params/update-tm-parameters";
+import { SearchTmsParameters } from "../api/translation-memory/params/search-tms-parameters";
+import { TmSorting } from "../api/translation-memory/params/tm-sorting";
 import { TranslationQualityType } from "../api/translation-memory/params/translation-quality-type";
 import { LeverageType } from "../api/translation-memory/params/leverage-type";
 import { SourceType } from "../api/translation-memory/params/source-type";
@@ -26,7 +28,9 @@ function formDataText(formData: { _streams: Array<unknown> }): string {
 
 const noRequestIdHeaders = { get: (): string | null => null };
 
-function tmGraphQlResponseMock(operationName: string, tm: Record<string, unknown>): {
+function tmGraphQlResponseMock(
+    operationName: string, tm: Record<string, unknown> | Array<Record<string, unknown>>
+): {
     status: number;
     headers: { get: (name: string) => string | null };
     text: () => Promise<string>;
@@ -756,6 +760,80 @@ describe("SmartlingTranslationMemoryApi class tests.", () => {
 
             assert.ok(result);
             assert.equal(result.tmUid, "j45v1uvsi3tx");
+        });
+
+        it("Get TM", async () => {
+            fetchStub.returns(tmGraphQlResponseMock("tm", sampleTm));
+
+            const result = await translationMemoryApi.getTm(accountUid, "j45v1uvsi3tx");
+
+            const sentBody = JSON.parse(fetchStub.getCall(0).args[1].body);
+            assert.deepEqual(sentBody.variables, { tmUid: "j45v1uvsi3tx" });
+            assert.ok(sentBody.query.includes("tm(tmUid: $tmUid)"));
+
+            assert.ok(result);
+            assert.equal(result.tmUid, "j45v1uvsi3tx");
+            assert.ok(result.created instanceof Date);
+            assert.ok(result.lastModified instanceof Date);
+        });
+
+        it("Get TM: a null result is returned as null, not thrown", async () => {
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({ data: { tm: null } })
+            });
+
+            const result = await translationMemoryApi.getTm(accountUid, "missingTmUid");
+
+            assert.equal(result, null);
+        });
+
+        it("Search TMs: exercises every SearchTmsParameters setter", async () => {
+            fetchStub.returns(tmGraphQlResponseMock("searchTms", [sampleTm]));
+
+            const params = new SearchTmsParameters()
+                .setFirst(25)
+                .setOffset(10)
+                .setSortBy(TmSorting.BY_NAME_DESC)
+                .setSourceLocaleId("en-US")
+                .setNameFilter("Marketing")
+                .setSourceLanguageId("en")
+                .setTranslationQuality(TranslationQualityType.TRANSLATION);
+
+            const result = await translationMemoryApi.searchTms(accountUid, params);
+
+            const sentBody = JSON.parse(fetchStub.getCall(0).args[1].body);
+            assert.deepEqual(sentBody.variables, {
+                searchTmFilter: {
+                    first: 25,
+                    offset: 10,
+                    sortBy: "BY_NAME_DESC",
+                    sourceLocaleId: "en-US",
+                    nameFilter: "Marketing",
+                    sourceLanguageId: "en",
+                    translationQuality: "TRANSLATION"
+                }
+            });
+            assert.ok(sentBody.query.includes("searchTms"));
+
+            assert.ok(result);
+            assert.equal(result.length, 1);
+            assert.equal(result[0].tmUid, "j45v1uvsi3tx");
+        });
+
+        it("Search TMs: a null result is returned as null, not thrown", async () => {
+            fetchStub.returns({
+                status: 200,
+                headers: noRequestIdHeaders,
+                text: async (): Promise<string> => JSON.stringify({ data: { searchTms: null } })
+            });
+
+            const result = await translationMemoryApi.searchTms(
+                accountUid, new SearchTmsParameters()
+            );
+
+            assert.equal(result, null);
         });
 
         it("Create string search: exercises every CreateStringSearchFilterParameters setter", () => {

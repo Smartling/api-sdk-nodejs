@@ -7,6 +7,8 @@ import { CreateStringSearchFilterParameters } from "../../api/translation-memory
 import { BulkExportTmStringsParameters } from "../../api/translation-memory/params/bulk-export-tm-strings-parameters";
 import { CreateTmParameters } from "../../api/translation-memory/params/create-tm-parameters";
 import { UpdateTmParameters } from "../../api/translation-memory/params/update-tm-parameters";
+import { SearchTmsParameters } from "../../api/translation-memory/params/search-tms-parameters";
+import { TmSorting } from "../../api/translation-memory/params/tm-sorting";
 import { TranslationQualityType } from "../../api/translation-memory/params/translation-quality-type";
 import { logResponse } from "./helpers/log-response";
 
@@ -32,6 +34,7 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
 
     let api: SmartlingTranslationMemoryApi;
     let tmUid: string;
+    let tmName: string;
 
     before(function skipWithoutCredentials() {
         if (!hasCredentials) {
@@ -47,10 +50,12 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
     });
 
     before(async () => {
+        tmName = `api-sdk-nodejs integration test TM ${Date.now()}`;
+
         const created = await api.createTm(
             accountUid,
             new CreateTmParameters()
-                .setName(`api-sdk-nodejs integration test TM ${Date.now()}`)
+                .setName(tmName)
                 .setDescription("Created by the api-sdk-nodejs integration suite")
                 .setSourceLocaleId("en-US")
                 .setTranslationQuality(TranslationQualityType.TRANSLATION)
@@ -89,6 +94,51 @@ describe("SmartlingTranslationMemoryApi integration tests.", function integratio
         assert.equal(updated.description, updatedDescription);
         assert.ok(updated.created instanceof Date);
         assert.ok(updated.lastModified instanceof Date);
+
+        // Keep tmName in sync with the TM's current name so a later nameFilter-based
+        // searchTms lookup (see "Finds the TM via searchTms") matches the renamed TM.
+        tmName = updatedName;
+    });
+
+    it("Gets the TM by UID", async () => {
+        const fetched = await api.getTm(accountUid, tmUid);
+
+        logResponse("getTm", fetched);
+
+        assert.ok(fetched, "getTm returned null");
+        assert.equal(fetched.tmUid, tmUid);
+        assert.ok(fetched.created instanceof Date);
+        assert.ok(fetched.lastModified instanceof Date);
+    });
+
+    it("Finds the TM via searchTms", async () => {
+        // Captured as a const so the polling loop's closure below doesn't trip no-loop-func.
+        const expectedTmUid = tmUid;
+        const searchParams = (): SearchTmsParameters => new SearchTmsParameters()
+            .setSourceLocaleId("en-US")
+            .setNameFilter(tmName)
+            .setSortBy(TmSorting.BY_NAME_ASC)
+            .setFirst(50);
+
+        // A just-created TM can briefly miss nameFilter-based search before it's indexed,
+        // so retry until it shows up or the deadline passes.
+        let found = await api.searchTms(accountUid, searchParams());
+        const deadline = Date.now() + 30000;
+
+        while (
+            !found?.some((tm) => tm.tmUid === expectedTmUid)
+            && Date.now() < deadline
+        ) {
+            /* eslint-disable-next-line no-await-in-loop */
+            await delay(2000);
+            /* eslint-disable-next-line no-await-in-loop */
+            found = await api.searchTms(accountUid, searchParams());
+        }
+
+        logResponse("searchTms", found);
+
+        assert.ok(found, "searchTms returned null");
+        assert.ok(found.some((tm) => tm.tmUid === expectedTmUid), "searchTms did not return the TM created by this suite");
     });
 
     it("Imports a TMX file", async () => {
