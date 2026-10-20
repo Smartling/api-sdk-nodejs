@@ -50,6 +50,8 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
     let projectId: string;
     let translationJobUid: string;
     let fileUri: string;
+    let fuzzyReportUid: string | undefined;
+    let costReportUid: string | undefined;
 
     before(function skipWithoutCredentials() {
         if (!hasCredentials) {
@@ -139,6 +141,17 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
     });
 
     after(async () => {
+        // Guards against a leaked report if an assertion in the `it` block below threw before
+        // reaching that test's own deleteEstimateReport call - each test clears its tracked uid
+        // once it deletes the report itself, so this is a no-op on the happy path.
+        if (fuzzyReportUid) {
+            await estimatesApi.deleteEstimateReport(projectId, fuzzyReportUid);
+        }
+
+        if (costReportUid) {
+            await estimatesApi.deleteEstimateReport(projectId, costReportUid);
+        }
+
         if (translationJobUid) {
             // A job can only be deleted once it's CANCELLED.
             await jobsApi.cancelJob(
@@ -184,6 +197,8 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
 
         const { reportUid } = generated;
 
+        fuzzyReportUid = reportUid;
+
         await waitForReportCompletion(reportUid);
 
         const report = await estimatesApi.getEstimateReport(projectId, reportUid);
@@ -216,6 +231,7 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
         assert.ok(downloaded.byteLength > 0);
 
         await estimatesApi.deleteEstimateReport(projectId, reportUid);
+        fuzzyReportUid = undefined;
     });
 
     it("generates and reads a cost estimate report", async () => {
@@ -229,6 +245,8 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
         assert.ok(generated.reportUid);
 
         const { reportUid } = generated;
+
+        costReportUid = reportUid;
 
         await waitForReportCompletion(reportUid);
 
@@ -248,5 +266,6 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
         assert.ok(list.items.some((item) => item.reportUid === reportUid));
 
         await estimatesApi.deleteEstimateReport(projectId, reportUid);
+        costReportUid = undefined;
     });
 });
