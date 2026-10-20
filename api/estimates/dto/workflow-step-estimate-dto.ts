@@ -5,7 +5,9 @@ import { PriceInformationDto } from "./price-information-dto";
 interface WorkflowStepEstimateDto {
     totalWordCount: number;
     totalWeightedWordCount: number;
-    totalCharacterCount: number;
+    // Nullable per the real WorkflowStepEstimate entity (Integer, unlike the primitive-int
+    // word-count fields), with no null-correcting fallback in WorkflowStepEstimateConverter.
+    totalCharacterCount: number | null;
     totalPageCount: number | null;
     workflowStepUid: string;
     workflowStepName: string;
