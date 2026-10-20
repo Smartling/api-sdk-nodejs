@@ -1,7 +1,7 @@
 interface EffectiveRatesRangeDto {
-    rateMin: number;
-    rateMax: number;
-    currencyCode: string;
+    rateMin: number | null;
+    rateMax: number | null;
+    currencyCode: string | null;
 }
 
 export { EffectiveRatesRangeDto };

@@ -9,7 +9,7 @@ interface LocaleEstimateDto {
     localeId: string;
     localeDescription: string;
     workflowEstimates: Array<WorkflowEstimateDto>;
-    priceInformation: PriceInformationDto;
+    priceInformation: PriceInformationDto | null;
 }
 
 export { LocaleEstimateDto };

@@ -11,7 +11,7 @@ interface WorkflowStepEstimateDto {
     workflowStepName: string;
     effectiveRatesRange: EffectiveRatesRangeDto;
     fuzzyMatchTiers: Array<FuzzyMatchTierDto>;
-    priceInformation: PriceInformationDto;
+    priceInformation: PriceInformationDto | null;
     warningType: string | null;
     aiSubscriptionServiceType: string | null;
 }

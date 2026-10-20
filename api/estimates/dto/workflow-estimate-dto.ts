@@ -9,7 +9,7 @@ interface WorkflowEstimateDto {
     workflowUid: string;
     workflowName: string;
     workflowStepEstimates: Array<WorkflowStepEstimateDto>;
-    priceInformation: PriceInformationDto;
+    priceInformation: PriceInformationDto | null;
 }
 
 export { WorkflowEstimateDto };

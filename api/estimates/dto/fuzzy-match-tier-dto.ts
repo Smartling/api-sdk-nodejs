@@ -8,7 +8,7 @@ interface FuzzyMatchTierDto {
     wordCount: number;
     weightedWordCount: number;
     characterCount: number;
-    priceInformation: PriceInformationDto;
+    priceInformation: PriceInformationDto | null;
 }
 
 export { FuzzyMatchTierDto };

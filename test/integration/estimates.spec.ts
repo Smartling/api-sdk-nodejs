@@ -4,8 +4,13 @@ import { SmartlingApiClientBuilder } from "../../api/builder/index";
 import { SmartlingEstimatesApi } from "../../api/estimates/index";
 import { SmartlingJobsApi } from "../../api/jobs/index";
 import { SmartlingProjectsApi } from "../../api/projects/index";
+import { SmartlingFilesApi } from "../../api/files/index";
 import { CreateJobParameters } from "../../api/jobs/params/create-job-parameters";
 import { CancelJobParameters } from "../../api/jobs/params/cancel-job-parameters";
+import { AddFileParameters } from "../../api/jobs/params/add-file-parameters";
+import { AuthorizeJobParameters } from "../../api/jobs/params/authorize-job-parameters";
+import { UploadFileParameters } from "../../api/files/params/upload-file-parameters";
+import { FileType } from "../../api/files/params/file-type";
 import { GenerateJobEstimateReportParameters } from "../../api/estimates/params/generate-job-estimate-report-parameters";
 import { ListJobEstimateReportsParameters } from "../../api/estimates/params/list-job-estimate-reports-parameters";
 import { ModifyEstimateReportTagsParameters } from "../../api/estimates/params/modify-estimate-report-tags-parameters";
@@ -41,8 +46,10 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
     let estimatesApi: SmartlingEstimatesApi;
     let jobsApi: SmartlingJobsApi;
     let projectsApi: SmartlingProjectsApi;
+    let filesApi: SmartlingFilesApi;
     let projectId: string;
     let translationJobUid: string;
+    let fileUri: string;
 
     before(function skipWithoutCredentials() {
         if (!hasCredentials) {
@@ -65,6 +72,11 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
             .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
             .authWithUserIdAndUserSecret(userId, userSecret)
             .build(SmartlingProjectsApi);
+
+        filesApi = new SmartlingApiClientBuilder()
+            .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
+            .authWithUserIdAndUserSecret(userId, userSecret)
+            .build(SmartlingFilesApi);
     });
 
     before(async () => {
@@ -79,15 +91,51 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
 
         logResponse("getProjectDetails", project);
 
+        const targetLocaleIds = project.targetLocales.map((locale) => locale.localeId);
+
         const job = await jobsApi.createJob(
             projectId,
             new CreateJobParameters()
                 .setName(`api-sdk-nodejs estimates integration test ${Date.now()}`)
-                .setTargetLocaleIds(project.targetLocales.map((locale) => locale.localeId))
+                .setTargetLocaleIds(targetLocaleIds)
         );
 
         logResponse("createJob", job);
         ({ translationJobUid } = job);
+
+        // Real translatable content, so the generated reports have non-zero word counts and
+        // a populated locale/workflow/fuzzy-match breakdown to verify the nested DTOs against.
+        fileUri = `api-sdk-nodejs-estimates-integration-test-${Date.now()}.json`;
+
+        const uploaded = await filesApi.uploadFile(
+            projectId,
+            new UploadFileParameters()
+                .setFileUri(fileUri)
+                .setFileType(FileType.JSON)
+                .setFileContent(JSON.stringify({
+                    greeting: "Hello, welcome to our service!",
+                    farewell: "Thank you for using our application, we hope to see you again soon.",
+                    description: "This is a sample piece of content used to generate a translation estimate for integration testing purposes."
+                }))
+        );
+
+        logResponse("uploadFile", uploaded);
+
+        const addedFile = await jobsApi.addFileToJob(
+            projectId,
+            translationJobUid,
+            new AddFileParameters().setFileUri(fileUri).setTargetLocaleIds(targetLocaleIds)
+        );
+
+        logResponse("addFileToJob", addedFile);
+
+        // Assigns the project's default workflow per locale, so the estimate has a workflow
+        // to break the word counts down by.
+        const authorized = await jobsApi.authorizeJob(
+            projectId, translationJobUid, new AuthorizeJobParameters()
+        );
+
+        logResponse("authorizeJob", authorized);
     });
 
     after(async () => {
@@ -99,6 +147,10 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
                 new CancelJobParameters().setReason("api-sdk-nodejs integration test cleanup")
             );
             await jobsApi.deleteJob(projectId, translationJobUid);
+        }
+
+        if (fileUri) {
+            await filesApi.deleteFile(projectId, fileUri);
         }
     });
 
@@ -138,6 +190,7 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
 
         logResponse("getEstimateReport", report);
         assert.equal(report.reportUid, reportUid);
+        assert.ok(report.totalStrings > 0, "expected non-zero totalStrings now the job has real content");
 
         const list = await estimatesApi.getJobFuzzyEstimateReports(
             projectId,
@@ -183,6 +236,7 @@ describe("SmartlingEstimatesApi integration tests.", function integrationSuite()
 
         logResponse("getEstimateReport (cost)", report);
         assert.equal(report.reportUid, reportUid);
+        assert.ok(report.totalStrings > 0, "expected non-zero totalStrings now the job has real content");
 
         const list = await estimatesApi.getJobCostEstimateReports(
             projectId,
