@@ -1,0 +1,9 @@
+export enum EstimateReportStatus {
+    NOT_FOUND = "NOT_FOUND",
+    PENDING = "PENDING",
+    PROCESSING = "PROCESSING",
+    COMPLETED = "COMPLETED",
+    FAILED = "FAILED",
+    TIMEOUT = "TIMEOUT",
+    CANCELED = "CANCELED"
+}

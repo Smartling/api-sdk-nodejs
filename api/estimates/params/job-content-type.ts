@@ -1,0 +1,6 @@
+export enum JobContentType {
+    TRANSLATION = "TRANSLATION",
+    ALL_CONTENT = "ALL_CONTENT",
+    CLAIMING = "CLAIMING",
+    UNAUTHORIZED = "UNAUTHORIZED"
+}
