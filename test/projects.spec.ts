@@ -1,3 +1,4 @@
+import assert from "assert";
 import sinon from "sinon";
 import { SmartlingProjectsApi } from "../api/projects/index";
 import { loggerMock, authMock, responseMock } from "./mock";
@@ -74,14 +75,15 @@ describe("SmartlingProjectsApi class tests.", () => {
                 .setLimit(10)
                 .setOffset(0)
                 .setProjectTypeCode("CONNECTED")
-                .setProjectTypeCodes(["CONNECTED", "STANDALONE"]);
+                .setProjectTypeCodes(["CONNECTED", "STANDALONE"])
+                .setProjectUids(["project1", "project2"]);
 
             await projectsApi.listProjects("accountUid", parameters);
 
             sinon.assert.calledOnce(projectsApiFetchStub);
             sinon.assert.calledWithExactly(
                 projectsApiFetchStub,
-                "https://test.com/accounts-api/v2/accounts/accountUid/projects?projectNameFilter=test&includeArchived=true&limit=10&offset=0&projectTypeCode=CONNECTED&projectTypeCodes=CONNECTED&projectTypeCodes=STANDALONE",
+                "https://test.com/accounts-api/v2/accounts/accountUid/projects?projectNameFilter=test&includeArchived=true&limit=10&offset=0&projectTypeCode=CONNECTED&projectTypeCodes=CONNECTED&projectTypeCodes=STANDALONE&projectUids=project1&projectUids=project2",
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",
@@ -91,6 +93,14 @@ describe("SmartlingProjectsApi class tests.", () => {
                     method: "get"
                 }
             );
+        });
+
+        it("Throws when projectUids exceeds the max count", () => {
+            const tooManyProjectUids = Array.from({ length: 101 }, (_, i) => `project${i}`);
+
+            assert.throws(() => {
+                new ListProjectsParameters().setProjectUids(tooManyProjectUids);
+            }, /projectUids must contain at most 100 items/);
         });
     });
 });

@@ -1,4 +1,5 @@
 import { BaseParameters } from "../../parameters/index";
+import { SmartlingException } from "../../exception";
 
 export class ListProjectsParameters extends BaseParameters {
     setProjectNameFilter(projectNameFilter: string): ListProjectsParameters {
@@ -32,6 +33,14 @@ export class ListProjectsParameters extends BaseParameters {
 
     setProjectTypeCodes(projectTypeCodes: Array<string>): ListProjectsParameters {
         this.set("projectTypeCodes", projectTypeCodes);
+        return this;
+    }
+
+    setProjectUids(projectUids: Array<string>): ListProjectsParameters {
+        if (projectUids.length > 100) {
+            throw new SmartlingException("projectUids must contain at most 100 items");
+        }
+        this.set("projectUids", projectUids);
         return this;
     }
 }
