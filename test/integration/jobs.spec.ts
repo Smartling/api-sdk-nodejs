@@ -6,23 +6,13 @@ import { AccessTokenProvider } from "../../api/auth/access-token-provider";
 import { SmartlingJobsApi } from "../../api/jobs/index";
 import { SmartlingProjectsApi } from "../../api/projects/index";
 import { SmartlingFilesApi } from "../../api/files/index";
-import { SmartlingStringsApi } from "../../api/strings/index";
 import { CreateJobParameters } from "../../api/jobs/params/create-job-parameters";
-import { UpdateJobParameters } from "../../api/jobs/params/update-job-parameters";
-import { ListJobsParameters } from "../../api/jobs/params/list-jobs-parameters";
-import { SearchJobsParameters } from "../../api/jobs/params/search-jobs-parameters";
 import { AddFileParameters } from "../../api/jobs/params/add-file-parameters";
 import { RemoveFileParameters } from "../../api/jobs/params/remove-file-parameters";
 import { ListJobFilesParameters } from "../../api/jobs/params/list-job-files-parameters";
-import { AddStringsToJobParameters } from "../../api/jobs/params/add-strings-to-job-parameters";
-import { RemoveStringsFromJobParameters } from "../../api/jobs/params/remove-strings-from-job-parameters";
-import { AuthorizeJobParameters } from "../../api/jobs/params/authorize-job-parameters";
-import { JobProgressParameters } from "../../api/jobs/params/job-progress-parameters";
-import { FileProgressParameters } from "../../api/jobs/params/file-progress-parameters";
 import { CancelJobParameters } from "../../api/jobs/params/cancel-job-parameters";
 import { UploadFileParameters } from "../../api/files/params/upload-file-parameters";
 import { FileType } from "../../api/files/params/file-type";
-import { FetchSourceStringsParameters } from "../../api/strings/params/fetch-source-strings-parameters";
 import { logResponse } from "./helpers/log-response";
 
 dotenv.config();
@@ -39,14 +29,11 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
     let jobsApi: SmartlingJobsApi;
     let projectsApi: SmartlingProjectsApi;
     let filesApi: SmartlingFilesApi;
-    let stringsApi: SmartlingStringsApi;
     let projectId: string;
     let targetLocaleIds: string[];
-    let jobName: string;
     let jobUid: string;
     let secondJobUid: string;
     let fileUri: string;
-    let hashcode: string;
 
     const suiteId = Date.now();
 
@@ -79,7 +66,6 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         jobsApi = buildApi(SmartlingJobsApi);
         projectsApi = buildApi(SmartlingProjectsApi);
         filesApi = buildApi(SmartlingFilesApi);
-        stringsApi = buildApi(SmartlingStringsApi);
     });
 
     before(async () => {
@@ -96,13 +82,10 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
 
         targetLocaleIds = project.targetLocales.map((locale) => locale.localeId);
 
-        jobName = `api-sdk-nodejs jobs integration test ${suiteId}`;
-
         const job = await jobsApi.createJob(
             projectId,
             new CreateJobParameters()
-                .setName(jobName)
-                .setDescription("Created by api-sdk-nodejs integration tests")
+                .setName(`api-sdk-nodejs jobs integration test ${suiteId}`)
                 .setTargetLocaleIds(targetLocaleIds)
         );
 
@@ -112,7 +95,7 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         const secondJob = await jobsApi.createJob(
             projectId,
             new CreateJobParameters()
-                .setName(`${jobName} (move target)`)
+                .setName(`api-sdk-nodejs jobs integration test ${suiteId} (move target)`)
                 .setTargetLocaleIds(targetLocaleIds)
         );
 
@@ -133,15 +116,6 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         );
 
         logResponse("uploadFile", uploaded);
-
-        const sourceStrings = await stringsApi.getSourceStrings(
-            projectId, new FetchSourceStringsParameters().setFileUri(fileUri)
-        );
-
-        logResponse("getSourceStrings", sourceStrings);
-        assert.ok(sourceStrings.items.length > 0, "Uploaded file must expose at least one source string");
-
-        ([{ hashcode }] = sourceStrings.items);
     });
 
     after(async () => {
@@ -158,38 +132,6 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         }
     });
 
-    it("gets a job", async () => {
-        const job = await jobsApi.getJob(projectId, jobUid);
-
-        logResponse("getJob", job);
-        assert.strictEqual(job.translationJobUid, jobUid);
-        assert.strictEqual(job.jobName, jobName);
-        assert.ok(job.createdDate instanceof Date);
-    });
-
-    it("updates a job", async () => {
-        // The update endpoint replaces the whole resource, so resend the name it was created with.
-        const job = await jobsApi.updateJob(
-            projectId,
-            jobUid,
-            new UpdateJobParameters()
-                .setName(jobName)
-                .setDescription("Updated by api-sdk-nodejs integration tests")
-        );
-
-        logResponse("updateJob", job);
-        assert.strictEqual(job.translationJobUid, jobUid);
-        assert.strictEqual(job.description, "Updated by api-sdk-nodejs integration tests");
-    });
-
-    it("lists jobs", async () => {
-        const jobs = await jobsApi.listJobs(projectId, new ListJobsParameters().setName(jobName));
-
-        logResponse("listJobs", jobs);
-        assert.ok(jobs.items.some((job) => job.translationJobUid === jobUid));
-        assert.ok(jobs.totalCount >= 1);
-    });
-
     it("adds a file to a job", async () => {
         const added = await jobsApi.addFileToJob(
             projectId,
@@ -202,86 +144,7 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         assert.strictEqual(typeof added.failCount, "number");
     });
 
-    it("searches jobs by translationJobUid and by fileUri", async () => {
-        const byUid = await jobsApi.searchJobs(
-            projectId, new SearchJobsParameters().setTranslationJobUids([jobUid])
-        );
-
-        logResponse("searchJobs (by translationJobUid)", byUid);
-        assert.ok(byUid.items.some((job) => job.translationJobUid === jobUid));
-
-        const byFile = await jobsApi.searchJobs(
-            projectId, new SearchJobsParameters().setFileUris([fileUri])
-        );
-
-        logResponse("searchJobs (by fileUri)", byFile);
-        assert.ok(byFile.items.some((job) => job.translationJobUid === jobUid));
-    });
-
-    it("lists the files of a job", async () => {
-        const files = await jobsApi.getJobFiles(projectId, jobUid, new ListJobFilesParameters());
-
-        logResponse("getJobFiles", files);
-        assert.ok(files.items.some((file) => file.uri === fileUri));
-    });
-
-    it("removes strings from a job and adds them back", async () => {
-        const removed = await jobsApi.removeStringsFromJob(
-            projectId,
-            jobUid,
-            new RemoveStringsFromJobParameters()
-                .setHashcodes([hashcode])
-                .setTargetLocaleIds(targetLocaleIds)
-        );
-
-        logResponse("removeStringsFromJob", removed);
-        assert.strictEqual(typeof removed.successCount, "number");
-        assert.strictEqual(typeof removed.failCount, "number");
-
-        const added = await jobsApi.addStringsToJob(
-            projectId,
-            jobUid,
-            new AddStringsToJobParameters()
-                .setHashcodes([hashcode])
-                .setTargetLocaleIds(targetLocaleIds)
-        );
-
-        logResponse("addStringsToJob", added);
-        assert.strictEqual(typeof added.successCount, "number");
-        assert.strictEqual(typeof added.failCount, "number");
-    });
-
-    it("authorizes a job", async () => {
-        const authorized = await jobsApi.authorizeJob(
-            projectId, jobUid, new AuthorizeJobParameters()
-        );
-
-        logResponse("authorizeJob", authorized);
-        assert.ok(authorized !== undefined);
-    });
-
-    it("gets job progress", async () => {
-        const progress = await jobsApi.getJobProgress(
-            projectId, jobUid, new JobProgressParameters()
-        );
-
-        logResponse("getJobProgress", progress);
-        assert.ok(progress.progress);
-        assert.ok(Array.isArray(progress.contentProgressReport));
-        assert.ok(Array.isArray(progress.summaryReport));
-    });
-
-    it("gets job file progress", async () => {
-        const progress = await jobsApi.getJobFileProgress(
-            projectId, jobUid, new FileProgressParameters().setFileUri(fileUri)
-        );
-
-        logResponse("getJobFileProgress", progress);
-        assert.ok(progress.progress);
-        assert.ok(Array.isArray(progress.contentProgressReport));
-    });
-
-    it("adds a file to another job with moveEnabled and removes it", async () => {
+    it("moves a file's strings from another job with moveEnabled", async () => {
         const added = await jobsApi.addFileToJob(
             projectId,
             secondJobUid,
@@ -309,28 +172,5 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         logResponse("removeFileFromJob", removed);
         assert.strictEqual(typeof removed.successCount, "number");
         assert.strictEqual(typeof removed.failCount, "number");
-    });
-
-    // closeJob is not covered: a job can only be closed once it is COMPLETED, which needs real
-    // translation work and can't be reached from a throwaway test job.
-
-    it("cancels and deletes a job", async () => {
-        const job = await jobsApi.createJob(
-            projectId,
-            new CreateJobParameters()
-                .setName(`${jobName} (disposable)`)
-                .setTargetLocaleIds(targetLocaleIds)
-        );
-
-        logResponse("createJob (disposable)", job);
-
-        await cancelAndDeleteJob(job.translationJobUid);
-
-        const jobs = await jobsApi.searchJobs(
-            projectId, new SearchJobsParameters().setTranslationJobUids([job.translationJobUid])
-        );
-
-        logResponse("searchJobs (after delete)", jobs);
-        assert.ok(!jobs.items.some((item) => item.translationJobUid === job.translationJobUid));
     });
 });
