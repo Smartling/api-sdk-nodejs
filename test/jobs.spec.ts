@@ -315,6 +315,30 @@ describe("SmartlingJobsAPI class tests.", () => {
             );
         });
 
+        it("Adds file to job with moveEnabled", async () => {
+            const params = new AddFileParameters();
+
+            params.setFileUri(fileUri);
+            params.setMoveEnabled(true);
+
+            await jobApi.addFileToJob(projectId, jobUid, params);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/file/add`,
+                {
+                    body: "{\"fileUri\":\"testFileUri.json\",\"moveEnabled\":true}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
         it("Authorizes a job", async () => {
             const params = new AuthorizeJobParameters();
             await jobApi.authorizeJob(projectId, jobUid, params);
