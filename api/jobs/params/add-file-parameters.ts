@@ -12,4 +12,10 @@ export class AddFileParameters extends BaseParameters {
 
         return this;
     }
+
+    setMoveEnabled(moveEnabled: boolean): AddFileParameters {
+        this.set("moveEnabled", moveEnabled);
+
+        return this;
+    }
 }
