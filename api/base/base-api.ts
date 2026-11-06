@@ -169,7 +169,9 @@ export class SmartlingBaseApi {
                     "authorizationDate",
                     "translationJobWorkflowStepDueDate",
                     "translationJobOverallDueDate",
-                    "requestDateTime"
+                    "requestDateTime",
+                    "started",
+                    "finished"
                 ];
 
                 if (dateProperties.includes(key) && value) {
