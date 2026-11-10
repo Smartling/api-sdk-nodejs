@@ -53,6 +53,9 @@ describe("SmartlingProjectsApi integration tests.", function integrationSuite() 
     });
 
     before(async () => {
+        // Mirror an existing project's own type/locales rather than hardcoding any -
+        // projectTypeCode must be one the test account is allowed to create, and locale ids
+        // must exist in the system, both of which an already-successful real project proves.
         const existingProjects = await projectsApi.listProjects(accountUid);
 
         logResponse("listProjects", existingProjects);

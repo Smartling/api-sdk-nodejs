@@ -245,6 +245,27 @@ describe("SmartlingProjectsApi class tests.", () => {
             );
         });
 
+        it("Clears the project description", async () => {
+            const parameters = new UpdateProjectDescriptionParameters().setDescription(null);
+
+            await projectsApi.updateProjectDescription(projectId, parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/description`,
+                {
+                    method: "put",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({ description: null })
+                }
+            );
+        });
+
         it("Throws when description exceeds the max length", () => {
             const tooLongDescription = "a".repeat(251);
 

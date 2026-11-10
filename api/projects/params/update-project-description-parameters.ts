@@ -4,7 +4,7 @@ import { SmartlingException } from "../../exception";
 const DESCRIPTION_MAX_LENGTH = 250;
 
 export class UpdateProjectDescriptionParameters extends BaseParameters {
-    setDescription(description: string): UpdateProjectDescriptionParameters {
+    setDescription(description: string | null): UpdateProjectDescriptionParameters {
         if (description && description.length > DESCRIPTION_MAX_LENGTH) {
             throw new SmartlingException(`Project description should be less than ${DESCRIPTION_MAX_LENGTH} characters.`);
         }
