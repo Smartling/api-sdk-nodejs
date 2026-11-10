@@ -21,8 +21,8 @@ export class CreateProjectParameters extends BaseParameters {
         return this;
     }
 
-    setSiteUrl(siteURL: string): CreateProjectParameters {
-        this.set("siteURL", siteURL);
+    setSiteUrl(siteUrl: string): CreateProjectParameters {
+        this.set("siteURL", siteUrl);
         return this;
     }
 

@@ -332,5 +332,41 @@ describe("SmartlingProjectsApi class tests.", () => {
                 }
             );
         });
+
+        it("Encodes special characters in path segments", async () => {
+            await projectsApi.deleteTargetLocale("project/id", "fr FR");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/projects-api/v2/projects/project%2Fid/locales/fr%20FR",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
+                }
+            );
+        });
+
+        it("Encodes special characters in accountUid", async () => {
+            await projectsApi.listProjects("account/uid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/account%2Fuid/projects",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
     });
 });

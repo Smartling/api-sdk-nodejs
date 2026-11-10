@@ -58,32 +58,35 @@ export class SmartlingProjectsApi extends SmartlingBaseApi {
     async archiveProject(projectId: string): Promise<ProjectDto> {
         return await this.makeRequest(
             "post",
-            `${this.entrypoint}/${projectId}/archive`
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/archive`
         );
     }
 
     async unarchiveProject(projectId: string): Promise<ProjectDto> {
         return await this.makeRequest(
             "post",
-            `${this.entrypoint}/${projectId}/unarchive`
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/unarchive`
         );
     }
 
     async renameProject(projectId: string, params: RenameProjectParameters): Promise<ProjectDto> {
         return await this.makeRequest(
             "put",
-            `${this.entrypoint}/${projectId}/rename`,
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/rename`,
             JSON.stringify(params.export())
         );
     }
 
+    // Returns only { description }, not the full ProjectDto every other mutation here returns -
+    // confirmed against the real API via the integration test: the endpoint's response genuinely
+    // is description-only, not a trimmed-down echo of the project.
     async updateProjectDescription(
         projectId: string,
         params: UpdateProjectDescriptionParameters
     ): Promise<ProjectDescriptionDto> {
         return await this.makeRequest(
             "put",
-            `${this.entrypoint}/${projectId}/description`,
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/description`,
             JSON.stringify(params.export())
         );
     }
@@ -94,26 +97,32 @@ export class SmartlingProjectsApi extends SmartlingBaseApi {
     ): Promise<ProjectDto> {
         return await this.makeRequest(
             "post",
-            `${this.entrypoint}/${projectId}/targetLocales`,
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/targetLocales`,
             JSON.stringify(params.export())
         );
     }
 
+    // Hits /locales/{localeId}, not /targetLocales like createTargetLocale/getTargetLocales -
+    // this is deliberate, not a typo: it disables the locale rather than removing it (confirmed
+    // by the integration test), a distinct operation from the /targetLocales resource.
     async deleteTargetLocale(projectId: string, localeId: string): Promise<void> {
         await this.makeRequest(
             "delete",
-            `${this.entrypoint}/${projectId}/locales/${localeId}`
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/locales/${encodeURIComponent(localeId)}`
         );
     }
 
     async getTargetLocales(projectId: string): Promise<SmartlingListResponse<LocaleDto>> {
         return await this.makeRequest(
             "get",
-            `${this.entrypoint}/${projectId}/targetLocales`
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/targetLocales`
         );
     }
 
     private getAccountsEndpoint(accountUid: string): string {
-        return this.entrypoint.replace("/projects-api/v2/projects", `/accounts-api/v2/accounts/${accountUid}/projects`);
+        return this.entrypoint.replace(
+            "/projects-api/v2/projects",
+            `/accounts-api/v2/accounts/${encodeURIComponent(accountUid)}/projects`
+        );
     }
 }
