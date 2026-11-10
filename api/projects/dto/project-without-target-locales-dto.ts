@@ -6,8 +6,9 @@ interface ProjectWithoutTargetLocalesDto {
     projectTypeCode: string;
     sourceLocaleDescription: string;
     sourceLocaleId: string;
-    projectTypeDisplayValue: string;
+    projectTypeDisplayValue: string | null;
     packageUid: string;
+    description: string | null;
 }
 
 export { ProjectWithoutTargetLocalesDto };
