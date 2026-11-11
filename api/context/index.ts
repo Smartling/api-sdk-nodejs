@@ -5,7 +5,7 @@ import { AccessTokenProvider } from "../auth/access-token-provider";
 import { ContextUploadParameters } from "./params/context-upload-parameters";
 import { ContextDto } from "./dto/context-dto";
 import { ContextAutomaticMatchParameters } from "./params/context-automatic-match-parameters";
-import { ContextMatchAsyncDto } from "./dto/context-match-async-dto";
+import { CreateBindingsResponseDto } from "./dto/create-bindings-response-dto";
 import { CreateBindingsParameters } from "./params/create-bindings-parameters";
 import { ContextSourceDto } from "./dto/context-source-dto";
 import { ContextHttpResponse } from "./context-http-response";
@@ -122,8 +122,8 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
-    async delete(projectId: string, contextUid: string): Promise<boolean> {
-        return await this.makeRequest(
+    async delete(projectId: string, contextUid: string): Promise<void> {
+        await this.makeRequest(
             "delete",
             `${this.entrypoint}/${projectId}/contexts/${contextUid}`
         );
@@ -141,7 +141,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
 
     async runAutomaticMatch(
         projectId: string, contextUid: string, params: ContextAutomaticMatchParameters
-    ): Promise<ContextMatchAsyncDto> {
+    ): Promise<AsyncMatchDto> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/contexts/${contextUid}/match/async`,
@@ -151,7 +151,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
 
     async createStringsToContextBindings(
         projectId: string, params: CreateBindingsParameters
-    ): Promise<boolean> {
+    ): Promise<CreateBindingsResponseDto> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/bindings`,

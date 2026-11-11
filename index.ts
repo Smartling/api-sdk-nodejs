@@ -21,6 +21,7 @@ export * from "./api/context/dto/async-match-dto";
 export * from "./api/context/dto/async-process-dto";
 export * from "./api/context/dto/binding/binding-details-dto";
 export * from "./api/context/dto/binding/coordinates-dto";
+export * from "./api/context/dto/create-bindings-response-dto";
 export * from "./api/context/dto/binding/timecode-dto";
 export * from "./api/context/dto/match-stats-dto";
 export * from "./api/context/dto/process-result-dto";

@@ -216,6 +216,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
         );
 
         logResponse("createStringsToContextBindings", created);
+        assert.strictEqual(created.errors.totalCount, 0);
 
         const listed = await contextApi.listBindings(
             projectId,
@@ -269,9 +270,8 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
     it("deletes a context", async () => {
         const uid = await uploadHtmlContext(`context-it-delete-${suiteId}`);
 
-        const result = await contextApi.delete(projectId, uid);
+        await contextApi.delete(projectId, uid);
 
-        logResponse("delete", result);
         const list = await contextApi.listContexts(projectId, new ListParameters());
 
         assert.ok(!list.items.some((context) => context.contextUid === uid));
