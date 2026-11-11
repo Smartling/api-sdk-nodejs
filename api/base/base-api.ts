@@ -160,6 +160,7 @@ export class SmartlingBaseApi {
                     "createdDate",
                     "modifiedDate",
                     "updatedDate",
+                    "updateDate",
                     "dueDate",
                     "actionTime",
                     "publishDate",
