@@ -4,7 +4,7 @@ interface EntityAttachmentDto {
     description: string | null;
     createdDate: Date;
     createdByUserUid: string;
-    localeId?: string | null;
+    localeId: string | null;
 }
 
 export { EntityAttachmentDto };

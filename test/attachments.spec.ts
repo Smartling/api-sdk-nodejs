@@ -2,6 +2,7 @@ import "mocha";
 import assert from "assert";
 import sinon from "sinon";
 import FormData from "form-data";
+import { Readable } from "stream";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAttachmentsApi } from "../api/attachments/index";
 import { SmartlingAuthApi } from "../api/auth/index";
@@ -131,6 +132,56 @@ describe("SmartlingAttachmentsApi class tests.", () => {
             assert.ok(getRawBody().includes("filename=\"stored.png\""));
         });
 
+        it("Should keep the display name and the stored file name separate", async () => {
+            const params = new CreateAttachmentParameters()
+                .setName("Quarterly report")
+                .setFileName("report.pdf")
+                .setFileContentFromBuffer(Buffer.from("pdf"));
+
+            await attachmentsApi.createAttachment("accountUid", AttachmentEntityType.JOBS, params);
+
+            const rawBody = getRawBody();
+
+            assert.ok(rawBody.includes("name=\"name\"\r\n\r\nQuarterly report"));
+            assert.ok(rawBody.includes("name=\"file\"; filename=\"report.pdf\""));
+            assert.ok(!rawBody.includes("filename=\"Quarterly report\""));
+        });
+
+        it("Should fall back to the attachment name when the file name is empty", async () => {
+            const params = new CreateAttachmentParameters()
+                .setName("report.txt")
+                .setFileName("")
+                .setFileContentFromBuffer(Buffer.from("x"));
+
+            await attachmentsApi.createAttachment("accountUid", AttachmentEntityType.JOBS, params);
+
+            assert.ok(getRawBody().includes("name=\"file\"; filename=\"report.txt\""));
+        });
+
+        it("Should upload content from a stream under the given file name", async () => {
+            const params = new CreateAttachmentParameters()
+                .setName("display name")
+                .setFileName("streamed.txt")
+                .setFileContentFromStream(Readable.from([Buffer.from("stream content")]));
+
+            await attachmentsApi.createAttachment("accountUid", AttachmentEntityType.JOBS, params);
+
+            sinon.assert.calledOnce(attachmentsApiFetchStub);
+
+            const body = attachmentsApiFetchStub.getCall(0).args[1].body as FormData;
+            const serialized = await new Promise<string>((resolve, reject) => {
+                let data = "";
+
+                body.on("data", (chunk) => { data += chunk.toString(); });
+                body.on("end", () => resolve(data));
+                body.on("error", reject);
+                body.resume();
+            });
+
+            assert.ok(serialized.includes("name=\"file\"; filename=\"streamed.txt\""));
+            assert.ok(serialized.includes("stream content"));
+        });
+
         it("Should upload an attachment from a local file path, defaulting filename to the basename", async () => {
             const params = new CreateAttachmentParameters()
                 .setName("display name")
@@ -256,6 +307,21 @@ describe("SmartlingAttachmentsApi class tests.", () => {
             assert.ok(result.fileContent instanceof ArrayBuffer);
             assert.strictEqual(result.contentType, undefined);
             assert.strictEqual(result.fileName, undefined);
+        });
+
+        [Number.NaN, -1, Number.POSITIVE_INFINITY].forEach((maxBytes) => {
+            it(`Should reject maxBytes ${maxBytes} before making any request`, async () => {
+                try {
+                    await attachmentsApi.downloadAttachmentWithMetadata(
+                        "accountUid", AttachmentEntityType.JOBS, "attachmentUid", { maxBytes }
+                    );
+                    assert.fail("must throw SmartlingException");
+                } catch (e) {
+                    assert.ok(e instanceof SmartlingException);
+                }
+
+                sinon.assert.notCalled(attachmentsApiFetchStub);
+            });
         });
 
         it("Should reject a download whose Content-Length exceeds maxBytes without reading the body", async () => {

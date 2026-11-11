@@ -408,12 +408,12 @@ describe("SmartlingAttachmentsApi string integration tests.", function integrati
 
         ({ projectId } = projects.items[0]);
 
-        fileUri = `api-sdk-nodejs-attachments-integration-test-${suiteId}.json`;
+        const uploadFileUri = `api-sdk-nodejs-attachments-integration-test-${suiteId}.json`;
 
         const uploaded = await filesApi.uploadFile(
             projectId,
             new UploadFileParameters()
-                .setFileUri(fileUri)
+                .setFileUri(uploadFileUri)
                 .setFileType(FileType.JSON)
                 .setFileContent(JSON.stringify({
                     greeting: `Hello from the attachments integration test ${suiteId}`
@@ -421,6 +421,10 @@ describe("SmartlingAttachmentsApi string integration tests.", function integrati
         );
 
         logResponse("uploadFile", uploaded);
+
+        // Only remember the file for cleanup once it exists, so a failed upload does not make
+        // the cleanup hook throw a second, misleading error.
+        fileUri = uploadFileUri;
 
         // The attachment entity UID for a string is "<projectUid>:<hashcode>".
         stringEntityUid = `${projectId}:${await waitForFirstHashcode(stringsApi, projectId, fileUri)}`;
@@ -551,17 +555,21 @@ describe("SmartlingAttachmentsApi issue integration tests.", function integratio
 
         ({ projectId } = projects.items[0]);
 
-        fileUri = `api-sdk-nodejs-attachments-issue-integration-test-${suiteId}.json`;
+        const uploadFileUri = `api-sdk-nodejs-attachments-issue-integration-test-${suiteId}.json`;
 
         await filesApi.uploadFile(
             projectId,
             new UploadFileParameters()
-                .setFileUri(fileUri)
+                .setFileUri(uploadFileUri)
                 .setFileType(FileType.JSON)
                 .setFileContent(JSON.stringify({
                     greeting: `Hello from the attachments issue integration test ${suiteId}`
                 }))
         );
+
+        // Only remember the file for cleanup once it exists, so a failed upload does not make
+        // the cleanup hook throw a second, misleading error.
+        fileUri = uploadFileUri;
 
         const hashcode = await waitForFirstHashcode(stringsApi, projectId, fileUri);
 
@@ -588,16 +596,19 @@ describe("SmartlingAttachmentsApi issue integration tests.", function integratio
     // the issue and deletes the file its string came from; the service removes the orphaned
     // attachment later.
     after(async () => {
-        if (issueUid) {
-            await issuesApi.openOrCloseIssue(
-                projectId,
-                issueUid,
-                new UpdateIssueStateParameters().setIssueState(IssueState.RESOLVED)
-            );
-        }
-
-        if (fileUri) {
-            await filesApi.deleteFile(projectId, fileUri);
+        try {
+            if (issueUid) {
+                await issuesApi.openOrCloseIssue(
+                    projectId,
+                    issueUid,
+                    new UpdateIssueStateParameters().setIssueState(IssueState.RESOLVED)
+                );
+            }
+        } finally {
+            // The file is deleted even when resolving the issue failed, so it is not leaked.
+            if (fileUri) {
+                await filesApi.deleteFile(projectId, fileUri);
+            }
         }
     });
 

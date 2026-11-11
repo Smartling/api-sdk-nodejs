@@ -57,7 +57,7 @@ export class SmartlingAttachmentsApi extends SmartlingBaseApi {
         const defaultFileName = exported.filePath
             ? path.basename(exported.filePath as string)
             : exported.name as string;
-        const fileName = exported.fileName as string ?? defaultFileName;
+        const fileName = exported.fileName as string || defaultFileName;
 
         const formData = new FormData();
 
@@ -105,6 +105,13 @@ export class SmartlingAttachmentsApi extends SmartlingBaseApi {
         attachmentUid: string,
         options?: DownloadAttachmentOptions
     ): Promise<TranslatedFileDto> {
+        const maxBytes = options?.maxBytes;
+
+        // A NaN limit would compare false against every size and silently disable the cap.
+        if (maxBytes !== undefined && (!Number.isFinite(maxBytes) || maxBytes < 0)) {
+            throw new SmartlingException("maxBytes must be a non-negative finite number.");
+        }
+
         const response: Response = await this.makeRequest(
             "get",
             `${this.entrypoint}/accounts/${accountUid}/${type}/attachments/${attachmentUid}`,
@@ -112,14 +119,11 @@ export class SmartlingAttachmentsApi extends SmartlingBaseApi {
             ResponseBodyType.RAW_RESPONSE
         );
 
-        if (options?.maxBytes === undefined) {
+        if (maxBytes === undefined) {
             return await SmartlingBaseFileApi.downloadResponseToTranslatedFileDto(response);
         }
 
-        const fileContent = await SmartlingAttachmentsApi.readBodyWithLimit(
-            response,
-            options.maxBytes
-        );
+        const fileContent = await SmartlingAttachmentsApi.readBodyWithLimit(response, maxBytes);
 
         // Reuse the header parsing (file name, content type) of the shared helper, handing it the
         // body that was already read under the size limit.
@@ -131,7 +135,12 @@ export class SmartlingAttachmentsApi extends SmartlingBaseApi {
 
     /**
      * The attachments service answers with chunked transfer encoding and no Content-Length, so the
-     * limit is enforced while reading: the body is abandoned as soon as it grows past maxBytes.
+     * limit is enforced while reading: reading stops as soon as the body grows past maxBytes.
+     *
+     * Stopping does not close the HTTP connection. Under node-fetch v2 the response body is a
+     * PassThrough piped from the socket, so discarding it leaves the connection open until the
+     * server finishes or closes it. Releasing it early would need a per-request abort signal,
+     * which makeRequest does not support.
      */
     private static async readBodyWithLimit(
         response: Response,
@@ -162,7 +171,8 @@ export class SmartlingAttachmentsApi extends SmartlingBaseApi {
         let chunks: Array<Uint8Array> = [];
         let received = 0;
 
-        // Leaving the loop early (the throw below) destroys the underlying stream.
+        // Throwing below stops reading and drops the buffered chunks; see the note above about
+        // the connection staying open.
         // eslint-disable-next-line no-restricted-syntax
         for await (const chunk of body) {
             received += chunk.byteLength;
