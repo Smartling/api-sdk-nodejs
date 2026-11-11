@@ -586,9 +586,9 @@ describe("SmartlingAttachmentsApi issue integration tests.", function integratio
         logResponse("createIssue", issue);
         ({ issueUid } = issue);
 
-        // Per the public API reference, an issue attachment's entity UID is
-        // "<accountUid>-<issueUid>". The service does not check that the entity exists, so this
-        // proves the API's behaviour, not that the dashboard shows the link.
+        // The dashboard links an issue's attachments to "<accountUid>-<issueUid>" (and a comment's
+        // to "<accountUid>-<issueUid>-<commentUid>"). The service does not check that the entity
+        // exists, so a different format would still succeed but the dashboard would never show it.
         issueEntityUid = `${accountUid}-${issueUid}`;
     });
 
