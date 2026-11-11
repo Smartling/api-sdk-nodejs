@@ -271,7 +271,6 @@ describe("SmartlingContextApi class tests.", () => {
             // Given
             const params = new ContextUploadAndMatchParameters()
                 .setName("contextName")
-                .setContent("contextContent")
                 .setFileUri(fileName)
                 .setVideoMatchingMode(VideoMatchingMode.OCR);
 
@@ -292,7 +291,10 @@ describe("SmartlingContextApi class tests.", () => {
             assert.equal(opts.method, "post");
             assert.equal(opts.headers["X-SL-Context-Source"], "group=testGroup;name=testName;version=testVersion");
             assert.match(opts.headers["Content-Type"], /^multipart\/form-data; boundary=/);
-            assert.equal(opts.body.constructor.name, "FormData");
+            assert.match(
+                opts.body.getBuffer().toString(),
+                /name="matchParams"[\s\S]*\{"contentFileUri":"testContextFileName","videoMatchingMode":"OCR"\}/
+            );
         });
 
         it("Should get match results", async () => {
@@ -335,6 +337,25 @@ describe("SmartlingContextApi class tests.", () => {
                 `https://test.com/context-api/v2/projects/${projectId}/bindings/list?offset=offset%20value`,
                 {
                     body: JSON.stringify({ contextUid, stringHashcodes: stringHashCodes }),
+                    headers: expectedHeaders,
+                    method: "post"
+                }
+            );
+        });
+
+        it("Should list bindings without offset query", async () => {
+            // Given
+            const params = new ListBindingsParameters().setContextUid(contextUid);
+
+            // When
+            await contextApi.listBindings(projectId, params);
+
+            // Then
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/bindings/list`,
+                {
+                    body: JSON.stringify({ contextUid }),
                     headers: expectedHeaders,
                     method: "post"
                 }

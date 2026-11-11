@@ -3,19 +3,19 @@ import { VideoMatchingMode } from "./video-matching-mode";
 import { SmartlingException } from "../../exception/index";
 
 export class ContextUploadAndMatchParameters extends ContextUploadParameters {
-    setFileUri(contentFileUri: string): ContextUploadAndMatchParameters {
+    setFileUri(contentFileUri: string): this {
         this.setMatchParam("contentFileUri", contentFileUri);
 
         return this;
     }
 
-    setStringHashcodes(stringHashcodes: Array<string>): ContextUploadAndMatchParameters {
+    setStringHashcodes(stringHashcodes: Array<string>): this {
         this.setMatchParam("stringHashcodes", stringHashcodes);
 
         return this;
     }
 
-    setTranslationJobUids(translationJobUids: Array<string>): ContextUploadAndMatchParameters {
+    setTranslationJobUids(translationJobUids: Array<string>): this {
         if (translationJobUids.length > 1) {
             throw new SmartlingException("Only one translation job uid is supported");
         }
@@ -24,7 +24,7 @@ export class ContextUploadAndMatchParameters extends ContextUploadParameters {
         return this;
     }
 
-    setOverrideContextOlderThanDays(days: number): ContextUploadAndMatchParameters {
+    setOverrideContextOlderThanDays(days: number): this {
         if (days < 1) {
             throw new SmartlingException("Override context older than days should be a positive number");
         }
@@ -33,7 +33,7 @@ export class ContextUploadAndMatchParameters extends ContextUploadParameters {
         return this;
     }
 
-    setVideoMatchingMode(videoMatchingMode: VideoMatchingMode): ContextUploadAndMatchParameters {
+    setVideoMatchingMode(videoMatchingMode: VideoMatchingMode): this {
         this.setMatchParam("videoMatchingMode", videoMatchingMode);
 
         return this;

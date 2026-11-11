@@ -200,7 +200,11 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
         );
 
         logResponse("runAutomaticMatch", result);
-        assert.ok(result);
+        assert.ok(result.processUid);
+
+        const process = await waitForProcess(result.processUid);
+
+        assert.strictEqual(process.processState, ContextProcessState.COMPLETED);
     });
 
     it("creates, lists and deletes bindings", async () => {
@@ -249,6 +253,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
             new ContextUploadAndMatchParameters()
                 .setName(`context-it-match-${suiteId}`)
                 .setContent(html)
+                .setFileUri(fileUri)
                 .setStringHashcodes([stringHashcode])
         );
 
@@ -259,12 +264,12 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
 
         assert.strictEqual(process.processState, ContextProcessState.COMPLETED);
 
-        if (started.matchId) {
-            const match = await contextApi.getMatchResults(projectId, started.matchId);
+        assert.ok(started.matchId);
 
-            logResponse("getMatchResults", match);
-            assert.strictEqual(match.matchId, started.matchId);
-        }
+        const match = await contextApi.getMatchResults(projectId, started.matchId);
+
+        logResponse("getMatchResults", match);
+        assert.strictEqual(match.matchId, started.matchId);
     });
 
     it("deletes a context", async () => {
