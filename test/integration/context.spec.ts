@@ -231,6 +231,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
         );
 
         logResponse("deleteBindings", removed);
+        assert.strictEqual(removed.totalCount, 1);
 
         const listedAfter = await contextApi.listBindings(
             projectId,

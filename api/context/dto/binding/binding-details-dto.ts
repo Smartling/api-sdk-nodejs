@@ -8,6 +8,7 @@ interface BindingDetailsDto extends BindingDto {
     contextPosition?: number;
     coordinates?: CoordinatesDto;
     timecode?: TimecodeDto;
+    placeholderValues?: Record<string, unknown>;
 }
 
 export { BindingDetailsDto };

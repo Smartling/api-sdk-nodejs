@@ -9,6 +9,7 @@ interface MatchProcessResultDto {
 }
 
 interface ProcessResultDto {
+    processUid: string;
     processState: ContextProcessState;
     processType: ProcessType;
     createdDate: Date;

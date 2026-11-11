@@ -3,6 +3,7 @@ import { MatchStatus } from "../params/match-status";
 
 interface MatchStatsDto {
     matchId: string;
+    contextId?: string;
     status: MatchStatus;
     createdDate: Date;
     modifiedDate: Date;

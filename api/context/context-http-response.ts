@@ -1,5 +1,5 @@
 interface ContextHttpResponse<T> {
-    offset: string;
+    offset?: string;
     items: Array<T>;
 }
 

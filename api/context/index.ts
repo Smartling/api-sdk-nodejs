@@ -11,6 +11,7 @@ import { ContextSourceDto } from "./dto/context-source-dto";
 import { ContextHttpResponse } from "./context-http-response";
 import { ListParameters } from "./params/list-parameters";
 import { Logger } from "../logger";
+import { SmartlingListResponse } from "../http/smartling-list-response";
 import { ResponseBodyType } from "../base/enum/response-body-type";
 import { AsyncProcessDto } from "./dto/async-process-dto";
 import { AsyncMatchDto } from "./dto/async-match-dto";
@@ -111,7 +112,9 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
-    async deleteBindings(projectId: string, params: DeleteBindingsParameters): Promise<boolean> {
+    async deleteBindings(
+        projectId: string, params: DeleteBindingsParameters
+    ): Promise<SmartlingListResponse<BindingDetailsDto>> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/bindings/remove`,
