@@ -10,6 +10,7 @@ import { UpdateProjectDescriptionParameters } from "../api/projects/params/updat
 import { CreateTargetLocaleParameters } from "../api/projects/params/create-target-locale-parameters";
 import { GetAccountProjectTypesParameters } from "../api/projects/params/get-account-project-types-parameters";
 import { ProjectTypeGroupCode } from "../api/projects/params/project-type-group-code";
+import { CopyProjectParameters } from "../api/projects/params/copy-project-parameters";
 
 describe("SmartlingProjectsApi class tests.", () => {
     const projectId = "testProjectId";
@@ -435,6 +436,83 @@ describe("SmartlingProjectsApi class tests.", () => {
             sinon.assert.calledWithExactly(
                 projectsApiFetchStub,
                 "https://test.com/accounts-api/v2/accounts/account%2Fuid/project-types",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Copy project", async () => {
+            const parameters = new CopyProjectParameters()
+                .setProjectName("New project name")
+                .setTargetLocaleIds(["fr-FR"]);
+
+            await projectsApi.copyProject(projectId, parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/copy`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({ projectName: "New project name", targetLocaleIds: ["fr-FR"] })
+                }
+            );
+        });
+
+        it("Copy project without parameters", async () => {
+            await projectsApi.copyProject(projectId);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/copy`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    }
+                }
+            );
+        });
+
+        it("Get project copy request status", async () => {
+            await projectsApi.getProjectCopyRequestStatus(projectId, "processUid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/copy/processUid`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Encodes special characters in getProjectCopyRequestStatus's path segments", async () => {
+            await projectsApi.getProjectCopyRequestStatus("project/id", "process/uid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/projects-api/v2/projects/project%2Fid/copy/process%2Fuid",
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",

@@ -11,7 +11,15 @@ import { UpdateProjectDescriptionParameters } from "../../api/projects/params/up
 import { CreateTargetLocaleParameters } from "../../api/projects/params/create-target-locale-parameters";
 import { GetAccountProjectTypesParameters } from "../../api/projects/params/get-account-project-types-parameters";
 import { ProjectTypeGroupCode } from "../../api/projects/params/project-type-group-code";
+import { CopyProjectParameters } from "../../api/projects/params/copy-project-parameters";
+import { ProjectCopyProcessState } from "../../api/projects/dto/project-copy-process-state";
 import { logResponse } from "./helpers/log-response";
+
+function delay(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(resolve, milliseconds);
+    });
+}
 
 dotenv.config();
 
@@ -27,6 +35,7 @@ describe("SmartlingProjectsApi integration tests.", function integrationSuite() 
     let projectsApi: SmartlingProjectsApi;
     let localesApi: SmartlingLocalesApi;
     let createdProjectId: string;
+    let copiedProjectId: string;
     let projectTypeCode: string;
     let originalLocaleId: string;
     let targetLocaleId: string;
@@ -100,6 +109,10 @@ describe("SmartlingProjectsApi integration tests.", function integrationSuite() 
     });
 
     after(async () => {
+        if (copiedProjectId) {
+            await projectsApi.archiveProject(copiedProjectId);
+        }
+
         if (createdProjectId) {
             await projectsApi.archiveProject(createdProjectId);
         }
@@ -184,6 +197,62 @@ describe("SmartlingProjectsApi integration tests.", function integrationSuite() 
         );
 
         assert.ok(connectorTypes.items.every(isConnectorType));
+    });
+
+    async function waitForCopyCompletion(processUid: string) {
+        // The real API uses IN_PROGRESS and COMPLETED, not the OPEN/CLOSED/FAILED the spec
+        // documents - confirmed live, so all five are treated as valid, with only
+        // COMPLETED/CLOSED/FAILED considered terminal.
+        const terminalStates = [
+            ProjectCopyProcessState.COMPLETED,
+            ProjectCopyProcessState.CLOSED,
+            ProjectCopyProcessState.FAILED
+        ];
+
+        for (let attempt = 0; attempt < 60; attempt += 1) {
+            /* eslint-disable-next-line no-await-in-loop */
+            const status = await projectsApi.getProjectCopyRequestStatus(
+                createdProjectId,
+                processUid
+            );
+
+            logResponse("getProjectCopyRequestStatus", status);
+
+            if (terminalStates.includes(status.processState)) {
+                return status;
+            }
+
+            /* eslint-disable-next-line no-await-in-loop */
+            await delay(3000);
+        }
+
+        throw new Error(`Timed out waiting for copy request ${processUid} to complete`);
+    }
+
+    it("copies the project and polls the copy request status to completion", async function test() {
+        this.timeout(240000);
+
+        const copyName = `api-sdk-nodejs projects integration test ${suiteId} (copy)`;
+        const copyStarted = await projectsApi.copyProject(
+            createdProjectId,
+            new CopyProjectParameters()
+                .setProjectName(copyName)
+                .setTargetLocaleIds([targetLocaleId])
+        );
+
+        logResponse("copyProject", copyStarted);
+        assert.ok(copyStarted.processUid);
+
+        const status = await waitForCopyCompletion(copyStarted.processUid);
+
+        assert.strictEqual(status.processUid, copyStarted.processUid);
+        assert.notStrictEqual(status.processState, ProjectCopyProcessState.FAILED);
+        assert.ok(status.newProjectUid);
+        assert.ok(status.createdDate instanceof Date);
+        assert.ok(status.modifiedDate instanceof Date);
+        assert.ok(status.processStatistics);
+
+        ({ newProjectUid: copiedProjectId } = status);
     });
 
     it("archives and unarchives the project", async () => {

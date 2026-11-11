@@ -14,6 +14,9 @@ import { UpdateProjectDescriptionParameters } from "./params/update-project-desc
 import { CreateTargetLocaleParameters } from "./params/create-target-locale-parameters";
 import { AccountProjectTypeDto } from "./dto/account-project-type-dto";
 import { GetAccountProjectTypesParameters } from "./params/get-account-project-types-parameters";
+import { ProjectCopyProcessDto } from "./dto/project-copy-process-dto";
+import { ProjectCopyRequestStatusDto } from "./dto/project-copy-request-status-dto";
+import { CopyProjectParameters } from "./params/copy-project-parameters";
 
 export class SmartlingProjectsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -129,6 +132,27 @@ export class SmartlingProjectsApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${encodeURIComponent(projectId)}/targetLocales`
+        );
+    }
+
+    async copyProject(
+        projectId: string,
+        params?: CopyProjectParameters
+    ): Promise<ProjectCopyProcessDto> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/copy`,
+            params ? JSON.stringify(params.export()) : undefined
+        );
+    }
+
+    async getProjectCopyRequestStatus(
+        projectId: string,
+        processUid: string
+    ): Promise<ProjectCopyRequestStatusDto> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/copy/${encodeURIComponent(processUid)}`
         );
     }
 
