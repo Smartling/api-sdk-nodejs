@@ -9,6 +9,12 @@ import { ContextType } from "../api/context/params/context-type";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { ContextUploadParameters } from "../api/context/params/context-upload-parameters";
 import { SmartlingAuthApi } from "../api/auth/index";
+import { ResponseBodyType } from "../api/base/enum/response-body-type";
+import { DeleteContextsAsyncParameters } from "../api/context/params/delete-contexts-async-parameters";
+import { ContextUploadAndMatchParameters } from "../api/context/params/context-upload-and-match-parameters";
+import { ListBindingsParameters } from "../api/context/params/list-bindings-parameters";
+import { DeleteBindingsParameters } from "../api/context/params/delete-bindings-parameters";
+import { VideoMatchingMode } from "../api/context/params/video-matching-mode";
 
 describe("SmartlingContextApi class tests.", () => {
     const projectId = "testProjectId";
@@ -192,6 +198,166 @@ describe("SmartlingContextApi class tests.", () => {
                         "User-Agent": "test_user_agent"
                     },
                     method: "delete"
+                }
+            );
+        });
+
+        const expectedHeaders = {
+            Authorization: "test_token_type test_access_token",
+            "Content-Type": "application/json",
+            "User-Agent": "test_user_agent"
+        };
+
+        it("Should get context", async () => {
+            // When
+            await contextApi.getContext(projectId, contextUid);
+
+            // Then
+            sinon.assert.calledOnce(contextServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/contexts/${contextUid}`,
+                { headers: expectedHeaders, method: "get" }
+            );
+        });
+
+        it("Should download context content as text", async () => {
+            // Given
+            const textStub = sinon.stub(responseMock, "text").returns("<html></html>");
+
+            // When
+            const content = await contextApi.downloadContextContent(
+                projectId, contextUid, ResponseBodyType.TEXT
+            );
+
+            // Then
+            textStub.restore();
+            assert.equal(content, "<html></html>");
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/contexts/${contextUid}/content`,
+                { headers: expectedHeaders, method: "get" }
+            );
+        });
+
+        it("Should delete contexts asynchronously", async () => {
+            // Given
+            const params = new DeleteContextsAsyncParameters().setContextUids(["uid1", "uid2"]);
+
+            // When
+            await contextApi.deleteContextsAsync(projectId, params);
+
+            // Then
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/contexts/remove/async`,
+                {
+                    body: JSON.stringify({ contextUids: ["uid1", "uid2"] }),
+                    headers: expectedHeaders,
+                    method: "post"
+                }
+            );
+        });
+
+        it("Should reject deleting more than 100 contexts", () => {
+            // Given
+            const uids = Array.from({ length: 101 }, (_, i) => `uid${i}`);
+
+            // When-Then
+            assert.throws(() => new DeleteContextsAsyncParameters().setContextUids(uids));
+        });
+
+        it("Should upload and match context", async () => {
+            // Given
+            const params = new ContextUploadAndMatchParameters()
+                .setName("contextName")
+                .setContent("contextContent")
+                .setFileUri(fileName)
+                .setVideoMatchingMode(VideoMatchingMode.OCR);
+
+            // When
+            await contextApi.uploadAndMatchContext(projectId, params, {
+                group: "testGroup",
+                name: "testName",
+                version: "testVersion"
+            });
+
+            // Then
+            const [uri, opts] = contextServiceApiFetchStub.getCall(0).args;
+
+            assert.equal(
+                uri,
+                `https://test.com/context-api/v2/projects/${projectId}/contexts/upload-and-match-async`
+            );
+            assert.equal(opts.method, "post");
+            assert.equal(opts.headers["X-SL-Context-Source"], "group=testGroup;name=testName;version=testVersion");
+            assert.match(opts.headers["Content-Type"], /^multipart\/form-data; boundary=/);
+            assert.equal(opts.body.constructor.name, "FormData");
+        });
+
+        it("Should get match results", async () => {
+            // When
+            await contextApi.getMatchResults(projectId, "matchId");
+
+            // Then
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/match/matchId`,
+                { headers: expectedHeaders, method: "get" }
+            );
+        });
+
+        it("Should get process results", async () => {
+            // When
+            await contextApi.getProcessResults(projectId, "processUid");
+
+            // Then
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/processes/processUid`,
+                { headers: expectedHeaders, method: "get" }
+            );
+        });
+
+        it("Should list bindings", async () => {
+            // Given
+            const params = new ListBindingsParameters()
+                .setContextUid(contextUid)
+                .setStringHashcodes(stringHashCodes)
+                .setOffset("offset value");
+
+            // When
+            await contextApi.listBindings(projectId, params);
+
+            // Then
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/bindings/list?offset=offset%20value`,
+                {
+                    body: JSON.stringify({ contextUid, stringHashcodes: stringHashCodes }),
+                    headers: expectedHeaders,
+                    method: "post"
+                }
+            );
+        });
+
+        it("Should delete bindings", async () => {
+            // Given
+            const params = new DeleteBindingsParameters()
+                .setBindingUids(["binding1"])
+                .setContentFileUri(fileName);
+
+            // When
+            await contextApi.deleteBindings(projectId, params);
+
+            // Then
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/bindings/remove`,
+                {
+                    body: JSON.stringify({ bindingUids: ["binding1"], contentFileUri: fileName }),
+                    headers: expectedHeaders,
+                    method: "post"
                 }
             );
         });

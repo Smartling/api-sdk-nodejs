@@ -1,0 +1,4 @@
+export enum ProcessType {
+    MATCH_CONTEXT = "MATCH_CONTEXT",
+    DELETE_CONTEXTS = "DELETE_CONTEXTS"
+}
