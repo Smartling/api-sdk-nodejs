@@ -55,6 +55,7 @@ describe("SmartlingContextApi class tests.", () => {
         contextServiceApiFetchStub.restore();
         responseMockJsonStub.restore();
         contextServiceApiUaStub.restore();
+        sinon.restore();
     });
 
     describe("Methods", () => {
@@ -223,7 +224,7 @@ describe("SmartlingContextApi class tests.", () => {
 
         it("Should download context content as text", async () => {
             // Given
-            const textStub = sinon.stub(responseMock, "text").returns("<html></html>");
+            sinon.stub(responseMock, "text").returns("<html></html>");
 
             // When
             const content = await contextApi.downloadContextContent(
@@ -231,7 +232,6 @@ describe("SmartlingContextApi class tests.", () => {
             );
 
             // Then
-            textStub.restore();
             assert.equal(content, "<html></html>");
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
