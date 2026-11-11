@@ -6,10 +6,15 @@ import { AccessTokenProvider } from "../../api/auth/access-token-provider";
 import { SmartlingAttachmentsApi } from "../../api/attachments/index";
 import { SmartlingJobsApi } from "../../api/jobs/index";
 import { SmartlingProjectsApi } from "../../api/projects/index";
+import { SmartlingGlossariesApi } from "../../api/glossaries/index";
+import { SmartlingException } from "../../api/exception/index";
 import { AttachmentEntityType } from "../../api/attachments/params/attachment-entity-type";
 import { CreateAttachmentParameters } from "../../api/attachments/params/create-attachment-parameters";
 import { CreateJobParameters } from "../../api/jobs/params/create-job-parameters";
 import { CancelJobParameters } from "../../api/jobs/params/cancel-job-parameters";
+import { CreateGlossaryParameters } from "../../api/glossaries/params/create-glossary-parameters";
+import { CreateGlossaryEntryParameters } from "../../api/glossaries/params/create-glossary-entry-parameters";
+import { ArchiveGlossariesParameters } from "../../api/glossaries/params/archive-glossaries-parameters";
 import { logResponse } from "./helpers/log-response";
 
 dotenv.config();
@@ -187,6 +192,139 @@ describe("SmartlingAttachmentsApi integration tests.", function integrationSuite
                 { maxBytes: 1 }
             ),
             /exceeds the maximum allowed/
+        );
+    });
+});
+
+describe("SmartlingAttachmentsApi glossary integration tests.", function integrationSuite() {
+    this.timeout(60000);
+
+    let attachmentsApi: SmartlingAttachmentsApi;
+    let glossariesApi: SmartlingGlossariesApi;
+    let glossaryUid: string;
+    let entryUid: string;
+    let attachmentUid: string;
+
+    const suiteId = Date.now();
+    const fileContent = `api-sdk-nodejs glossary attachment integration test ${suiteId}`;
+    const attachmentName = `glossary-attachment-${suiteId}.txt`;
+
+    before(function skipWithoutCredentials() {
+        if (!hasCredentials) {
+            // eslint-disable-next-line no-console
+            console.log("Skipping Attachments glossary integration tests: set SMARTLING_ACCOUNT_UID, SMARTLING_USER_ID, SMARTLING_USER_SECRET in .env");
+            this.skip();
+        }
+
+        const builder = () => new SmartlingApiClientBuilder()
+            .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
+            .authWithUserIdAndUserSecret(userId, userSecret);
+
+        attachmentsApi = builder().build(SmartlingAttachmentsApi);
+        glossariesApi = builder().build(SmartlingGlossariesApi);
+    });
+
+    before(async () => {
+        const glossary = await glossariesApi.createGlossary(
+            accountUid,
+            new CreateGlossaryParameters()
+                .setGlossaryName(`Attachments integration test glossary ${suiteId}`)
+                .setLocaleIds(["en-US", "fr-FR"])
+        );
+
+        logResponse("createGlossary", glossary);
+        ({ glossaryUid } = glossary);
+
+        const entry = await glossariesApi.createGlossaryEntry(
+            accountUid,
+            glossaryUid,
+            new CreateGlossaryEntryParameters()
+                .setDefinition("Attachments integration test term")
+                .setTranslations([{ localeId: "fr-FR", term: "Terme de test" }])
+        );
+
+        logResponse("createGlossaryEntry", entry);
+        ({ entryUid } = entry);
+    });
+
+    // Glossary attachments are linked to an entry UID. The attachments API has no delete
+    // endpoint, so cleanup is archiving the glossary; the service removes the orphaned file later.
+    after(async () => {
+        if (glossaryUid) {
+            await glossariesApi.archiveGlossaries(
+                accountUid,
+                new ArchiveGlossariesParameters().setGlossaryUids([glossaryUid])
+            );
+        }
+    });
+
+    it("uploads an attachment and links it to a glossary entry", async () => {
+        const attachment = await attachmentsApi.createAttachment(
+            accountUid,
+            AttachmentEntityType.GLOSSARIES,
+            new CreateAttachmentParameters()
+                .setName(attachmentName)
+                .setDescription("glossary integration test attachment")
+                .setEntityUids([entryUid])
+                .setFileContentFromBuffer(Buffer.from(fileContent))
+        );
+
+        logResponse("createAttachment (glossaries)", attachment);
+        ({ attachmentUid } = attachment);
+
+        assert.ok(attachmentUid);
+        assert.strictEqual(attachment.name, attachmentName);
+        assert.ok(attachment.createdDate instanceof Date);
+    });
+
+    it("lists the attachment linked to the glossary entry", async () => {
+        const result = await attachmentsApi.listEntityAttachments(
+            accountUid,
+            AttachmentEntityType.GLOSSARIES,
+            entryUid
+        );
+
+        logResponse("listEntityAttachments (glossaries)", result);
+
+        assert.strictEqual(result.totalCount, 1);
+        assert.strictEqual(result.items[0].attachmentUid, attachmentUid);
+        assert.strictEqual(result.items[0].name, attachmentName);
+        assert.strictEqual(typeof result.items[0].canDelete, "boolean");
+    });
+
+    it("downloads the glossary attachment", async () => {
+        const download = await attachmentsApi.downloadAttachmentWithMetadata(
+            accountUid,
+            AttachmentEntityType.GLOSSARIES,
+            attachmentUid,
+            { maxBytes: 1024 * 1024 }
+        );
+
+        logResponse("downloadAttachmentWithMetadata (glossaries)", {
+            fileName: download.fileName,
+            contentType: download.contentType,
+            byteLength: download.fileContent.byteLength
+        });
+
+        assert.strictEqual(Buffer.from(download.fileContent).toString(), fileContent);
+        assert.strictEqual(download.fileName, attachmentName);
+    });
+
+    it("rejects a second attachment on the same entry, as glossaries allow only one", async () => {
+        await assert.rejects(
+            attachmentsApi.createAttachment(
+                accountUid,
+                AttachmentEntityType.GLOSSARIES,
+                new CreateAttachmentParameters()
+                    .setName(`second-${attachmentName}`)
+                    .setEntityUids([entryUid])
+                    .setFileContentFromBuffer(Buffer.from("second"))
+            ),
+            (error: unknown) => {
+                logResponse("createAttachment (glossaries, over the cap)", error);
+
+                return error instanceof SmartlingException;
+            }
         );
     });
 });
