@@ -4,6 +4,13 @@ import { SmartlingProjectsApi } from "../api/projects/index";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingAuthApi } from "../api/auth/index";
 import { ListProjectsParameters } from "../api/projects/params/list-projects-parameters";
+import { CreateProjectParameters } from "../api/projects/params/create-project-parameters";
+import { RenameProjectParameters } from "../api/projects/params/rename-project-parameters";
+import { UpdateProjectDescriptionParameters } from "../api/projects/params/update-project-description-parameters";
+import { CreateTargetLocaleParameters } from "../api/projects/params/create-target-locale-parameters";
+import { GetAccountProjectTypesParameters } from "../api/projects/params/get-account-project-types-parameters";
+import { ProjectTypeGroupCode } from "../api/projects/params/project-type-group-code";
+import { CopyProjectParameters } from "../api/projects/params/copy-project-parameters";
 
 describe("SmartlingProjectsApi class tests.", () => {
     const projectId = "testProjectId";
@@ -101,6 +108,420 @@ describe("SmartlingProjectsApi class tests.", () => {
             assert.throws(() => {
                 new ListProjectsParameters().setProjectUids(tooManyProjectUids);
             }, /projectUids must contain at most 100 items/);
+        });
+
+        it("Get project details with includeDisabledLocales", async () => {
+            await projectsApi.getProjectDetails(projectId, true);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}?includeDisabledLocales=true`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Create project", async () => {
+            const parameters = new CreateProjectParameters()
+                .setProjectName("Test project")
+                .setProjectTypeCode("CONNECTED")
+                .setOriginalLocaleId("en-US")
+                .setTranslationLocaleIds(["fr-FR", "de-DE"])
+                .setSiteUrl("https://example.com")
+                .setPackageUid("packageUid")
+                .setLqaDefaultWorkflowUid("lqaWorkflowUid")
+                .setLqaNewWorkflowName("LQA workflow")
+                .setLqaSchemaUid("lqaSchemaUid")
+                .setDefaultWorkflowUid("defaultWorkflowUid");
+
+            await projectsApi.createProject("accountUid", parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/accountUid/projects",
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({
+                        projectName: "Test project",
+                        projectTypeCode: "CONNECTED",
+                        originalLocaleId: "en-US",
+                        translationLocaleIds: ["fr-FR", "de-DE"],
+                        siteURL: "https://example.com",
+                        packageUid: "packageUid",
+                        lqaDefaultWorkflowUid: "lqaWorkflowUid",
+                        lqaNewWorkflowName: "LQA workflow",
+                        lqaSchemaUid: "lqaSchemaUid",
+                        defaultWorkflowUid: "defaultWorkflowUid"
+                    })
+                }
+            );
+        });
+
+        it("Archive project", async () => {
+            await projectsApi.archiveProject(projectId);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/archive`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Unarchive project", async () => {
+            await projectsApi.unarchiveProject(projectId);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/unarchive`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("Rename project", async () => {
+            const parameters = new RenameProjectParameters().setProjectName("New name");
+
+            await projectsApi.renameProject(projectId, parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/rename`,
+                {
+                    method: "put",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({ projectName: "New name" })
+                }
+            );
+        });
+
+        it("Update project description", async () => {
+            const parameters = new UpdateProjectDescriptionParameters().setDescription("New description");
+
+            await projectsApi.updateProjectDescription(projectId, parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/description`,
+                {
+                    method: "put",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({ description: "New description" })
+                }
+            );
+        });
+
+        it("Clears the project description", async () => {
+            const parameters = new UpdateProjectDescriptionParameters().setDescription(null);
+
+            await projectsApi.updateProjectDescription(projectId, parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/description`,
+                {
+                    method: "put",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({ description: null })
+                }
+            );
+        });
+
+        it("Throws when description exceeds the max length", () => {
+            const tooLongDescription = "a".repeat(251);
+
+            assert.throws(() => {
+                new UpdateProjectDescriptionParameters().setDescription(tooLongDescription);
+            }, /Project description should be less than 250 characters\./);
+        });
+
+        it("Create target locale", async () => {
+            const parameters = new CreateTargetLocaleParameters()
+                .setLocaleId("fr-FR")
+                .setDefaultWorkflowUid("defaultWorkflowUid");
+
+            await projectsApi.createTargetLocale(projectId, parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/targetLocales`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({ localeId: "fr-FR", defaultWorkflowUid: "defaultWorkflowUid" })
+                }
+            );
+        });
+
+        it("Delete target locale", async () => {
+            await projectsApi.deleteTargetLocale(projectId, "fr-FR");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/locales/fr-FR`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
+                }
+            );
+        });
+
+        it("Get target locales", async () => {
+            await projectsApi.getTargetLocales(projectId);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/targetLocales`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Encodes special characters in path segments", async () => {
+            await projectsApi.deleteTargetLocale("project/id", "fr FR");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/projects-api/v2/projects/project%2Fid/locales/fr%20FR",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "delete"
+                }
+            );
+        });
+
+        it("Encodes special characters in accountUid", async () => {
+            await projectsApi.listProjects("account/uid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/account%2Fuid/projects",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Encodes special characters in getProjectDetails's projectId", async () => {
+            await projectsApi.getProjectDetails("project/id");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/projects-api/v2/projects/project%2Fid",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get account project types", async () => {
+            await projectsApi.getAccountProjectTypes("accountUid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/accountUid/project-types",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get account project types filtered by group code", async () => {
+            const parameters = new GetAccountProjectTypesParameters()
+                .setProjectTypeGroupCode(ProjectTypeGroupCode.CONNECTOR);
+
+            await projectsApi.getAccountProjectTypes("accountUid", parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/accountUid/project-types?projectTypeGroupCode=CONNECTOR",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Encodes special characters in getAccountProjectTypes's accountUid", async () => {
+            await projectsApi.getAccountProjectTypes("account/uid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/account%2Fuid/project-types",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Copy project", async () => {
+            const parameters = new CopyProjectParameters()
+                .setProjectName("New project name")
+                .setTargetLocaleIds(["fr-FR"]);
+
+            await projectsApi.copyProject(projectId, parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/copy`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    body: JSON.stringify({ projectName: "New project name", targetLocaleIds: ["fr-FR"] })
+                }
+            );
+        });
+
+        it("Copy project without parameters", async () => {
+            await projectsApi.copyProject(projectId);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/copy`,
+                {
+                    method: "post",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    }
+                }
+            );
+        });
+
+        it("Get project copy request status", async () => {
+            await projectsApi.getProjectCopyRequestStatus(projectId, "processUid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                `https://test.com/projects-api/v2/projects/${projectId}/copy/processUid`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Encodes special characters in getProjectCopyRequestStatus's path segments", async () => {
+            await projectsApi.getProjectCopyRequestStatus("project/id", "process/uid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/projects-api/v2/projects/project%2Fid/copy/process%2Fuid",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
         });
     });
 });
