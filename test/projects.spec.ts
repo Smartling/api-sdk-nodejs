@@ -8,6 +8,8 @@ import { CreateProjectParameters } from "../api/projects/params/create-project-p
 import { RenameProjectParameters } from "../api/projects/params/rename-project-parameters";
 import { UpdateProjectDescriptionParameters } from "../api/projects/params/update-project-description-parameters";
 import { CreateTargetLocaleParameters } from "../api/projects/params/create-target-locale-parameters";
+import { GetAccountProjectTypesParameters } from "../api/projects/params/get-account-project-types-parameters";
+import { ProjectTypeGroupCode } from "../api/projects/params/project-type-group-code";
 
 describe("SmartlingProjectsApi class tests.", () => {
     const projectId = "testProjectId";
@@ -358,6 +360,81 @@ describe("SmartlingProjectsApi class tests.", () => {
             sinon.assert.calledWithExactly(
                 projectsApiFetchStub,
                 "https://test.com/accounts-api/v2/accounts/account%2Fuid/projects",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Encodes special characters in getProjectDetails's projectId", async () => {
+            await projectsApi.getProjectDetails("project/id");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/projects-api/v2/projects/project%2Fid",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get account project types", async () => {
+            await projectsApi.getAccountProjectTypes("accountUid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/accountUid/project-types",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Get account project types filtered by group code", async () => {
+            const parameters = new GetAccountProjectTypesParameters()
+                .setProjectTypeGroupCode(ProjectTypeGroupCode.CONNECTOR);
+
+            await projectsApi.getAccountProjectTypes("accountUid", parameters);
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/accountUid/project-types?projectTypeGroupCode=CONNECTOR",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("Encodes special characters in getAccountProjectTypes's accountUid", async () => {
+            await projectsApi.getAccountProjectTypes("account/uid");
+
+            sinon.assert.calledOnce(projectsApiFetchStub);
+            sinon.assert.calledWithExactly(
+                projectsApiFetchStub,
+                "https://test.com/accounts-api/v2/accounts/account%2Fuid/project-types",
                 {
                     headers: {
                         Authorization: "test_token_type test_access_token",

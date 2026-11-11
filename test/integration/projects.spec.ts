@@ -9,6 +9,8 @@ import { CreateProjectParameters } from "../../api/projects/params/create-projec
 import { RenameProjectParameters } from "../../api/projects/params/rename-project-parameters";
 import { UpdateProjectDescriptionParameters } from "../../api/projects/params/update-project-description-parameters";
 import { CreateTargetLocaleParameters } from "../../api/projects/params/create-target-locale-parameters";
+import { GetAccountProjectTypesParameters } from "../../api/projects/params/get-account-project-types-parameters";
+import { ProjectTypeGroupCode } from "../../api/projects/params/project-type-group-code";
 import { logResponse } from "./helpers/log-response";
 
 dotenv.config();
@@ -159,6 +161,29 @@ describe("SmartlingProjectsApi integration tests.", function integrationSuite() 
 
         assert.ok(deletedLocale);
         assert.strictEqual(deletedLocale.enabled, false);
+    });
+
+    it("gets account project types, optionally filtered by group code", async () => {
+        const allTypes = await projectsApi.getAccountProjectTypes(accountUid);
+
+        logResponse("getAccountProjectTypes", allTypes);
+        assert.ok(allTypes.items.length > 0);
+        assert.ok(allTypes.items.some((type) => type.projectTypeCode === projectTypeCode));
+
+        const connectorTypesParams = new GetAccountProjectTypesParameters()
+            .setProjectTypeGroupCode(ProjectTypeGroupCode.CONNECTOR);
+        const connectorTypes = await projectsApi.getAccountProjectTypes(
+            accountUid,
+            connectorTypesParams
+        );
+
+        logResponse("getAccountProjectTypes (CONNECTOR)", connectorTypes);
+        assert.ok(connectorTypes.items.length > 0);
+        const isConnectorType = (type) => (
+            type.projectTypeGroupCode === ProjectTypeGroupCode.CONNECTOR
+        );
+
+        assert.ok(connectorTypes.items.every(isConnectorType));
     });
 
     it("archives and unarchives the project", async () => {

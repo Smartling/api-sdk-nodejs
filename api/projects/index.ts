@@ -12,6 +12,8 @@ import { CreateProjectParameters } from "./params/create-project-parameters";
 import { RenameProjectParameters } from "./params/rename-project-parameters";
 import { UpdateProjectDescriptionParameters } from "./params/update-project-description-parameters";
 import { CreateTargetLocaleParameters } from "./params/create-target-locale-parameters";
+import { AccountProjectTypeDto } from "./dto/account-project-type-dto";
+import { GetAccountProjectTypesParameters } from "./params/get-account-project-types-parameters";
 
 export class SmartlingProjectsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -26,7 +28,7 @@ export class SmartlingProjectsApi extends SmartlingBaseApi {
     ): Promise<ProjectDto> {
         return await this.makeRequest(
             "get",
-            `${this.entrypoint}/${projectId}`,
+            `${this.entrypoint}/${encodeURIComponent(projectId)}`,
             includeDisabledLocales === undefined ? undefined : { includeDisabledLocales }
         );
     }
@@ -35,7 +37,7 @@ export class SmartlingProjectsApi extends SmartlingBaseApi {
         accountUid: string,
         parameters?: ListProjectsParameters
     ): Promise<SmartlingListResponse<ProjectWithoutTargetLocalesDto>> {
-        const accountsEndpoint = this.getAccountsEndpoint(accountUid);
+        const accountsEndpoint = this.getAccountsEndpoint(accountUid, "projects");
 
         return await this.makeRequest(
             "get",
@@ -50,8 +52,19 @@ export class SmartlingProjectsApi extends SmartlingBaseApi {
     ): Promise<ProjectCreateResponseDto> {
         return await this.makeRequest(
             "post",
-            this.getAccountsEndpoint(accountUid),
+            this.getAccountsEndpoint(accountUid, "projects"),
             JSON.stringify(params.export())
+        );
+    }
+
+    async getAccountProjectTypes(
+        accountUid: string,
+        params?: GetAccountProjectTypesParameters
+    ): Promise<SmartlingListResponse<AccountProjectTypeDto>> {
+        return await this.makeRequest(
+            "get",
+            this.getAccountsEndpoint(accountUid, "project-types"),
+            params ? params.export() : undefined
         );
     }
 
@@ -119,10 +132,10 @@ export class SmartlingProjectsApi extends SmartlingBaseApi {
         );
     }
 
-    private getAccountsEndpoint(accountUid: string): string {
+    private getAccountsEndpoint(accountUid: string, resource: string): string {
         return this.entrypoint.replace(
             "/projects-api/v2/projects",
-            `/accounts-api/v2/accounts/${encodeURIComponent(accountUid)}/projects`
+            `/accounts-api/v2/accounts/${encodeURIComponent(accountUid)}/${resource}`
         );
     }
 }
