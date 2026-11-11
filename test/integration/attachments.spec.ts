@@ -7,6 +7,8 @@ import { SmartlingAttachmentsApi } from "../../api/attachments/index";
 import { SmartlingJobsApi } from "../../api/jobs/index";
 import { SmartlingProjectsApi } from "../../api/projects/index";
 import { SmartlingGlossariesApi } from "../../api/glossaries/index";
+import { SmartlingFilesApi } from "../../api/files/index";
+import { SmartlingStringsApi } from "../../api/strings/index";
 import { SmartlingException } from "../../api/exception/index";
 import { AttachmentEntityType } from "../../api/attachments/params/attachment-entity-type";
 import { CreateAttachmentParameters } from "../../api/attachments/params/create-attachment-parameters";
@@ -15,6 +17,9 @@ import { CancelJobParameters } from "../../api/jobs/params/cancel-job-parameters
 import { CreateGlossaryParameters } from "../../api/glossaries/params/create-glossary-parameters";
 import { CreateGlossaryEntryParameters } from "../../api/glossaries/params/create-glossary-entry-parameters";
 import { ArchiveGlossariesParameters } from "../../api/glossaries/params/archive-glossaries-parameters";
+import { UploadFileParameters } from "../../api/files/params/upload-file-parameters";
+import { FileType } from "../../api/files/params/file-type";
+import { FetchSourceStringsParameters } from "../../api/strings/params/fetch-source-strings-parameters";
 import { logResponse } from "./helpers/log-response";
 
 dotenv.config();
@@ -322,6 +327,161 @@ describe("SmartlingAttachmentsApi glossary integration tests.", function integra
             ),
             (error: unknown) => {
                 logResponse("createAttachment (glossaries, over the cap)", error);
+
+                return error instanceof SmartlingException;
+            }
+        );
+    });
+});
+
+describe("SmartlingAttachmentsApi string integration tests.", function integrationSuite() {
+    this.timeout(120000);
+
+    let attachmentsApi: SmartlingAttachmentsApi;
+    let projectsApi: SmartlingProjectsApi;
+    let filesApi: SmartlingFilesApi;
+    let stringsApi: SmartlingStringsApi;
+    let projectId: string;
+    let fileUri: string;
+    let stringEntityUid: string;
+    let attachmentUid: string;
+
+    const suiteId = Date.now();
+    const fileContent = `api-sdk-nodejs string attachment integration test ${suiteId}`;
+    const attachmentName = `string-attachment-${suiteId}.txt`;
+
+    before(function skipWithoutCredentials() {
+        if (!hasCredentials) {
+            // eslint-disable-next-line no-console
+            console.log("Skipping Attachments string integration tests: set SMARTLING_ACCOUNT_UID, SMARTLING_USER_ID, SMARTLING_USER_SECRET in .env");
+            this.skip();
+        }
+
+        const builder = () => new SmartlingApiClientBuilder()
+            .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
+            .authWithUserIdAndUserSecret(userId, userSecret);
+
+        attachmentsApi = builder().build(SmartlingAttachmentsApi);
+        projectsApi = builder().build(SmartlingProjectsApi);
+        filesApi = builder().build(SmartlingFilesApi);
+        stringsApi = builder().build(SmartlingStringsApi);
+    });
+
+    before(async () => {
+        const projects = await projectsApi.listProjects(accountUid);
+
+        logResponse("listProjects", projects);
+        assert.ok(projects.items.length > 0, "Test account must have at least one project to run Attachments string integration tests");
+
+        ({ projectId } = projects.items[0]);
+
+        fileUri = `api-sdk-nodejs-attachments-integration-test-${suiteId}.json`;
+
+        const uploaded = await filesApi.uploadFile(
+            projectId,
+            new UploadFileParameters()
+                .setFileUri(fileUri)
+                .setFileType(FileType.JSON)
+                .setFileContent(JSON.stringify({
+                    greeting: `Hello from the attachments integration test ${suiteId}`
+                }))
+        );
+
+        logResponse("uploadFile", uploaded);
+
+        // The file's strings are indexed asynchronously, so poll until the hashcode is readable.
+        for (let attempt = 0; attempt < 15 && !stringEntityUid; attempt += 1) {
+            // eslint-disable-next-line no-await-in-loop
+            const sourceStrings = await stringsApi.getSourceStrings(
+                projectId,
+                new FetchSourceStringsParameters().setFileUri(fileUri)
+            );
+
+            if (sourceStrings.items.length > 0) {
+                logResponse("getSourceStrings", sourceStrings);
+                // The attachment entity UID for a string is "<projectUid>:<hashcode>".
+                stringEntityUid = `${projectId}:${sourceStrings.items[0].hashcode}`;
+            } else {
+                // eslint-disable-next-line no-await-in-loop
+                await new Promise((resolve) => { setTimeout(resolve, 2000); });
+            }
+        }
+
+        assert.ok(stringEntityUid, "uploaded file must expose at least one source string");
+    });
+
+    // The attachments API has no delete endpoint; the service removes the orphaned attachment on
+    // an hourly schedule. Cleanup is deleting the file the string came from.
+    after(async () => {
+        if (fileUri) {
+            await filesApi.deleteFile(projectId, fileUri);
+        }
+    });
+
+    it("uploads an attachment and links it to a string", async () => {
+        const attachment = await attachmentsApi.createAttachment(
+            accountUid,
+            AttachmentEntityType.STRINGS,
+            new CreateAttachmentParameters()
+                .setName(attachmentName)
+                .setDescription("string integration test attachment")
+                .setEntityUids([stringEntityUid])
+                .setFileContentFromBuffer(Buffer.from(fileContent))
+        );
+
+        logResponse("createAttachment (strings)", attachment);
+        ({ attachmentUid } = attachment);
+
+        assert.ok(attachmentUid);
+        assert.strictEqual(attachment.name, attachmentName);
+        assert.ok(attachment.createdDate instanceof Date);
+    });
+
+    it("lists the attachment linked to the string", async () => {
+        const result = await attachmentsApi.listEntityAttachments(
+            accountUid,
+            AttachmentEntityType.STRINGS,
+            stringEntityUid
+        );
+
+        logResponse("listEntityAttachments (strings)", result);
+
+        assert.strictEqual(result.totalCount, 1);
+        assert.strictEqual(result.items[0].attachmentUid, attachmentUid);
+        assert.strictEqual(result.items[0].name, attachmentName);
+        assert.strictEqual(typeof result.items[0].canDelete, "boolean");
+    });
+
+    it("downloads the string attachment", async () => {
+        const download = await attachmentsApi.downloadAttachmentWithMetadata(
+            accountUid,
+            AttachmentEntityType.STRINGS,
+            attachmentUid,
+            { maxBytes: 1024 * 1024 }
+        );
+
+        logResponse("downloadAttachmentWithMetadata (strings)", {
+            fileName: download.fileName,
+            contentType: download.contentType,
+            byteLength: download.fileContent.byteLength
+        });
+
+        assert.strictEqual(Buffer.from(download.fileContent).toString(), fileContent);
+        assert.strictEqual(download.fileName, attachmentName);
+    });
+
+    it("rejects a second attachment on the same string, as strings allow only one", async () => {
+        await assert.rejects(
+            attachmentsApi.createAttachment(
+                accountUid,
+                AttachmentEntityType.STRINGS,
+                new CreateAttachmentParameters()
+                    .setName(`second-${attachmentName}`)
+                    .setEntityUids([stringEntityUid])
+                    .setFileContentFromBuffer(Buffer.from("second"))
+            ),
+            (error: unknown) => {
+                logResponse("createAttachment (strings, over the cap)", error);
 
                 return error instanceof SmartlingException;
             }
