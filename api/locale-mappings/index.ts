@@ -127,6 +127,6 @@ export class SmartlingLocaleMappingsApi extends SmartlingBaseApi {
     private scopeUrl(scope: "accounts" | "projects", scopeId: string, integrationId?: string): string {
         const base = `${this.entrypoint}/${scope}/${scopeId}`;
 
-        return integrationId ? `${base}/integrations/${integrationId}` : base;
+        return integrationId ? `${base}/integrations/${encodeURIComponent(integrationId)}` : base;
     }
 }

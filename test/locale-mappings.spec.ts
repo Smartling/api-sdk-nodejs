@@ -64,6 +64,16 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
         );
     });
 
+    it("Create mapping encodes integration id", async () => {
+        await localeMappingsApi.createMappingForProject("test_project", mappingParams(), "a/b?c");
+
+        sinon.assert.calledWithExactly(
+            fetchStub,
+            "https://test.com/locale-mappings-api/v2/projects/test_project/integrations/a%2Fb%3Fc/locale-mappings",
+            { method: "post", headers, body: mappingBody }
+        );
+    });
+
     it("Create mapping for project", async () => {
         await localeMappingsApi.createMappingForProject("test_project", mappingParams());
 
