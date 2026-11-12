@@ -1,8 +1,5 @@
 import dotenv from "dotenv";
 import assert from "assert";
-import { SmartlingApiClientBuilder } from "../../api/builder/index";
-import { SmartlingBaseApi } from "../../api/base/index";
-import { AccessTokenProvider } from "../../api/auth/access-token-provider";
 import { SmartlingProjectsApi } from "../../api/projects/index";
 import { SmartlingLocalesApi } from "../../api/locales/index";
 import { CreateProjectParameters } from "../../api/projects/params/create-project-parameters";
@@ -14,6 +11,7 @@ import { ProjectTypeGroupCode } from "../../api/projects/params/project-type-gro
 import { CopyProjectParameters } from "../../api/projects/params/copy-project-parameters";
 import { ProjectCopyProcessState } from "../../api/projects/dto/project-copy-process-state";
 import { logResponse } from "./helpers/log-response";
+import { buildApi } from "./helpers/build-api";
 
 function delay(milliseconds: number): Promise<void> {
     return new Promise((resolve) => {
@@ -23,7 +21,6 @@ function delay(milliseconds: number): Promise<void> {
 
 dotenv.config();
 
-const baseSmartlingApiUrl = process.env.SMARTLING_API_BASE_URL || "https://api.smartling.com";
 const accountUid = process.env.SMARTLING_ACCOUNT_UID as string;
 const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
@@ -42,15 +39,6 @@ describe("SmartlingProjectsApi integration tests.", function integrationSuite() 
     let extraLocaleId: string;
 
     const suiteId = Date.now();
-
-    function buildApi<T extends SmartlingBaseApi>(
-        apiClass: new (baseUrl: string, authApi: AccessTokenProvider, logger) => T
-    ): T {
-        return new SmartlingApiClientBuilder()
-            .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
-            .authWithUserIdAndUserSecret(userId, userSecret)
-            .build(apiClass);
-    }
 
     before(function skipWithoutCredentials() {
         if (!hasCredentials) {

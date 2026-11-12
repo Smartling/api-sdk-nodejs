@@ -1,8 +1,5 @@
 import dotenv from "dotenv";
 import assert from "assert";
-import { SmartlingApiClientBuilder } from "../../api/builder/index";
-import { SmartlingBaseApi } from "../../api/base/index";
-import { AccessTokenProvider } from "../../api/auth/access-token-provider";
 import { SmartlingJobsApi } from "../../api/jobs/index";
 import { SmartlingProjectsApi } from "../../api/projects/index";
 import { SmartlingFilesApi } from "../../api/files/index";
@@ -14,10 +11,10 @@ import { CancelJobParameters } from "../../api/jobs/params/cancel-job-parameters
 import { UploadFileParameters } from "../../api/files/params/upload-file-parameters";
 import { FileType } from "../../api/files/params/file-type";
 import { logResponse } from "./helpers/log-response";
+import { buildApi } from "./helpers/build-api";
 
 dotenv.config();
 
-const baseSmartlingApiUrl = process.env.SMARTLING_API_BASE_URL || "https://api.smartling.com";
 const accountUid = process.env.SMARTLING_ACCOUNT_UID as string;
 const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
@@ -36,15 +33,6 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
     let fileUri: string;
 
     const suiteId = Date.now();
-
-    function buildApi<T extends SmartlingBaseApi>(
-        apiClass: new (baseUrl: string, authApi: AccessTokenProvider, logger) => T
-    ): T {
-        return new SmartlingApiClientBuilder()
-            .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
-            .authWithUserIdAndUserSecret(userId, userSecret)
-            .build(apiClass);
-    }
 
     async function cancelAndDeleteJob(translationJobUid: string): Promise<void> {
         // A job can only be deleted once it's CANCELLED.
