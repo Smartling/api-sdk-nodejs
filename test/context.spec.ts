@@ -15,6 +15,9 @@ import { ContextUploadAndMatchParameters } from "../api/context/params/context-u
 import { ListBindingsParameters } from "../api/context/params/list-bindings-parameters";
 import { DeleteBindingsParameters } from "../api/context/params/delete-bindings-parameters";
 import { VideoMatchingMode } from "../api/context/params/video-matching-mode";
+import { SmartlingException } from "../api/exception/index";
+import { ContextProcessState } from "../api/context/params/context-process-state";
+import { ProcessType } from "../api/context/params/process-type";
 
 describe("SmartlingContextApi class tests.", () => {
     const projectId = "testProjectId";
@@ -99,10 +102,19 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should run automatic matching", async () => {
-            await contextApi.runAutomaticMatch(
+            // Given
+            sinon.stub(responseMock, "text").returns(JSON.stringify({
+                response: { data: { processUid: "process-1", matchId: "match-1" } }
+            }));
+
+            // When
+            const result = await contextApi.runAutomaticMatch(
                 projectId, contextUid, contextAutomaticMatchParameters
             );
 
+            // Then
+            assert.strictEqual(result.processUid, "process-1");
+            assert.strictEqual(result.matchId, "match-1");
             sinon.assert.calledOnce(contextServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
@@ -116,6 +128,24 @@ describe("SmartlingContextApi class tests.", () => {
                     },
                     method: "post"
                 }
+            );
+        });
+
+        it("Should reject a non-integer override-context-older-than-days value", () => {
+            assert.throws(
+                () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(NaN),
+                SmartlingException
+            );
+            assert.throws(
+                () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(0.5),
+                SmartlingException
+            );
+            assert.throws(
+                () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(0),
+                SmartlingException
+            );
+            assert.doesNotThrow(
+                () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(1)
             );
         });
 
@@ -160,6 +190,40 @@ describe("SmartlingContextApi class tests.", () => {
             );
         });
 
+        it("Should correctly unwrap created/errors binding lists (regression: 'created' must not collapse into Invalid Date)", async () => {
+            // Given
+            sinon.stub(responseMock, "text").returns(JSON.stringify({
+                response: {
+                    data: {
+                        created: {
+                            totalCount: 1,
+                            items: [{ contextUid: "1", stringHashcode: "1" }]
+                        },
+                        errors: { totalCount: 0, items: [] }
+                    }
+                }
+            }));
+
+            const createBindingsParams = new CreateBindingsParameters().addBinding({
+                contextUid: "1",
+                stringHashcode: "1",
+                selector: { anchors: ["1"] }
+            });
+
+            // When
+            const result = await contextApi
+                .createStringsToContextBindings(projectId, createBindingsParams);
+
+            // Then
+            assert.strictEqual(result.errors.totalCount, 0);
+            assert.ok(
+                result.created instanceof Object && !(result.created instanceof Date),
+                "'created' must not be coerced into an Invalid Date"
+            );
+            assert.strictEqual(result.created.totalCount, 1);
+            assert.strictEqual(result.created.items.length, 1);
+        });
+
         it("Should list contexts by project", async () => {
             const listParams = new ListParameters();
 
@@ -186,8 +250,9 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should delete context by context uid", async () => {
-            await contextApi.delete(projectId, "context_uid");
+            const result = await contextApi.delete(projectId, "context_uid");
 
+            assert.strictEqual(result, undefined);
             sinon.assert.calledOnce(contextServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
@@ -203,6 +268,18 @@ describe("SmartlingContextApi class tests.", () => {
             );
         });
 
+        it("Should resolve with undefined on a real empty 204 delete response", async () => {
+            contextServiceApiFetchStub.returns({
+                ...responseMock,
+                status: 204,
+                text: async (): Promise<string> => ""
+            });
+
+            const result = await contextApi.delete(projectId, "context_uid");
+
+            assert.strictEqual(result, undefined);
+        });
+
         const expectedHeaders = {
             Authorization: "test_token_type test_access_token",
             "Content-Type": "application/json",
@@ -210,10 +287,24 @@ describe("SmartlingContextApi class tests.", () => {
         };
 
         it("Should get context", async () => {
+            // Given
+            sinon.stub(responseMock, "text").returns(JSON.stringify({
+                response: {
+                    data: {
+                        name: "contextName",
+                        contextType: ContextType.HTML,
+                        created: "2024-01-01T00:00:00.000Z",
+                        contextUid
+                    }
+                }
+            }));
+
             // When
-            await contextApi.getContext(projectId, contextUid);
+            const context = await contextApi.getContext(projectId, contextUid);
 
             // Then
+            assert.strictEqual(context.contextUid, contextUid);
+            assert.ok(context.created instanceof Date);
             sinon.assert.calledOnce(contextServiceApiFetchStub);
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
@@ -240,6 +331,25 @@ describe("SmartlingContextApi class tests.", () => {
             );
         });
 
+        it("Should download context content as an array buffer by default", async () => {
+            // When
+            const content = await contextApi.downloadContextContent(projectId, contextUid);
+
+            // Then
+            assert.ok(content instanceof ArrayBuffer);
+        });
+
+        it("Should return null downloading context content from a 204 response", async () => {
+            // Given
+            contextServiceApiFetchStub.returns({ ...responseMock, status: 204 });
+
+            // When
+            const content = await contextApi.downloadContextContent(projectId, contextUid);
+
+            // Then
+            assert.strictEqual(content, null);
+        });
+
         it("Should delete contexts asynchronously", async () => {
             // Given
             const params = new DeleteContextsAsyncParameters().setContextUids(["uid1", "uid2"]);
@@ -264,7 +374,31 @@ describe("SmartlingContextApi class tests.", () => {
             const uids = Array.from({ length: 101 }, (_, i) => `uid${i}`);
 
             // When-Then
-            assert.throws(() => new DeleteContextsAsyncParameters().setContextUids(uids));
+            assert.throws(
+                () => new DeleteContextsAsyncParameters().setContextUids(uids),
+                (e: unknown) => e instanceof SmartlingException
+                    && (e as SmartlingException).message === "Cannot delete more than 100 contexts at once, got 101"
+            );
+        });
+
+        it("Should accept exactly 100 contexts", () => {
+            // Given
+            const uids = Array.from({ length: 100 }, (_, i) => `uid${i}`);
+
+            // When-Then
+            assert.doesNotThrow(() => new DeleteContextsAsyncParameters().setContextUids(uids));
+        });
+
+        it("Should not let a later mutation of the source array bypass the 100-context limit", () => {
+            // Given
+            const uids = ["uid1", "uid2"];
+            const params = new DeleteContextsAsyncParameters().setContextUids(uids);
+
+            // When
+            uids[2] = "uid3";
+
+            // Then
+            assert.strictEqual((params.export().contextUids as Array<string>).length, 2);
         });
 
         it("Should upload and match context", async () => {
@@ -297,11 +431,84 @@ describe("SmartlingContextApi class tests.", () => {
             );
         });
 
-        it("Should get match results", async () => {
+        it("Should send a single translation job uid wrapped as an array", async () => {
+            // Given
+            const params = new ContextUploadAndMatchParameters()
+                .setName("contextName")
+                .setFileUri(fileName)
+                .setTranslationJobUid("job-1");
+
             // When
-            await contextApi.getMatchResults(projectId, "matchId");
+            await contextApi.uploadAndMatchContext(projectId, params);
 
             // Then
+            const [, opts] = contextServiceApiFetchStub.getCall(0).args;
+
+            assert.match(
+                opts.body.getBuffer().toString(),
+                /name="matchParams"[\s\S]*"translationJobUids":\["job-1"\]/
+            );
+        });
+
+        it("Should reject a non-integer override-context-older-than-days value on upload-and-match params", () => {
+            assert.throws(
+                () => new ContextUploadAndMatchParameters().setOverrideContextOlderThanDays(NaN),
+                SmartlingException
+            );
+            assert.throws(
+                () => new ContextUploadAndMatchParameters().setOverrideContextOlderThanDays(0.5),
+                SmartlingException
+            );
+            assert.doesNotThrow(
+                () => new ContextUploadAndMatchParameters().setOverrideContextOlderThanDays(1)
+            );
+        });
+
+        it("Should not re-corrupt the FormData body on a 401 retry", async () => {
+            // Given
+            const params = new ContextUploadAndMatchParameters()
+                .setName("contextName")
+                .setFileUri(fileName)
+                .setVideoMatchingMode(VideoMatchingMode.OCR);
+
+            contextServiceApiFetchStub.onCall(0).returns({ status: 401 });
+            contextServiceApiFetchStub.onCall(1).returns(responseMock);
+
+            // When
+            await contextApi.uploadAndMatchContext(projectId, params);
+
+            // Then
+            sinon.assert.calledTwice(contextServiceApiFetchStub);
+
+            const firstBody = contextServiceApiFetchStub.getCall(0).args[1].body;
+            const secondBody = contextServiceApiFetchStub.getCall(1).args[1].body;
+
+            assert.strictEqual(firstBody, secondBody);
+            assert.match(
+                secondBody.getBuffer().toString(),
+                /name="matchParams"[\s\S]*\{"contentFileUri":"testContextFileName","videoMatchingMode":"OCR"\}/
+            );
+        });
+
+        it("Should get match results", async () => {
+            // Given
+            sinon.stub(responseMock, "text").returns(JSON.stringify({
+                response: {
+                    data: {
+                        matchId: "matchId",
+                        status: "COMPLETED",
+                        createdDate: "2024-01-01T00:00:00.000Z",
+                        modifiedDate: "2024-01-01T00:00:00.000Z"
+                    }
+                }
+            }));
+
+            // When
+            const match = await contextApi.getMatchResults(projectId, "matchId");
+
+            // Then
+            assert.strictEqual(match.matchId, "matchId");
+            assert.ok(match.createdDate instanceof Date);
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
                 `https://test.com/context-api/v2/projects/${projectId}/match/matchId`,
@@ -310,10 +517,29 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should get process results", async () => {
+            // Given
+            sinon.stub(responseMock, "text").returns(JSON.stringify({
+                response: {
+                    data: {
+                        processUid: "processUid",
+                        processState: ContextProcessState.COMPLETED,
+                        processType: ProcessType.MATCH_CONTEXT,
+                        createdDate: "2024-01-01T00:00:00.000Z",
+                        modifiedDate: "2024-01-01T00:00:00.000Z",
+                        result: { contextUid: "ctx-1", bindings: [] }
+                    }
+                }
+            }));
+
             // When
-            await contextApi.getProcessResults(projectId, "processUid");
+            const process = await contextApi.getProcessResults(projectId, "processUid");
 
             // Then
+            assert.strictEqual(process.processUid, "processUid");
+            assert.strictEqual(process.processType, ProcessType.MATCH_CONTEXT);
+            if (process.processType === ProcessType.MATCH_CONTEXT) {
+                assert.strictEqual(process.result?.contextUid, "ctx-1");
+            }
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
                 `https://test.com/context-api/v2/projects/${projectId}/processes/processUid`,
@@ -328,10 +554,18 @@ describe("SmartlingContextApi class tests.", () => {
                 .setStringHashcodes(stringHashCodes)
                 .setOffset("offset value");
 
+            sinon.stub(responseMock, "text").returns(JSON.stringify({
+                response: {
+                    data: { items: [{ contextUid, stringHashcode: stringHashCodes[0] }] }
+                }
+            }));
+
             // When
-            await contextApi.listBindings(projectId, params);
+            const bindings = await contextApi.listBindings(projectId, params);
 
             // Then
+            assert.strictEqual(bindings.items.length, 1);
+            assert.strictEqual(bindings.items[0].contextUid, contextUid);
             sinon.assert.calledWithExactly(
                 contextServiceApiFetchStub,
                 `https://test.com/context-api/v2/projects/${projectId}/bindings/list?offset=offset%20value`,
@@ -381,6 +615,14 @@ describe("SmartlingContextApi class tests.", () => {
                     method: "post"
                 }
             );
+        });
+
+        it("Should reject deleting bindings with no filter set", async () => {
+            await assert.rejects(
+                () => contextApi.deleteBindings(projectId, new DeleteBindingsParameters()),
+                SmartlingException
+            );
+            sinon.assert.notCalled(contextServiceApiFetchStub);
         });
     });
 });

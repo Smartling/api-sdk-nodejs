@@ -1,6 +1,6 @@
 import { BaseParameters } from "../../parameters/index";
 
-export class BindingFilterParameters extends BaseParameters {
+export abstract class BindingFilterParameters extends BaseParameters {
     setStringHashcodes(stringHashcodes: Array<string>): this {
         this.set("stringHashcodes", stringHashcodes);
 

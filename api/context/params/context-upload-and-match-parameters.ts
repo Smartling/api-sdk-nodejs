@@ -15,18 +15,15 @@ export class ContextUploadAndMatchParameters extends ContextUploadParameters {
         return this;
     }
 
-    setTranslationJobUids(translationJobUids: Array<string>): this {
-        if (translationJobUids.length > 1) {
-            throw new SmartlingException("Only one translation job uid is supported");
-        }
-        this.setMatchParam("translationJobUids", translationJobUids);
+    setTranslationJobUid(translationJobUid: string): this {
+        this.setMatchParam("translationJobUids", [translationJobUid]);
 
         return this;
     }
 
     setOverrideContextOlderThanDays(days: number): this {
-        if (days < 1) {
-            throw new SmartlingException("Override context older than days should be a positive number");
+        if (!Number.isInteger(days) || days < 1) {
+            throw new SmartlingException("Override context older than days should be a positive integer");
         }
         this.setMatchParam("overrideContextOlderThanDays", days);
 

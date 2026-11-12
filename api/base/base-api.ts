@@ -152,6 +152,12 @@ export class SmartlingBaseApi {
         let textResponse: string;
         try {
             textResponse = await response.text();
+
+            // A successful empty body (e.g. a 204 on DELETE) has nothing to parse as JSON.
+            if (textResponse === "") {
+                return true;
+            }
+
             const jsonResponse = JSON.parse(textResponse, (key, value) => {
                 const dateProperties = [
                     "created",
@@ -175,7 +181,12 @@ export class SmartlingBaseApi {
                     "finished"
                 ];
 
-                if (dateProperties.includes(key) && value) {
+                // Only coerce string/number values: some response shapes (e.g.
+                // CreateBindingsResponseDto) have a "created" field that is a list wrapper
+                // object, not a date, and new Date(object) silently produces an Invalid Date.
+                const isDateLike = typeof value === "string" || typeof value === "number";
+
+                if (dateProperties.includes(key) && isDateLike) {
                     return new Date(value);
                 }
 

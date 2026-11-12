@@ -54,7 +54,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         projectId: string,
         contextUid: string,
         responseType: ResponseBodyType = ResponseBodyType.ARRAY_BUFFER
-    ): Promise<ArrayBuffer | string> {
+    ): Promise<ArrayBuffer | string | null> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/contexts/${contextUid}/content`,
@@ -122,6 +122,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
+    /** Resolves with no value on success; a failed delete rejects instead. */
     async delete(projectId: string, contextUid: string): Promise<void> {
         await this.makeRequest(
             "delete",
@@ -139,6 +140,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
+    /** The match runs asynchronously; poll its completion with getProcessResults(processUid). */
     async runAutomaticMatch(
         projectId: string, contextUid: string, params: ContextAutomaticMatchParameters
     ): Promise<AsyncMatchDto> {
@@ -149,6 +151,10 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
+    /**
+     * A 2xx response does not mean every binding was created: check the returned
+     * errors.totalCount, since a partial failure still resolves normally.
+     */
     async createStringsToContextBindings(
         projectId: string, params: CreateBindingsParameters
     ): Promise<CreateBindingsResponseDto> {
@@ -167,7 +173,10 @@ export class SmartlingContextApi extends SmartlingBaseApi {
 
     /* eslint-disable-next-line class-methods-use-this */
     alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
-        if (uri.match(/context-api\/v2\/projects\/.*\/contexts(\/upload-and-match-async)?$/g)) {
+        // Guard against re-converting an already-built FormData body: makeRequest() calls
+        // alterRequestData() again on a 401 retry, reusing the same opts object.
+        if (!(opts.body instanceof FormData)
+            && uri.match(/context-api\/v2\/projects\/.*\/contexts(\/upload-and-match-async)?$/g)) {
             if (!opts.body) {
                 return opts;
             }

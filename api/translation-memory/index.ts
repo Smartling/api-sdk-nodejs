@@ -180,8 +180,8 @@ export class SmartlingTranslationMemoryApi extends SmartlingBaseFileApi {
     // every alterRequestData-based upload in this SDK (api/job-batches, api/context), not
     // something specific to this method; use setFileContentFromBuffer for a retry-safe upload
     // here (a Buffer can be re-read, and this file's alterRequestData guards against reusing an
-    // already-built FormData on retry). job-batches/context lack that FormData guard, so a
-    // buffer alone would not make their uploads retry-safe too.
+    // already-built FormData on retry, as does api/context's). job-batches still lacks that
+    // FormData guard, so a buffer alone would not make its uploads retry-safe too.
     async importTmxFile(
         accountUid: string, params: ImportTmxFileParameters
     ): Promise<TmxImportSummaryDto> {

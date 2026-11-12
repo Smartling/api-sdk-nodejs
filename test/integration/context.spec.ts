@@ -18,8 +18,10 @@ import { DeleteContextsAsyncParameters } from "../../api/context/params/delete-c
 import { ListParameters } from "../../api/context/params/list-parameters";
 import { ContextType } from "../../api/context/params/context-type";
 import { ContextProcessState } from "../../api/context/params/context-process-state";
+import { ProcessType } from "../../api/context/params/process-type";
 import { HtmlBindingDto } from "../../api/context/dto/binding/html-binding-dto";
-import { DeleteProcessResultDto } from "../../api/context/dto/process-result-dto";
+import { CreateProjectParameters } from "../../api/projects/params/create-project-parameters";
+import { SmartlingException } from "../../api/exception/index";
 import { logResponse } from "./helpers/log-response";
 import { buildApi } from "./helpers/build-api";
 
@@ -79,6 +81,13 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
         return uploaded.contextUid;
     }
 
+    async function assertContextGone(uid: string): Promise<void> {
+        await assert.rejects(
+            () => contextApi.getContext(projectId, uid),
+            SmartlingException
+        );
+    }
+
     before(function skipWithoutCredentials() {
         if (!hasCredentials) {
             // eslint-disable-next-line no-console
@@ -95,9 +104,23 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
     before(async () => {
         const existingProjects = await projectsApi.listProjects(accountUid);
 
-        assert.ok(existingProjects.items.length > 0, "Test account must have at least one project to run Context integration tests");
+        assert.ok(existingProjects.items.length > 0, "Test account must have at least one project to read a sample project configuration from");
 
-        ({ projectId } = existingProjects.items[0]);
+        const sampleProject = await projectsApi.getProjectDetails(
+            existingProjects.items[0].projectId,
+            true
+        );
+        const created = await projectsApi.createProject(
+            accountUid,
+            new CreateProjectParameters()
+                .setProjectName(`api-sdk-nodejs context integration test ${suiteId}`)
+                .setProjectTypeCode(sampleProject.projectTypeCode)
+                .setOriginalLocaleId(sampleProject.sourceLocaleId)
+                .setTranslationLocaleIds([sampleProject.targetLocales[0].localeId])
+        );
+
+        logResponse("createProject", created);
+        ({ projectUid: projectId } = created);
 
         fileUri = `context-integration-${suiteId}.json`;
         const uploadedFile = await filesApi.uploadFile(
@@ -134,18 +157,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
             return;
         }
 
-        const contexts = await contextApi.listContexts(projectId, new ListParameters());
-        const suiteContexts = contexts.items.filter(
-            (context) => context.name.includes(String(suiteId))
-        );
-
-        await Promise.all(
-            suiteContexts.map((context) => contextApi.delete(projectId, context.contextUid))
-        );
-
-        if (fileUri) {
-            await filesApi.deleteFile(projectId, fileUri);
-        }
+        await projectsApi.archiveProject(projectId);
     });
 
     it("lists contexts", async () => {
@@ -180,9 +192,13 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
     });
 
     it("runs automatic match", async () => {
+        // Own context, so a binding created here can't skew the exact-count assertions
+        // in "creates, lists and deletes bindings" below.
+        const matchContextUid = await uploadHtmlContext(`context-it-match-${suiteId}`);
+
         const result = await contextApi.runAutomaticMatch(
             projectId,
-            contextUid,
+            matchContextUid,
             new ContextAutomaticMatchParameters().setStringHashcodes([stringHashcode])
         );
 
@@ -192,6 +208,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
         const process = await waitForProcess(result.processUid);
 
         assert.strictEqual(process.processState, ContextProcessState.COMPLETED);
+        assert.strictEqual(process.processType, ProcessType.MATCH_CONTEXT);
     });
 
     it("creates, lists and deletes bindings", async () => {
@@ -208,6 +225,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
 
         logResponse("createStringsToContextBindings", created);
         assert.strictEqual(created.errors.totalCount, 0);
+        assert.strictEqual(created.created.totalCount, 1);
 
         const listed = await contextApi.listBindings(
             projectId,
@@ -238,7 +256,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
         const started = await contextApi.uploadAndMatchContext(
             projectId,
             new ContextUploadAndMatchParameters()
-                .setName(`context-it-match-${suiteId}`)
+                .setName(`context-it-match-upload-${suiteId}`)
                 .setContent(html)
                 .setFileUri(fileUri)
                 .setStringHashcodes([stringHashcode])
@@ -264,9 +282,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
 
         await contextApi.delete(projectId, uid);
 
-        const list = await contextApi.listContexts(projectId, new ListParameters());
-
-        assert.ok(!list.items.some((context) => context.contextUid === uid));
+        await assertContextGone(uid);
     });
 
     it("deletes contexts asynchronously", async () => {
@@ -284,12 +300,15 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
         const process = await waitForProcess(started.processUid);
 
         assert.strictEqual(process.processState, ContextProcessState.COMPLETED);
-        const { contextUids: deletedUids } = process.result as DeleteProcessResultDto;
+        assert.strictEqual(process.processType, ProcessType.DELETE_CONTEXTS);
+
+        const deletedUids = process.processType === ProcessType.DELETE_CONTEXTS
+            ? (process.result?.contextUids ?? [])
+            : [];
 
         assert.strictEqual(deletedUids.length, uids.length);
         assert.ok(uids.every((uid) => deletedUids.includes(uid)));
-        const list = await contextApi.listContexts(projectId, new ListParameters());
 
-        assert.ok(!list.items.some((context) => uids.includes(context.contextUid)));
+        await Promise.all(uids.map((uid) => assertContextGone(uid)));
     });
 });
