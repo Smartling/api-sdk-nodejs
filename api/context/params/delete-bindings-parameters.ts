@@ -2,12 +2,13 @@ import { BindingFilterParameters } from "./binding-filter-parameters";
 import { SmartlingException } from "../../exception/index";
 
 export class DeleteBindingsParameters extends BindingFilterParameters {
-    // Defense in depth: regardless of what the backend does with an unfiltered request,
-    // nothing here should delete every binding in a project by accident.
+    // An unfiltered request falls through to "all bindings in the project" on the backend
+    // (BindingOperationsFactory.getBindingOperations -> getAllBindingsOperation), so nothing
+    // here should send one by accident.
     export(): Record<string, unknown> {
         const exported = super.export();
 
-        if (Object.keys(exported).length === 0) {
+        if (!DeleteBindingsParameters.hasAnyFilterSet(exported)) {
             throw new SmartlingException(
                 "At least one filter (stringHashcodes, contentFileUri, contextUid or bindingUids) must be set before deleting bindings"
             );

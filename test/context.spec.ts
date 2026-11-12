@@ -141,11 +141,11 @@ describe("SmartlingContextApi class tests.", () => {
                 SmartlingException
             );
             assert.throws(
-                () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(0),
+                () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(-1),
                 SmartlingException
             );
             assert.doesNotThrow(
-                () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(1)
+                () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(0)
             );
         });
 
@@ -187,6 +187,25 @@ describe("SmartlingContextApi class tests.", () => {
                     },
                     method: "post"
                 }
+            );
+        });
+
+        it("Should reject more than 150 bindings in a single request", () => {
+            const params = new CreateBindingsParameters();
+            const binding: HtmlBindingDto = {
+                contextUid: "1",
+                stringHashcode: "1",
+                selector: { anchors: ["1"] }
+            };
+
+            for (let i = 0; i < 150; i += 1) {
+                params.addBinding(binding);
+            }
+
+            assert.throws(
+                () => params.addBinding(binding),
+                (e: unknown) => e instanceof SmartlingException
+                    && (e as SmartlingException).message === "Cannot create more than 150 bindings at once, got 151"
             );
         });
 
@@ -459,8 +478,12 @@ describe("SmartlingContextApi class tests.", () => {
                 () => new ContextUploadAndMatchParameters().setOverrideContextOlderThanDays(0.5),
                 SmartlingException
             );
+            assert.throws(
+                () => new ContextUploadAndMatchParameters().setOverrideContextOlderThanDays(-1),
+                SmartlingException
+            );
             assert.doesNotThrow(
-                () => new ContextUploadAndMatchParameters().setOverrideContextOlderThanDays(1)
+                () => new ContextUploadAndMatchParameters().setOverrideContextOlderThanDays(0)
             );
         });
 
@@ -551,7 +574,6 @@ describe("SmartlingContextApi class tests.", () => {
             // Given
             const params = new ListBindingsParameters()
                 .setContextUid(contextUid)
-                .setStringHashcodes(stringHashCodes)
                 .setOffset("offset value");
 
             sinon.stub(responseMock, "text").returns(JSON.stringify({
@@ -570,11 +592,23 @@ describe("SmartlingContextApi class tests.", () => {
                 contextServiceApiFetchStub,
                 `https://test.com/context-api/v2/projects/${projectId}/bindings/list?offset=offset%20value`,
                 {
-                    body: JSON.stringify({ contextUid, stringHashcodes: stringHashCodes }),
+                    body: JSON.stringify({ contextUid }),
                     headers: expectedHeaders,
                     method: "post"
                 }
             );
+        });
+
+        it("Should reject listing bindings with more than one filter set", async () => {
+            const params = new ListBindingsParameters()
+                .setContextUid(contextUid)
+                .setStringHashcodes(stringHashCodes);
+
+            await assert.rejects(
+                () => contextApi.listBindings(projectId, params),
+                SmartlingException
+            );
+            sinon.assert.notCalled(contextServiceApiFetchStub);
         });
 
         it("Should list bindings without offset query", async () => {
@@ -598,9 +632,7 @@ describe("SmartlingContextApi class tests.", () => {
 
         it("Should delete bindings", async () => {
             // Given
-            const params = new DeleteBindingsParameters()
-                .setBindingUids(["binding1"])
-                .setContentFileUri(fileName);
+            const params = new DeleteBindingsParameters().setBindingUids(["binding1"]);
 
             // When
             await contextApi.deleteBindings(projectId, params);
@@ -610,7 +642,7 @@ describe("SmartlingContextApi class tests.", () => {
                 contextServiceApiFetchStub,
                 `https://test.com/context-api/v2/projects/${projectId}/bindings/remove`,
                 {
-                    body: JSON.stringify({ bindingUids: ["binding1"], contentFileUri: fileName }),
+                    body: JSON.stringify({ bindingUids: ["binding1"] }),
                     headers: expectedHeaders,
                     method: "post"
                 }
@@ -620,6 +652,18 @@ describe("SmartlingContextApi class tests.", () => {
         it("Should reject deleting bindings with no filter set", async () => {
             await assert.rejects(
                 () => contextApi.deleteBindings(projectId, new DeleteBindingsParameters()),
+                SmartlingException
+            );
+            sinon.assert.notCalled(contextServiceApiFetchStub);
+        });
+
+        it("Should reject deleting bindings with more than one filter set", async () => {
+            const params = new DeleteBindingsParameters()
+                .setBindingUids(["binding1"])
+                .setContentFileUri(fileName);
+
+            await assert.rejects(
+                () => contextApi.deleteBindings(projectId, params),
                 SmartlingException
             );
             sinon.assert.notCalled(contextServiceApiFetchStub);

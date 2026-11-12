@@ -22,8 +22,8 @@ export class ContextUploadAndMatchParameters extends ContextUploadParameters {
     }
 
     setOverrideContextOlderThanDays(days: number): this {
-        if (!Number.isInteger(days) || days < 1) {
-            throw new SmartlingException("Override context older than days should be a positive integer");
+        if (!Number.isInteger(days) || days < 0) {
+            throw new SmartlingException("Override context older than days should be a non-negative integer");
         }
         this.setMatchParam("overrideContextOlderThanDays", days);
 
