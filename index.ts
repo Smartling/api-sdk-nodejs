@@ -341,3 +341,8 @@ export * from "./api/estimates/dto/workflow-estimate-dto";
 export * from "./api/estimates/dto/locale-estimate-dto";
 export * from "./api/estimates/dto/locale-workflow-pair-dto";
 export * from "./api/estimates/dto/locale-workflow-step-pair-dto";
+export * from "./api/locale-mappings/index";
+export * from "./api/locale-mappings/dto/locale-mapping-dto";
+export * from "./api/locale-mappings/dto/locale-mapping-level";
+export * from "./api/locale-mappings/params/locale-mapping-parameters";
+export * from "./api/locale-mappings/params/list-locale-mappings-parameters";
