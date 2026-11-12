@@ -7,7 +7,7 @@ interface MatchStatsDto {
     status: MatchStatus;
     createdDate: Date;
     modifiedDate: Date;
-    bindings: Array<BindingDetailsDto>;
+    bindings?: Array<BindingDetailsDto>;
 }
 
 export { MatchStatsDto };

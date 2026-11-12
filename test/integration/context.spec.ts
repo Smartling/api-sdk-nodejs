@@ -1,14 +1,10 @@
 import dotenv from "dotenv";
 import assert from "assert";
-import { SmartlingApiClientBuilder } from "../../api/builder/index";
-import { SmartlingBaseApi } from "../../api/base/index";
-import { AccessTokenProvider } from "../../api/auth/access-token-provider";
 import { ResponseBodyType } from "../../api/base/enum/response-body-type";
 import { SmartlingContextApi } from "../../api/context/index";
 import { SmartlingProjectsApi } from "../../api/projects/index";
 import { SmartlingFilesApi } from "../../api/files/index";
 import { SmartlingStringsApi } from "../../api/strings/index";
-import { CreateProjectParameters } from "../../api/projects/params/create-project-parameters";
 import { UploadFileParameters } from "../../api/files/params/upload-file-parameters";
 import { FileType } from "../../api/files/params/file-type";
 import { FetchSourceStringsParameters } from "../../api/strings/params/fetch-source-strings-parameters";
@@ -23,7 +19,9 @@ import { ListParameters } from "../../api/context/params/list-parameters";
 import { ContextType } from "../../api/context/params/context-type";
 import { ContextProcessState } from "../../api/context/params/context-process-state";
 import { HtmlBindingDto } from "../../api/context/dto/binding/html-binding-dto";
+import { DeleteProcessResultDto } from "../../api/context/dto/process-result-dto";
 import { logResponse } from "./helpers/log-response";
+import { buildApi } from "./helpers/build-api";
 
 function delay(milliseconds: number): Promise<void> {
     return new Promise((resolve) => {
@@ -33,7 +31,6 @@ function delay(milliseconds: number): Promise<void> {
 
 dotenv.config();
 
-const baseSmartlingApiUrl = process.env.SMARTLING_API_BASE_URL || "https://api.smartling.com";
 const accountUid = process.env.SMARTLING_ACCOUNT_UID as string;
 const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
@@ -53,15 +50,6 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
 
     const suiteId = Date.now();
     const html = "<html><body><p>Hello world</p></body></html>";
-
-    function buildApi<T extends SmartlingBaseApi>(
-        apiClass: new (baseUrl: string, authApi: AccessTokenProvider, logger) => T
-    ): T {
-        return new SmartlingApiClientBuilder()
-            .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
-            .authWithUserIdAndUserSecret(userId, userSecret)
-            .build(apiClass);
-    }
 
     async function waitForProcess(processUid: string) {
         for (let attempt = 0; attempt < 30; attempt += 1) {
@@ -109,21 +97,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
 
         assert.ok(existingProjects.items.length > 0, "Test account must have at least one project to run Context integration tests");
 
-        const sampleProject = await projectsApi.getProjectDetails(
-            existingProjects.items[0].projectId,
-            true
-        );
-        const created = await projectsApi.createProject(
-            accountUid,
-            new CreateProjectParameters()
-                .setProjectName(`api-sdk-nodejs context integration test ${suiteId}`)
-                .setProjectTypeCode(sampleProject.projectTypeCode)
-                .setOriginalLocaleId(sampleProject.sourceLocaleId)
-                .setTranslationLocaleIds([sampleProject.targetLocales[0].localeId])
-        );
-
-        logResponse("createProject", created);
-        ({ projectUid: projectId } = created);
+        ({ projectId } = existingProjects.items[0]);
 
         fileUri = `context-integration-${suiteId}.json`;
         const uploadedFile = await filesApi.uploadFile(
@@ -156,8 +130,21 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
     });
 
     after(async () => {
-        if (projectId) {
-            await projectsApi.archiveProject(projectId);
+        if (!projectId) {
+            return;
+        }
+
+        const contexts = await contextApi.listContexts(projectId, new ListParameters());
+        const suiteContexts = contexts.items.filter(
+            (context) => context.name.includes(String(suiteId))
+        );
+
+        await Promise.all(
+            suiteContexts.map((context) => contextApi.delete(projectId, context.contextUid))
+        );
+
+        if (fileUri) {
+            await filesApi.deleteFile(projectId, fileUri);
         }
     });
 
@@ -297,6 +284,10 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
         const process = await waitForProcess(started.processUid);
 
         assert.strictEqual(process.processState, ContextProcessState.COMPLETED);
+        const { contextUids: deletedUids } = process.result as DeleteProcessResultDto;
+
+        assert.strictEqual(deletedUids.length, uids.length);
+        assert.ok(uids.every((uid) => deletedUids.includes(uid)));
         const list = await contextApi.listContexts(projectId, new ListParameters());
 
         assert.ok(!list.items.some((context) => uids.includes(context.contextUid)));

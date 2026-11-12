@@ -1,11 +1,9 @@
 import { BindingDetailsDto } from "./binding/binding-details-dto";
+import { SmartlingListResponse } from "../../http/smartling-list-response";
 
 interface CreateBindingsResponseDto {
-    created: { items: Array<BindingDetailsDto> } | null;
-    errors: {
-        totalCount: number;
-        items: Array<unknown>;
-    };
+    created: SmartlingListResponse<BindingDetailsDto> | null;
+    errors: SmartlingListResponse<{ message: string }>;
 }
 
 export { CreateBindingsResponseDto };

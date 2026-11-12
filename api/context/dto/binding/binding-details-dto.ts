@@ -6,6 +6,7 @@ interface BindingDetailsDto extends BindingDto {
     bindingUid?: string;
     anchors?: Array<string>;
     contextPosition?: number;
+    page?: number;
     coordinates?: CoordinatesDto;
     timecode?: TimecodeDto;
     placeholderValues?: Record<string, unknown>;

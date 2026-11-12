@@ -4,8 +4,12 @@ import { ProcessType } from "../params/process-type";
 
 interface MatchProcessResultDto {
     contextUid: string;
-    checkedStringsCount: number;
+    checkedStringsCount?: number;
     bindings: Array<BindingDetailsDto>;
+}
+
+interface DeleteProcessResultDto {
+    contextUids: Array<string>;
 }
 
 interface ProcessResultDto {
@@ -15,7 +19,7 @@ interface ProcessResultDto {
     createdDate: Date;
     modifiedDate: Date;
     errorMessage?: string;
-    result?: MatchProcessResultDto | Record<string, never>;
+    result?: MatchProcessResultDto | DeleteProcessResultDto | Record<string, never>;
 }
 
-export { MatchProcessResultDto, ProcessResultDto };
+export { DeleteProcessResultDto, MatchProcessResultDto, ProcessResultDto };
