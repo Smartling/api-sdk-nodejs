@@ -44,8 +44,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Create mapping for account", async () => {
+        // When
         await localeMappingsApi.createMappingForAccount("test_account", mappingParams());
 
+        // Then
         sinon.assert.calledOnce(fetchStub);
         sinon.assert.calledWithExactly(
             fetchStub,
@@ -55,8 +57,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Create mapping for account and integration", async () => {
+        // When
         await localeMappingsApi.createMappingForAccount("test_account", mappingParams(), "helpshift");
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/accounts/test_account/integrations/helpshift/locale-mappings",
@@ -65,8 +69,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Create mapping encodes integration id", async () => {
+        // When
         await localeMappingsApi.createMappingForProject("test_project", mappingParams(), "a/b?c");
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/projects/test_project/integrations/a%2Fb%3Fc/locale-mappings",
@@ -75,8 +81,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Create mapping for project", async () => {
+        // When
         await localeMappingsApi.createMappingForProject("test_project", mappingParams());
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/projects/test_project/locale-mappings",
@@ -85,8 +93,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Create mapping for project and integration", async () => {
+        // When
         await localeMappingsApi.createMappingForProject("test_project", mappingParams(), "helpshift");
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/projects/test_project/integrations/helpshift/locale-mappings",
@@ -95,8 +105,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Update mapping for account", async () => {
+        // When
         await localeMappingsApi.updateMappingForAccount("test_account", "test_uid", mappingParams());
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/accounts/test_account/locale-mappings/test_uid",
@@ -105,8 +117,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Update mapping for project", async () => {
+        // When
         await localeMappingsApi.updateMappingForProject("test_project", "test_uid", mappingParams());
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/projects/test_project/locale-mappings/test_uid",
@@ -115,8 +129,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Delete mapping for account", async () => {
+        // When
         await localeMappingsApi.deleteMappingForAccount("test_account", "test_uid");
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/accounts/test_account/locale-mappings/test_uid",
@@ -125,8 +141,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Delete mapping for project", async () => {
+        // When
         await localeMappingsApi.deleteMappingForProject("test_project", "test_uid");
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/projects/test_project/locale-mappings/test_uid",
@@ -135,8 +153,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Get mapping for account", async () => {
+        // When
         await localeMappingsApi.getMappingForAccount("test_account", "test_uid");
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/accounts/test_account/locale-mappings/test_uid",
@@ -145,8 +165,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("Get mapping for project", async () => {
+        // When
         await localeMappingsApi.getMappingForProject("test_project", "test_uid");
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/projects/test_project/locale-mappings/test_uid",
@@ -155,8 +177,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("List mappings for account", async () => {
+        // When
         await localeMappingsApi.listMappingsForAccount("test_account");
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/accounts/test_account/locale-mappings",
@@ -165,6 +189,7 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
     });
 
     it("List mappings for project with params", async () => {
+        // Given
         const params = new ListLocaleMappingsParameters()
             .setOffset(5)
             .setLimit(20)
@@ -172,8 +197,10 @@ describe("SmartlingLocaleMappingsApi class tests.", () => {
             .setOrderBy("asc")
             .setIntegrationId("helpshift");
 
+        // When
         await localeMappingsApi.listMappingsForProject("test_project", params);
 
+        // Then
         sinon.assert.calledWithExactly(
             fetchStub,
             "https://test.com/locale-mappings-api/v2/projects/test_project/locale-mappings?offset=5&limit=20&sortBy=modified&orderBy=asc&integrationId=helpshift",

@@ -1,16 +1,15 @@
 import dotenv from "dotenv";
 import assert from "assert";
-import { SmartlingApiClientBuilder } from "../../api/builder/index";
 import { SmartlingLocaleMappingsApi } from "../../api/locale-mappings/index";
 import { SmartlingProjectsApi } from "../../api/projects/index";
 import { CreateProjectParameters } from "../../api/projects/params/create-project-parameters";
 import { LocaleMappingParameters } from "../../api/locale-mappings/params/locale-mapping-parameters";
 import { ListLocaleMappingsParameters } from "../../api/locale-mappings/params/list-locale-mappings-parameters";
 import { logResponse } from "./helpers/log-response";
+import { buildApi } from "./helpers/build-api";
 
 dotenv.config();
 
-const baseSmartlingApiUrl = process.env.SMARTLING_API_BASE_URL || "https://api.smartling.com";
 const accountUid = process.env.SMARTLING_ACCOUNT_UID as string;
 const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
@@ -44,12 +43,8 @@ describe("SmartlingLocaleMappingsApi integration tests.", function integrationSu
             this.skip();
         }
 
-        const builder = () => new SmartlingApiClientBuilder()
-            .setBaseSmartlingApiUrl(baseSmartlingApiUrl)
-            .authWithUserIdAndUserSecret(userId, userSecret);
-
-        localeMappingsApi = builder().build(SmartlingLocaleMappingsApi);
-        projectsApi = builder().build(SmartlingProjectsApi);
+        localeMappingsApi = buildApi(SmartlingLocaleMappingsApi);
+        projectsApi = buildApi(SmartlingProjectsApi);
     });
 
     before(async () => {
@@ -75,24 +70,28 @@ describe("SmartlingLocaleMappingsApi integration tests.", function integrationSu
     });
 
     after(async () => {
-        if (accountMappingUid) {
-            await localeMappingsApi.deleteMappingForAccount(accountUid, accountMappingUid);
-        }
-        if (projectMappingUid) {
-            await localeMappingsApi.deleteMappingForProject(projectId, projectMappingUid);
-        }
+        await Promise.all([
+            accountMappingUid && localeMappingsApi
+                .deleteMappingForAccount(accountUid, accountMappingUid)
+                .catch(() => undefined),
+            projectMappingUid && localeMappingsApi
+                .deleteMappingForProject(projectId, projectMappingUid)
+                .catch(() => undefined)
+        ]);
         if (projectId) {
             await projectsApi.archiveProject(projectId);
         }
     });
 
     it("creates an account-level mapping scoped to an integration", async () => {
+        // When
         const created = await localeMappingsApi.createMappingForAccount(
             accountUid,
             mappingParams("Account mapping"),
             integrationId
         );
 
+        // Then
         logResponse("createMappingForAccount", created);
         ({ localeMappingUid: accountMappingUid } = created);
         assert.ok(accountMappingUid);
@@ -101,8 +100,10 @@ describe("SmartlingLocaleMappingsApi integration tests.", function integrationSu
     });
 
     it("creates a project-level mapping", async () => {
+        // When
         const created = await localeMappingsApi.createMappingForProject(projectId, mappingParams("Project mapping"));
 
+        // Then
         logResponse("createMappingForProject", created);
         ({ localeMappingUid: projectMappingUid } = created);
         assert.ok(projectMappingUid);
@@ -110,8 +111,10 @@ describe("SmartlingLocaleMappingsApi integration tests.", function integrationSu
     });
 
     it("gets an account-level mapping", async () => {
+        // When
         const mapping = await localeMappingsApi.getMappingForAccount(accountUid, accountMappingUid);
 
+        // Then
         logResponse("getMappingForAccount", mapping);
         assert.strictEqual(mapping.localeMappingUid, accountMappingUid);
         assert.ok(mapping.created instanceof Date);
@@ -119,62 +122,80 @@ describe("SmartlingLocaleMappingsApi integration tests.", function integrationSu
     });
 
     it("gets a project-level mapping", async () => {
+        // When
         const mapping = await localeMappingsApi.getMappingForProject(projectId, projectMappingUid);
 
+        // Then
         logResponse("getMappingForProject", mapping);
         assert.strictEqual(mapping.localeMappingUid, projectMappingUid);
     });
 
     it("lists account-level mappings filtered by integration", async () => {
-        const list = await localeMappingsApi.listMappingsForAccount(
-            accountUid,
-            new ListLocaleMappingsParameters().setIntegrationId(integrationId).setLimit(10)
-        );
+        // Given
+        const params = new ListLocaleMappingsParameters()
+            .setIntegrationId(integrationId)
+            .setLimit(10);
 
+        // When
+        const list = await localeMappingsApi.listMappingsForAccount(accountUid, params);
+
+        // Then
         logResponse("listMappingsForAccount", list);
         assert.ok(list.items.some((mapping) => mapping.localeMappingUid === accountMappingUid));
     });
 
     it("lists project-level mappings", async () => {
-        const list = await localeMappingsApi.listMappingsForProject(
-            projectId,
-            new ListLocaleMappingsParameters().setSortBy("created").setOrderBy("desc")
-        );
+        // Given
+        const params = new ListLocaleMappingsParameters().setSortBy("created").setOrderBy("desc");
 
+        // When
+        const list = await localeMappingsApi.listMappingsForProject(projectId, params);
+
+        // Then
         logResponse("listMappingsForProject", list);
         assert.ok(list.totalCount >= 1);
         assert.ok(list.items.some((mapping) => mapping.localeMappingUid === projectMappingUid));
     });
 
     it("updates an account-level mapping", async () => {
+        // When
         const updated = await localeMappingsApi.updateMappingForAccount(
             accountUid,
             accountMappingUid,
             mappingParams("Account mapping updated")
         );
 
+        // Then
         logResponse("updateMappingForAccount", updated);
         assert.strictEqual(updated.externalLocaleDescription, "Account mapping updated");
     });
 
     it("updates a project-level mapping", async () => {
+        // When
         const updated = await localeMappingsApi.updateMappingForProject(
             projectId,
             projectMappingUid,
             mappingParams("Project mapping updated")
         );
 
+        // Then
         logResponse("updateMappingForProject", updated);
         assert.strictEqual(updated.externalLocaleDescription, "Project mapping updated");
     });
 
     it("deletes an account-level mapping", async () => {
+        // When
         await localeMappingsApi.deleteMappingForAccount(accountUid, accountMappingUid);
+
+        // Then
         accountMappingUid = "";
     });
 
     it("deletes a project-level mapping", async () => {
+        // When
         await localeMappingsApi.deleteMappingForProject(projectId, projectMappingUid);
+
+        // Then
         projectMappingUid = "";
     });
 });
