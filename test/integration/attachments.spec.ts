@@ -121,9 +121,10 @@ describe("SmartlingAttachmentsApi integration tests.", function integrationSuite
         ({ translationJobUid: jobUid } = job);
     });
 
-    // The attachments API has no delete endpoint: the service removes attachments that have no
-    // links on an hourly schedule. Cleanup is therefore deleting the job the attachments were
-    // linked to (a job can only be deleted once it is CANCELLED).
+    // The attachments API has no delete endpoint: a scheduled job in the service removes
+    // attachments with no links once they are more than 2 days old (at most 5 per hourly run).
+    // Cleanup is therefore deleting the job the attachments were linked to (a job can only be
+    // deleted once it is CANCELLED); the files are left for that job.
     after(async () => {
         if (jobUid) {
             await jobsApi.cancelJob(
@@ -286,7 +287,8 @@ describe("SmartlingAttachmentsApi glossary integration tests.", function integra
     });
 
     // Glossary attachments are linked to an entry UID. The attachments API has no delete
-    // endpoint, so cleanup is archiving the glossary; the service removes the orphaned file later.
+    // endpoint, so cleanup is archiving the glossary; the service's scheduled job removes the
+    // unlinked file once it is more than 2 days old.
     after(async () => {
         if (glossaryUid) {
             await glossariesApi.archiveGlossaries(
@@ -432,8 +434,9 @@ describe("SmartlingAttachmentsApi string integration tests.", function integrati
         assert.ok(stringEntityUid, "uploaded file must expose at least one source string");
     });
 
-    // The attachments API has no delete endpoint; the service removes the orphaned attachment on
-    // an hourly schedule. Cleanup is deleting the file the string came from.
+    // The attachments API has no delete endpoint; the service's scheduled job removes the
+    // unlinked attachment once it is more than 2 days old. Cleanup is deleting the file the
+    // string came from.
     after(async () => {
         if (fileUri) {
             await filesApi.deleteFile(projectId, fileUri);
@@ -593,8 +596,8 @@ describe("SmartlingAttachmentsApi issue integration tests.", function integratio
     });
 
     // The attachments API has no delete endpoint and issues cannot be deleted. Cleanup resolves
-    // the issue and deletes the file its string came from; the service removes the orphaned
-    // attachment later.
+    // the issue and deletes the file its string came from; the service's scheduled job removes
+    // the unlinked attachment once it is more than 2 days old.
     after(async () => {
         try {
             if (issueUid) {
