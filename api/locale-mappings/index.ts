@@ -38,6 +38,10 @@ export class SmartlingLocaleMappingsApi extends SmartlingBaseApi {
         );
     }
 
+    /*
+     * Replaces the whole mapping: an unset externalLocaleDescription or
+     * externalLocaleMetadata is cleared.
+     */
     async updateMappingForAccount(
         accountUid: string,
         localeMappingUid: string,
@@ -50,6 +54,10 @@ export class SmartlingLocaleMappingsApi extends SmartlingBaseApi {
         );
     }
 
+    /*
+     * Replaces the whole mapping: an unset externalLocaleDescription or
+     * externalLocaleMetadata is cleared.
+     */
     async updateMappingForProject(
         projectId: string,
         localeMappingUid: string,
