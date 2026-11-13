@@ -12,7 +12,8 @@
     "pretest": "eslint . --ext .ts",
     "test": "npm run build:dev && nyc mocha --reporter mocha-junit-reporter --recursive 'built/test/**/*.spec.js' --ignore 'built/test/integration/**'",
     "test:dev": "npm run build:dev && nyc mocha --recursive 'built/test/**/*.spec.js' --ignore 'built/test/integration/**'",
-    "test:integration": "npm run build:dev && mocha --recursive 'built/test/integration/**/*.spec.js'"
+    "test:integration": "npm run build:dev && mocha --recursive 'built/test/integration/**/*.spec.js'",
+    "test:integration:only": "npm run build:dev && f() { [ -n \"$1\" ] || { echo \"usage: npm run test:integration:only -- <spec-name>\"; return 1; }; mkdir -p test/results && SMARTLING_LOG_RESPONSES=true mocha \"built/test/integration/$1.spec.js\" > \"test/results/$1.results.txt\" 2>&1; s=$?; cat \"test/results/$1.results.txt\"; return $s; }; f"
   },
   "repository": {
     "type": "git",
