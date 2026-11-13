@@ -44,4 +44,25 @@ Then compile the javascript:
 
 `npm install && npm run build`
 
+Testing
+-------
+
+Run the unit test suite (lint, build, and the Mocha tests):
+
+`npm test`
+
+Integration tests call the real Smartling API and need credentials: copy `.env.example` to `.env` and fill in `SMARTLING_ACCOUNT_UID`, `SMARTLING_USER_ID` and `SMARTLING_USER_SECRET`. Run the whole integration suite with:
+
+`npm run test:integration`
+
+To run just one integration spec instead of all of them, pass its file name under `test/integration/` (without the `.spec.ts` extension):
+
+`npm run test:integration:only -- <spec-name>`
+
+for example:
+
+`npm run test:integration:only -- jobs`
+
+This sets `SMARTLING_LOG_RESPONSES=true` and saves the run's output, real API responses included, to `test/results/<spec-name>.results.txt` for review.
+
 To contribute, fork it and follow [general GitHub guidelines](http://help.github.com/fork-a-repo/) with pull request.
