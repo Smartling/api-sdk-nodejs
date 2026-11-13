@@ -3,5 +3,6 @@ coverage/
 node_modules/
 .nyc_output/
 test-results.xml
+test/results/
 .idea/
 .env
