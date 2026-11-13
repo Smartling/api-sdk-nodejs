@@ -54,7 +54,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         projectId: string,
         contextUid: string,
         responseType: ResponseBodyType = ResponseBodyType.ARRAY_BUFFER
-    ): Promise<ArrayBuffer | string> {
+    ): Promise<ArrayBuffer | string | null> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/contexts/${contextUid}/content`,
@@ -122,6 +122,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
+    /** Resolves with no value on success; a failed delete rejects instead. */
     async delete(projectId: string, contextUid: string): Promise<void> {
         await this.makeRequest(
             "delete",
@@ -139,6 +140,7 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
+    /** The match runs asynchronously; poll its completion with getProcessResults(processUid). */
     async runAutomaticMatch(
         projectId: string, contextUid: string, params: ContextAutomaticMatchParameters
     ): Promise<AsyncMatchDto> {
@@ -149,6 +151,10 @@ export class SmartlingContextApi extends SmartlingBaseApi {
         );
     }
 
+    /**
+     * A 2xx response does not mean every binding was created: check the returned
+     * errors.totalCount, since a partial failure still resolves normally.
+     */
     async createStringsToContextBindings(
         projectId: string, params: CreateBindingsParameters
     ): Promise<CreateBindingsResponseDto> {
@@ -167,31 +173,39 @@ export class SmartlingContextApi extends SmartlingBaseApi {
 
     /* eslint-disable-next-line class-methods-use-this */
     alterRequestData(uri: string, opts: Record<string, unknown>): Record<string, unknown> {
-        if (uri.match(/context-api\/v2\/projects\/.*\/contexts(\/upload-and-match-async)?$/g)) {
-            if (!opts.body) {
-                return opts;
-            }
-
-            const formData = new FormData();
-
-            Object.keys(opts.body).forEach((key) => {
-                if (key === "content") {
-                    formData.append(key, string2fileStream(opts.body[key]));
-                } else if (key === "matchParams") {
-                    formData.append(key, JSON.stringify(opts.body[key]), { contentType: "application/json" });
-                } else if (Array.isArray(opts.body[key])) {
-                    opts.body[key].forEach((value) => {
-                        formData.append(`${key}[]`, value);
-                    });
-                } else {
-                    formData.append(key, opts.body[key]);
-                }
-            });
-
-            opts.headers["Content-Type"] = formData.getHeaders()["content-type"];
-            opts.body = formData;
+        if (!opts.body || opts.body instanceof FormData
+            || !uri.match(/context-api\/v2\/projects\/.*\/contexts(\/upload-and-match-async)?$/g)) {
+            return opts;
         }
 
-        return opts;
+        // Build a fresh FormData from opts.body without mutating opts: makeRequest() calls
+        // alterRequestData() again with the same opts object on a 401 retry, and a FormData's
+        // underlying stream can only be read once, so reusing one across attempts corrupts the
+        // retried body.
+        const body = opts.body as Record<string, unknown>;
+        const formData = new FormData();
+
+        Object.keys(body).forEach((key) => {
+            if (key === "content") {
+                formData.append(key, string2fileStream(body[key]));
+            } else if (key === "matchParams") {
+                formData.append(key, JSON.stringify(body[key]), { contentType: "application/json" });
+            } else if (Array.isArray(body[key])) {
+                (body[key] as Array<unknown>).forEach((value) => {
+                    formData.append(`${key}[]`, value);
+                });
+            } else {
+                formData.append(key, body[key]);
+            }
+        });
+
+        return {
+            ...opts,
+            headers: {
+                ...(opts.headers as Record<string, unknown>),
+                "Content-Type": formData.getHeaders()["content-type"]
+            },
+            body: formData
+        };
     }
 }

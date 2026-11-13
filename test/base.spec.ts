@@ -212,6 +212,49 @@ describe("Base class tests.", () => {
             );
         });
 
+        it("Success (JSON response): falsy and non-date-shaped date-key values are left untouched.", async () => {
+            const requestVerb = "POST";
+            const requestUri = "https://test.com";
+            const payload = {
+                foo: "bar"
+            };
+
+            baseFetchStub.returns(responseMock);
+
+            responseMockTextStub.returns(JSON.stringify({
+                response: {
+                    data: {
+                        created: null,
+                        modified: "",
+                        dueDate: 0,
+                        updated: { totalCount: 0 },
+                        createdDate: { nested: { deeper: 1 } }
+                    }
+                }
+            }));
+
+            const result = await base.makeRequest(requestVerb, requestUri, payload);
+
+            assert.strictEqual(result.created, null);
+            assert.strictEqual(result.modified, "");
+            assert.strictEqual(result.dueDate, 0);
+            assert.deepEqual(result.updated, { totalCount: 0 });
+            assert.deepEqual(result.createdDate, { nested: { deeper: 1 } });
+        });
+
+        it("Success: resolves to true on a real empty 204 body.", async () => {
+            const requestVerb = "DELETE";
+            const requestUri = "https://test.com";
+
+            baseFetchStub.returns(responseMock);
+            responseMockTextStub.returns("");
+
+            const result = await base.makeRequest(requestVerb, requestUri);
+
+            assert.strictEqual(result, true);
+            sinon.assert.notCalled(loggerDebug);
+        });
+
         it("Success (raw text response).", async () => {
             const requestVerb = "POST";
             const requestUri = "https://test.com";

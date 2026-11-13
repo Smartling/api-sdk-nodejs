@@ -23,6 +23,8 @@ export * from "./api/context/dto/binding/coordinates-dto";
 export * from "./api/context/dto/create-bindings-response-dto";
 export * from "./api/context/dto/binding/timecode-dto";
 export * from "./api/context/dto/match-stats-dto";
+export * from "./api/context/dto/match-process-result-dto";
+export * from "./api/context/dto/delete-process-result-dto";
 export * from "./api/context/dto/process-result-dto";
 export * from "./api/context/params/binding-filter-parameters";
 export * from "./api/context/params/context-upload-and-match-parameters";

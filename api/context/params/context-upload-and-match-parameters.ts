@@ -1,6 +1,6 @@
 import { ContextUploadParameters } from "./context-upload-parameters";
 import { VideoMatchingMode } from "./video-matching-mode";
-import { SmartlingException } from "../../exception/index";
+import { validateOverrideContextOlderThanDays } from "./validate-override-context-older-than-days";
 
 export class ContextUploadAndMatchParameters extends ContextUploadParameters {
     setFileUri(contentFileUri: string): this {
@@ -15,19 +15,14 @@ export class ContextUploadAndMatchParameters extends ContextUploadParameters {
         return this;
     }
 
-    setTranslationJobUids(translationJobUids: Array<string>): this {
-        if (translationJobUids.length > 1) {
-            throw new SmartlingException("Only one translation job uid is supported");
-        }
-        this.setMatchParam("translationJobUids", translationJobUids);
+    setTranslationJobUid(translationJobUid: string): this {
+        this.setMatchParam("translationJobUids", [translationJobUid]);
 
         return this;
     }
 
     setOverrideContextOlderThanDays(days: number): this {
-        if (days < 1) {
-            throw new SmartlingException("Override context older than days should be a positive number");
-        }
+        validateOverrideContextOlderThanDays(days);
         this.setMatchParam("overrideContextOlderThanDays", days);
 
         return this;
