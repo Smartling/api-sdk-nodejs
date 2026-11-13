@@ -1,5 +1,5 @@
 import { BaseParameters } from "../../parameters/index";
-import { SmartlingException } from "../../exception/index";
+import { validateOverrideContextOlderThanDays } from "./validate-override-context-older-than-days";
 
 export class ContextAutomaticMatchParameters extends BaseParameters {
     setFileUri(fileUri: string): ContextAutomaticMatchParameters {
@@ -17,9 +17,7 @@ export class ContextAutomaticMatchParameters extends BaseParameters {
     setOverrideContextOlderThanDays(
         overrideContextOlderThanDays: number
     ): ContextAutomaticMatchParameters {
-        if (!Number.isInteger(overrideContextOlderThanDays) || overrideContextOlderThanDays < 0) {
-            throw new SmartlingException("Override context older than days should be a non-negative integer");
-        }
+        validateOverrideContextOlderThanDays(overrideContextOlderThanDays);
         this.set("overrideContextOlderThanDays", overrideContextOlderThanDays);
 
         return this;

@@ -149,16 +149,18 @@ export class SmartlingBaseApi {
             return response;
         }
 
-        let textResponse: string;
+        const textResponse = await response.text();
+
+        // A successful empty body (e.g. a 204 on DELETE) has nothing to parse as JSON;
+        // mirrors the no-data sentinel returned below for a response with no `data` field.
+        if (textResponse === "") {
+            return true;
+        }
+
+        let jsonResponse;
+
         try {
-            textResponse = await response.text();
-
-            // A successful empty body (e.g. a 204 on DELETE) has nothing to parse as JSON.
-            if (textResponse === "") {
-                return true;
-            }
-
-            const jsonResponse = JSON.parse(textResponse, (key, value) => {
+            jsonResponse = JSON.parse(textResponse, (key, value) => {
                 const dateProperties = [
                     "created",
                     "modified",
@@ -181,10 +183,10 @@ export class SmartlingBaseApi {
                     "finished"
                 ];
 
-                // Only coerce string/number values: some response shapes (e.g.
+                // Only coerce non-empty string/number values: some response shapes (e.g.
                 // CreateBindingsResponseDto) have a "created" field that is a list wrapper
                 // object, not a date, and new Date(object) silently produces an Invalid Date.
-                const isDateLike = typeof value === "string" || typeof value === "number";
+                const isDateLike = value && (typeof value === "string" || typeof value === "number");
 
                 if (dateProperties.includes(key) && isDateLike) {
                     return new Date(value);
@@ -192,10 +194,6 @@ export class SmartlingBaseApi {
 
                 return value;
             });
-
-            this.logger.debug(`Received code ${response.status}; content: ${JSON.stringify(jsonResponse, SmartlingBaseApi.sensitiveReplacer)}`);
-
-            return jsonResponse?.response?.data ? jsonResponse?.response?.data : true;
         } catch (e) {
             this.logger.error(`Couldn't parse response json: ${e.toString()}`);
 
@@ -203,8 +201,12 @@ export class SmartlingBaseApi {
                 statusCode: response.status,
                 errorResponse: textResponse,
                 requestId: response.headers.get("x-sl-requestid")
-            });
+            }, e);
         }
+
+        this.logger.debug(`Received code ${response.status}; content: ${JSON.stringify(jsonResponse, SmartlingBaseApi.sensitiveReplacer)}`);
+
+        return jsonResponse?.response?.data ? jsonResponse?.response?.data : true;
     }
 
     public static sensitiveReplacer(key: string, value: any): any {

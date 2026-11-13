@@ -15,4 +15,17 @@ export class DeleteContextsAsyncParameters extends BaseParameters {
 
         return this;
     }
+
+    export(): Record<string, unknown> {
+        const exported = super.export();
+        const contextUids = exported.contextUids as Array<string>;
+
+        if (contextUids.length > MAX_CONTEXT_UIDS_PER_DELETE) {
+            throw new SmartlingException(
+                `Cannot delete more than ${MAX_CONTEXT_UIDS_PER_DELETE} contexts at once, got ${contextUids.length}`
+            );
+        }
+
+        return { ...exported, contextUids: [...contextUids] };
+    }
 }

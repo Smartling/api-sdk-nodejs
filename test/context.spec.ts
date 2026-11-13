@@ -132,6 +132,7 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should reject a non-integer override-context-older-than-days value", () => {
+            // When / Then
             assert.throws(
                 () => new ContextAutomaticMatchParameters().setOverrideContextOlderThanDays(NaN),
                 SmartlingException
@@ -191,6 +192,7 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should reject more than 150 bindings in a single request", () => {
+            // Given
             const params = new CreateBindingsParameters();
             const binding: HtmlBindingDto = {
                 contextUid: "1",
@@ -202,11 +204,15 @@ describe("SmartlingContextApi class tests.", () => {
                 params.addBinding(binding);
             }
 
+            // When / Then
             assert.throws(
                 () => params.addBinding(binding),
                 (e: unknown) => e instanceof SmartlingException
                     && (e as SmartlingException).message === "Cannot create more than 150 bindings at once, got 151"
             );
+
+            // The rejected binding must not have been appended to the list.
+            assert.strictEqual((params.export().bindings as Array<HtmlBindingDto>).length, 150);
         });
 
         it("Should correctly unwrap created/errors binding lists (regression: 'created' must not collapse into Invalid Date)", async () => {
@@ -288,14 +294,17 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should resolve with undefined on a real empty 204 delete response", async () => {
+            // Given
             contextServiceApiFetchStub.returns({
                 ...responseMock,
                 status: 204,
                 text: async (): Promise<string> => ""
             });
 
+            // When
             const result = await contextApi.delete(projectId, "context_uid");
 
+            // Then
             assert.strictEqual(result, undefined);
         });
 
@@ -470,6 +479,7 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should reject a non-integer override-context-older-than-days value on upload-and-match params", () => {
+            // When / Then
             assert.throws(
                 () => new ContextUploadAndMatchParameters().setOverrideContextOlderThanDays(NaN),
                 SmartlingException
@@ -506,11 +516,12 @@ describe("SmartlingContextApi class tests.", () => {
             const firstBody = contextServiceApiFetchStub.getCall(0).args[1].body;
             const secondBody = contextServiceApiFetchStub.getCall(1).args[1].body;
 
-            assert.strictEqual(firstBody, secondBody);
-            assert.match(
-                secondBody.getBuffer().toString(),
-                /name="matchParams"[\s\S]*\{"contentFileUri":"testContextFileName","videoMatchingMode":"OCR"\}/
-            );
+            assert.notStrictEqual(firstBody, secondBody);
+
+            const matchParamsPattern = /name="matchParams"[\s\S]*\{"contentFileUri":"testContextFileName","videoMatchingMode":"OCR"\}/;
+
+            assert.match(firstBody.getBuffer().toString(), matchParamsPattern);
+            assert.match(secondBody.getBuffer().toString(), matchParamsPattern);
         });
 
         it("Should get match results", async () => {
@@ -599,11 +610,35 @@ describe("SmartlingContextApi class tests.", () => {
             );
         });
 
+        it("Should list bindings with no filter set", async () => {
+            // Given
+            sinon.stub(responseMock, "text").returns(JSON.stringify({
+                response: {
+                    data: { items: [] }
+                }
+            }));
+
+            // When / Then
+            await contextApi.listBindings(projectId, new ListBindingsParameters());
+
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/bindings/list`,
+                {
+                    body: JSON.stringify({}),
+                    headers: expectedHeaders,
+                    method: "post"
+                }
+            );
+        });
+
         it("Should reject listing bindings with more than one filter set", async () => {
+            // Given
             const params = new ListBindingsParameters()
                 .setContextUid(contextUid)
                 .setStringHashcodes(stringHashCodes);
 
+            // When / Then
             await assert.rejects(
                 () => contextApi.listBindings(projectId, params),
                 SmartlingException
@@ -650,6 +685,7 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should reject deleting bindings with no filter set", async () => {
+            // When / Then
             await assert.rejects(
                 () => contextApi.deleteBindings(projectId, new DeleteBindingsParameters()),
                 SmartlingException
@@ -658,15 +694,68 @@ describe("SmartlingContextApi class tests.", () => {
         });
 
         it("Should reject deleting bindings with more than one filter set", async () => {
+            // Given
             const params = new DeleteBindingsParameters()
                 .setBindingUids(["binding1"])
                 .setContentFileUri(fileName);
+
+            // When / Then
+            await assert.rejects(
+                () => contextApi.deleteBindings(projectId, params),
+                SmartlingException
+            );
+            sinon.assert.notCalled(contextServiceApiFetchStub);
+        });
+
+        it("Should reject deleting bindings with an empty bindingUids array", async () => {
+            const params = new DeleteBindingsParameters().setBindingUids([]);
 
             await assert.rejects(
                 () => contextApi.deleteBindings(projectId, params),
                 SmartlingException
             );
             sinon.assert.notCalled(contextServiceApiFetchStub);
+        });
+
+        it("Should reject deleting bindings with a blank contentFileUri", async () => {
+            const params = new DeleteBindingsParameters().setContentFileUri("  ");
+
+            await assert.rejects(
+                () => contextApi.deleteBindings(projectId, params),
+                SmartlingException
+            );
+            sinon.assert.notCalled(contextServiceApiFetchStub);
+        });
+
+        it("Should reject deleting bindings with a null contextUid", async () => {
+            const params = new DeleteBindingsParameters().setContextUid(null);
+
+            await assert.rejects(
+                () => contextApi.deleteBindings(projectId, params),
+                SmartlingException
+            );
+            sinon.assert.notCalled(contextServiceApiFetchStub);
+        });
+
+        it("Should not reject deleting bindings with one empty filter alongside a set one", async () => {
+            // Given
+            const params = new DeleteBindingsParameters()
+                .setStringHashcodes([])
+                .setContextUid(contextUid);
+
+            // When
+            await contextApi.deleteBindings(projectId, params);
+
+            // Then
+            sinon.assert.calledWithExactly(
+                contextServiceApiFetchStub,
+                `https://test.com/context-api/v2/projects/${projectId}/bindings/remove`,
+                {
+                    body: JSON.stringify({ stringHashcodes: [], contextUid }),
+                    headers: expectedHeaders,
+                    method: "post"
+                }
+            );
         });
     });
 });

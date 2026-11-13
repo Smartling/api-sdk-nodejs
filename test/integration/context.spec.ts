@@ -84,7 +84,7 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
     async function assertContextGone(uid: string): Promise<void> {
         await assert.rejects(
             () => contextApi.getContext(projectId, uid),
-            SmartlingException
+            (e: unknown) => e instanceof SmartlingException && e.getPayload().statusCode === 404
         );
     }
 
@@ -192,8 +192,8 @@ describe("SmartlingContextApi integration tests.", function integrationSuite() {
     });
 
     it("runs automatic match", async () => {
-        // Own context, so a binding created here can't skew the exact-count assertions
-        // in "creates, lists and deletes bindings" below.
+        // Own context, so a binding created here can't skew another test's exact-count
+        // assertions on bindings.
         const matchContextUid = await uploadHtmlContext(`context-it-match-${suiteId}`);
 
         const result = await contextApi.runAutomaticMatch(

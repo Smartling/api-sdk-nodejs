@@ -1,6 +1,6 @@
 import { ContextUploadParameters } from "./context-upload-parameters";
 import { VideoMatchingMode } from "./video-matching-mode";
-import { SmartlingException } from "../../exception/index";
+import { validateOverrideContextOlderThanDays } from "./validate-override-context-older-than-days";
 
 export class ContextUploadAndMatchParameters extends ContextUploadParameters {
     setFileUri(contentFileUri: string): this {
@@ -22,9 +22,7 @@ export class ContextUploadAndMatchParameters extends ContextUploadParameters {
     }
 
     setOverrideContextOlderThanDays(days: number): this {
-        if (!Number.isInteger(days) || days < 0) {
-            throw new SmartlingException("Override context older than days should be a non-negative integer");
-        }
+        validateOverrideContextOlderThanDays(days);
         this.setMatchParam("overrideContextOlderThanDays", days);
 
         return this;

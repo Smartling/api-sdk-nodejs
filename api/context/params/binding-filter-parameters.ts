@@ -2,13 +2,16 @@ import { BaseParameters } from "../../parameters/index";
 import { SmartlingException } from "../../exception/index";
 
 export abstract class BindingFilterParameters extends BaseParameters {
-    // Mirrors BindingOperationsFactory.validate() on the backend: exactly one of these may
-    // be set, and an empty array/string counts as not set there (CollectionUtils/StringUtils
-    // .isEmpty), matched here by isFilterValueSet().
-    private static readonly FILTER_KEYS = ["stringHashcodes", "contentFileUri", "contextUid", "bindingUids"];
+    protected static readonly FILTER_KEYS = ["stringHashcodes", "contentFileUri", "contextUid", "bindingUids"];
+
+    protected static describeFilterKeys(): string {
+        const keys = BindingFilterParameters.FILTER_KEYS;
+
+        return `${keys.slice(0, -1).join(", ")} or ${keys[keys.length - 1]}`;
+    }
 
     setStringHashcodes(stringHashcodes: Array<string>): this {
-        this.set("stringHashcodes", stringHashcodes);
+        this.set("stringHashcodes", [...stringHashcodes]);
 
         return this;
     }
@@ -26,7 +29,7 @@ export abstract class BindingFilterParameters extends BaseParameters {
     }
 
     setBindingUids(bindingUids: Array<string>): this {
-        this.set("bindingUids", bindingUids);
+        this.set("bindingUids", [...bindingUids]);
 
         return this;
     }
@@ -39,7 +42,7 @@ export abstract class BindingFilterParameters extends BaseParameters {
 
         if (setFilterCount > 1) {
             throw new SmartlingException(
-                "Only one of stringHashcodes, contentFileUri, contextUid or bindingUids may be set"
+                `Only one of ${BindingFilterParameters.describeFilterKeys()} may be set`
             );
         }
 
@@ -57,9 +60,9 @@ export abstract class BindingFilterParameters extends BaseParameters {
         }
 
         if (typeof value === "string") {
-            return value.length > 0;
+            return value.trim().length > 0;
         }
 
-        return value !== undefined;
+        return value !== undefined && value !== null;
     }
 }
