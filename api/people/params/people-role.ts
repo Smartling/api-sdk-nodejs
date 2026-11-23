@@ -1,10 +1,5 @@
-// The full role catalog, from RoleValues.java (Smartling/tms) - ROLE_SERVICE excluded:
-// it's documented there as "a role specifically for standalone services to communicate...
-// No real user should be granted this role."
-//
-// This enum does not say which roles are valid for a given ACL level (account/project/
-// workflow): that is enforced server-side, and an invalid or inaccessible role is rejected
-// with a 400.
+// ROLE_SERVICE is intentionally omitted. Which roles are valid for an ACL level is enforced
+// server-side: an invalid or inaccessible role is rejected with a 400.
 export enum PeopleRole {
     ROLE_ADMINISTRATOR = "ROLE_ADMINISTRATOR",
     ROLE_PROFESSIONAL_TRANSLATOR = "ROLE_PROFESSIONAL_TRANSLATOR",

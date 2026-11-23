@@ -32,6 +32,10 @@ const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
 const hasCredentials = Boolean(accountUid && userId && userSecret);
 
+/*
+ * closeJob has no integration test: the service only closes a COMPLETED job, and a job can't be
+ * driven to COMPLETED here without real translation work on the account.
+ */
 describe("SmartlingJobsApi integration tests.", function integrationSuite() {
     this.timeout(180000);
 
@@ -251,7 +255,18 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         );
 
         logResponse("findJobsByStrings", jobs);
-        assert.ok(jobs.items.some((item) => item.translationJobUid === jobUid));
+        assert.strictEqual(typeof jobs.totalCount, "number");
+
+        const found = jobs.items.find((item) => item.translationJobUid === jobUid);
+
+        assert.ok(found);
+        assert.strictEqual(typeof found.jobName, "string");
+        assert.ok(found.dueDate === null || found.dueDate instanceof Date);
+        assert.ok(found.hashcodesByLocale.length > 0);
+        found.hashcodesByLocale.forEach((entry) => {
+            assert.strictEqual(typeof entry.localeId, "string");
+            assert.ok(entry.hashcodes.length > 0);
+        });
     });
 
     it("moves a file's strings from another job with moveEnabled", async () => {
