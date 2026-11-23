@@ -201,7 +201,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
     ): Promise<SmartlingListResponse<JobWithProcessDto>> {
         return await this.makeRequest(
             "post",
-            `${this.entrypoint}/${projectId}/jobs/processes`,
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/jobs/processes`,
             JSON.stringify(params.export())
         );
     }
@@ -211,16 +211,18 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
     ): Promise<SmartlingListResponse<JobLocaleCompletionDateDto>> {
         return await this.makeRequest(
             "get",
-            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/locales-completion-dates`
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/jobs/${encodeURIComponent(translationJobUid)}/locales-completion-dates`
         );
     }
 
+    // Returns a list (one item per locale and workflow step), although the public API reference
+    // shows a single object.
     async getJobSchedule(
         projectId: string, translationJobUid: string
     ): Promise<SmartlingListResponse<JobScheduleDto>> {
         return await this.makeRequest(
             "get",
-            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/schedule`
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/jobs/${encodeURIComponent(translationJobUid)}/schedule`
         );
     }
 
@@ -229,7 +231,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
     ): Promise<SmartlingListResponse<JobByStringsDto>> {
         return await this.makeRequest(
             "post",
-            `${this.entrypoint}/${projectId}/jobs/find-jobs-by-strings`,
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/jobs/find-jobs-by-strings`,
             JSON.stringify(params.export())
         );
     }

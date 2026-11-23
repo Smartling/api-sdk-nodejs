@@ -579,6 +579,18 @@ describe("SmartlingJobsAPI class tests.", () => {
         });
     });
 
+    describe("path encoding of the new methods", () => {
+        it("encodes the project and job uids", async () => {
+            await jobApi.getJobSchedule("project/id", "job uid");
+
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                "https://test.com/jobs-api/v3/projects/project%2Fid/jobs/job%20uid/schedule",
+                sinon.match.object
+            );
+        });
+    });
+
     describe("getJobSchedule", () => {
         it("gets the job schedule", async () => {
             await jobApi.getJobSchedule(projectId, jobUid);

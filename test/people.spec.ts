@@ -1,3 +1,4 @@
+import assert from "assert";
 import sinon from "sinon";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { SmartlingPeopleApi } from "../api/people/index";
@@ -12,22 +13,24 @@ describe("SmartlingPeopleApi class tests.", () => {
     let peopleApi;
     let fetchStub;
     let uaStub;
-    let responseMockJsonStub;
+    let responseMockTextStub;
 
     beforeEach(() => {
         peopleApi = new SmartlingPeopleApi("https://test.com", authMock as unknown as SmartlingAuthApi, loggerMock);
         fetchStub = sinon.stub(peopleApi, "fetch");
         uaStub = sinon.stub(peopleApi, "ua");
-        responseMockJsonStub = sinon.stub(responseMock, "json");
+        responseMockTextStub = sinon.stub(responseMock, "text");
 
         uaStub.returns("test_user_agent");
         fetchStub.returns(responseMock);
-        responseMockJsonStub.returns({ response: { data: { items: [], offsetToken: null } } });
+        responseMockTextStub.returns(
+            JSON.stringify({ response: { data: { items: [], offsetToken: null } } })
+        );
     });
 
     afterEach(() => {
         fetchStub.restore();
-        responseMockJsonStub.restore();
+        responseMockTextStub.restore();
         uaStub.restore();
     });
 
@@ -63,6 +66,47 @@ describe("SmartlingPeopleApi class tests.", () => {
             fetchStub,
             `https://test.com/people-api/v3/accounts/${accountUid}/users`,
             expectedRequest("{}")
+        );
+    });
+
+    it("converts lastLogin to a Date and keeps null", async () => {
+        responseMockTextStub.returns(JSON.stringify({
+            response: {
+                data: {
+                    items: [
+                        { userUid: "u1", lastLogin: "2026-01-14T09:30:00Z" },
+                        { userUid: "u2", lastLogin: null }
+                    ],
+                    offsetToken: null
+                }
+            }
+        }));
+
+        const result = await peopleApi.searchAccountUsers(accountUid);
+
+        assert.ok(result.items[0].lastLogin instanceof Date);
+        assert.strictEqual(result.items[1].lastLogin, null);
+        assert.strictEqual(result.offsetToken, null);
+    });
+
+    it("sends the offset token from a response in the next request", async () => {
+        const responseBody = { response: { data: { items: [], offsetToken: "next-token" } } };
+
+        responseMockTextStub.returns(JSON.stringify(responseBody));
+
+        const page = await peopleApi.searchAccountUsers(
+            accountUid, new TeamViewFilterParameters().setLimit(1)
+        );
+
+        await peopleApi.searchAccountUsers(
+            accountUid,
+            new TeamViewFilterParameters().setLimit(1).setOffsetToken(page.offsetToken)
+        );
+
+        sinon.assert.calledWithExactly(
+            fetchStub.secondCall,
+            `https://test.com/people-api/v3/accounts/${accountUid}/users`,
+            expectedRequest("{\"limit\":1,\"offsetToken\":\"next-token\"}")
         );
     });
 

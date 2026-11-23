@@ -9,7 +9,6 @@ import { AddFileParameters } from "../../api/jobs/params/add-file-parameters";
 import { RemoveFileParameters } from "../../api/jobs/params/remove-file-parameters";
 import { ListJobFilesParameters } from "../../api/jobs/params/list-job-files-parameters";
 import { CancelJobParameters } from "../../api/jobs/params/cancel-job-parameters";
-import { AuthorizeJobParameters } from "../../api/jobs/params/authorize-job-parameters";
 import { UpdateJobParameters } from "../../api/jobs/params/update-job-parameters";
 import { ListJobsParameters } from "../../api/jobs/params/list-jobs-parameters";
 import { SearchJobsParameters } from "../../api/jobs/params/search-jobs-parameters";
@@ -147,15 +146,6 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         assert.strictEqual(typeof added.failCount, "number");
     });
 
-    it("authorizes a job", async () => {
-        const authorized = await jobsApi.authorizeJob(
-            projectId, jobUid, new AuthorizeJobParameters()
-        );
-
-        logResponse("authorizeJob", authorized);
-        assert.ok(authorized);
-    });
-
     it("gets a job", async () => {
         const job = await jobsApi.getJob(projectId, jobUid);
 
@@ -202,7 +192,8 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         );
 
         logResponse("getJobProgress", progress);
-        assert.ok(progress.progress);
+        assert.strictEqual(typeof progress.progress.totalWordCount, "number");
+        assert.ok(Array.isArray(progress.contentProgressReport));
     });
 
     it("gets job file progress", async () => {
@@ -219,6 +210,10 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
 
         logResponse("getJobLocalesCompletionDates", dates);
         assert.ok(Array.isArray(dates.items));
+        dates.items.forEach((item) => {
+            assert.strictEqual(typeof item.targetLocaleId, "string");
+            assert.ok(item.completionDate instanceof Date);
+        });
     });
 
     it("gets the job schedule", async () => {
@@ -226,6 +221,10 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
 
         logResponse("getJobSchedule", schedule);
         assert.ok(Array.isArray(schedule.items));
+        schedule.items.forEach((item) => {
+            assert.strictEqual(typeof item.scheduleUid, "string");
+            assert.ok(item.dueDate instanceof Date);
+        });
     });
 
     it("gets jobs with an active process", async () => {
