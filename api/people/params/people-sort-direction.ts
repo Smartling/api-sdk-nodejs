@@ -1,3 +1,4 @@
-type PeopleSortDirection = "ASC" | "DESC";
-
-export { PeopleSortDirection };
+export enum PeopleSortDirection {
+    ASC = "ASC",
+    DESC = "DESC"
+}

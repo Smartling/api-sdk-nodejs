@@ -152,7 +152,7 @@ describe("Base class tests.", () => {
 
             baseFetchStub.returns(responseMock);
 
-            responseMockTextStub.returns("{\"response\": {\"data\": {\"userIdentifier\":\"test_user_identifier\",\"foo\":{\"userSecret\":\"test_user_secret\",\"accessToken\":\"test_access_token\",\"refreshToken\":\"test_refresh_token\"},\"created\":\"2021-08-18T09:57:59.088Z\",\"modified\":\"2021-08-18T09:57:59.088Z\",\"updated\":\"2021-08-18T09:57:59.088Z\",\"createdDate\":\"2021-08-18T09:57:59.088Z\",\"modifiedDate\":\"2021-08-18T09:57:59.088Z\",\"updatedDate\":\"2021-08-18T09:57:59.088Z\",\"updateDate\":\"2021-08-18T09:57:59.088Z\",\"dueDate\":\"2021-08-18T09:57:59.088Z\",\"actionTime\":\"2021-08-18T09:57:59.088Z\",\"publishDate\":\"2021-08-18T09:57:59.088Z\",\"lastModified\":\"2021-08-18T09:57:59.088Z\",\"completedDate\":\"2021-08-18T09:57:59.088Z\",\"authorizationDate\":\"2021-08-18T09:57:59.088Z\",\"started\":\"2021-08-18T09:57:59.088Z\",\"finished\":\"2021-08-18T09:57:59.088Z\",\"createdString\":\"2021-08-18T09:57:59.088Z\"}}}");
+            responseMockTextStub.returns("{\"response\": {\"data\": {\"userIdentifier\":\"test_user_identifier\",\"foo\":{\"userSecret\":\"test_user_secret\",\"accessToken\":\"test_access_token\",\"refreshToken\":\"test_refresh_token\"},\"created\":\"2021-08-18T09:57:59.088Z\",\"modified\":\"2021-08-18T09:57:59.088Z\",\"updated\":\"2021-08-18T09:57:59.088Z\",\"createdDate\":\"2021-08-18T09:57:59.088Z\",\"modifiedDate\":\"2021-08-18T09:57:59.088Z\",\"updatedDate\":\"2021-08-18T09:57:59.088Z\",\"updateDate\":\"2021-08-18T09:57:59.088Z\",\"dueDate\":\"2021-08-18T09:57:59.088Z\",\"actionTime\":\"2021-08-18T09:57:59.088Z\",\"publishDate\":\"2021-08-18T09:57:59.088Z\",\"lastModified\":\"2021-08-18T09:57:59.088Z\",\"completedDate\":\"2021-08-18T09:57:59.088Z\",\"completionDate\":\"2021-08-18T09:57:59.088Z\",\"lastLogin\":\"2021-08-18T09:57:59.088Z\",\"authorizationDate\":\"2021-08-18T09:57:59.088Z\",\"started\":\"2021-08-18T09:57:59.088Z\",\"finished\":\"2021-08-18T09:57:59.088Z\",\"createdString\":\"2021-08-18T09:57:59.088Z\"}}}");
 
             const result = await base.makeRequest(requestVerb, requestUri, payload);
 
@@ -168,6 +168,8 @@ describe("Base class tests.", () => {
             assert.equal(result.publishDate instanceof Date, true);
             assert.equal(result.lastModified instanceof Date, true);
             assert.equal(result.completedDate instanceof Date, true);
+            assert.equal(result.completionDate instanceof Date, true);
+            assert.equal(result.lastLogin instanceof Date, true);
             assert.equal(result.authorizationDate instanceof Date, true);
             assert.equal(result.started instanceof Date, true);
             assert.equal(result.finished instanceof Date, true);
@@ -208,7 +210,7 @@ describe("Base class tests.", () => {
             sinon.assert.calledOnce(loggerDebug);
             sinon.assert.calledWithExactly(
                 loggerDebug,
-                "Received code 200; content: {\"response\":{\"data\":{\"userIdentifier\":\"test_user_xxxxx\",\"foo\":{\"userSecret\":\"test_user_xxxxx\",\"accessToken\":\"test_accesxxxxx\",\"refreshToken\":\"test_refrexxxxx\"},\"created\":\"2021-08-18T09:57:59.088Z\",\"modified\":\"2021-08-18T09:57:59.088Z\",\"updated\":\"2021-08-18T09:57:59.088Z\",\"createdDate\":\"2021-08-18T09:57:59.088Z\",\"modifiedDate\":\"2021-08-18T09:57:59.088Z\",\"updatedDate\":\"2021-08-18T09:57:59.088Z\",\"updateDate\":\"2021-08-18T09:57:59.088Z\",\"dueDate\":\"2021-08-18T09:57:59.088Z\",\"actionTime\":\"2021-08-18T09:57:59.088Z\",\"publishDate\":\"2021-08-18T09:57:59.088Z\",\"lastModified\":\"2021-08-18T09:57:59.088Z\",\"completedDate\":\"2021-08-18T09:57:59.088Z\",\"authorizationDate\":\"2021-08-18T09:57:59.088Z\",\"started\":\"2021-08-18T09:57:59.088Z\",\"finished\":\"2021-08-18T09:57:59.088Z\",\"createdString\":\"2021-08-18T09:57:59.088Z\"}}}"
+                "Received code 200; content: {\"response\":{\"data\":{\"userIdentifier\":\"test_user_xxxxx\",\"foo\":{\"userSecret\":\"test_user_xxxxx\",\"accessToken\":\"test_accesxxxxx\",\"refreshToken\":\"test_refrexxxxx\"},\"created\":\"2021-08-18T09:57:59.088Z\",\"modified\":\"2021-08-18T09:57:59.088Z\",\"updated\":\"2021-08-18T09:57:59.088Z\",\"createdDate\":\"2021-08-18T09:57:59.088Z\",\"modifiedDate\":\"2021-08-18T09:57:59.088Z\",\"updatedDate\":\"2021-08-18T09:57:59.088Z\",\"updateDate\":\"2021-08-18T09:57:59.088Z\",\"dueDate\":\"2021-08-18T09:57:59.088Z\",\"actionTime\":\"2021-08-18T09:57:59.088Z\",\"publishDate\":\"2021-08-18T09:57:59.088Z\",\"lastModified\":\"2021-08-18T09:57:59.088Z\",\"completedDate\":\"2021-08-18T09:57:59.088Z\",\"completionDate\":\"2021-08-18T09:57:59.088Z\",\"lastLogin\":\"2021-08-18T09:57:59.088Z\",\"authorizationDate\":\"2021-08-18T09:57:59.088Z\",\"started\":\"2021-08-18T09:57:59.088Z\",\"finished\":\"2021-08-18T09:57:59.088Z\",\"createdString\":\"2021-08-18T09:57:59.088Z\"}}}"
             );
         });
 

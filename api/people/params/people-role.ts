@@ -2,28 +2,27 @@
 // it's documented there as "a role specifically for standalone services to communicate...
 // No real user should be granted this role."
 //
-// This type does not say which roles are valid for a given ACL level (account/project/
-// workflow) - that grouping isn't available from any static, authoritative source, and is
-// enforced server-side: an invalid or inaccessible role is rejected with a 400.
-type PeopleRole =
-    | "ROLE_ADMINISTRATOR"
-    | "ROLE_PROFESSIONAL_TRANSLATOR"
-    | "ROLE_COMMUNITY_TRANSLATOR"
-    | "ROLE_LINGUISTIC_QA_EDITOR"
-    | "ROLE_PROFESSIONAL_EDITOR"
-    | "ROLE_CLIENT_PRE_APPROVER"
-    | "ROLE_CLIENT_POST_APPROVER"
-    | "ROLE_AGENCY_USER"
-    | "ROLE_DEMO_USER"
-    | "ROLE_PROJECT_MANAGER"
-    | "ROLE_PSVC_ADMINISTRATOR"
-    | "ROLE_TRUSTED_REVIEWER"
-    | "ROLE_ACCOUNT_OWNER"
-    | "ROLE_AGENCY_OWNER"
-    | "ROLE_TRANSLATION_RESOURCE"
-    | "ROLE_TRANSLATION_RESOURCE_MANAGER"
-    | "ROLE_REQUESTER"
-    | "ROLE_CONTENT_CREATOR"
-    | "ROLE_CONTENT_VIEWER";
-
-export { PeopleRole };
+// This enum does not say which roles are valid for a given ACL level (account/project/
+// workflow): that is enforced server-side, and an invalid or inaccessible role is rejected
+// with a 400.
+export enum PeopleRole {
+    ROLE_ADMINISTRATOR = "ROLE_ADMINISTRATOR",
+    ROLE_PROFESSIONAL_TRANSLATOR = "ROLE_PROFESSIONAL_TRANSLATOR",
+    ROLE_COMMUNITY_TRANSLATOR = "ROLE_COMMUNITY_TRANSLATOR",
+    ROLE_LINGUISTIC_QA_EDITOR = "ROLE_LINGUISTIC_QA_EDITOR",
+    ROLE_PROFESSIONAL_EDITOR = "ROLE_PROFESSIONAL_EDITOR",
+    ROLE_CLIENT_PRE_APPROVER = "ROLE_CLIENT_PRE_APPROVER",
+    ROLE_CLIENT_POST_APPROVER = "ROLE_CLIENT_POST_APPROVER",
+    ROLE_AGENCY_USER = "ROLE_AGENCY_USER",
+    ROLE_DEMO_USER = "ROLE_DEMO_USER",
+    ROLE_PROJECT_MANAGER = "ROLE_PROJECT_MANAGER",
+    ROLE_PSVC_ADMINISTRATOR = "ROLE_PSVC_ADMINISTRATOR",
+    ROLE_TRUSTED_REVIEWER = "ROLE_TRUSTED_REVIEWER",
+    ROLE_ACCOUNT_OWNER = "ROLE_ACCOUNT_OWNER",
+    ROLE_AGENCY_OWNER = "ROLE_AGENCY_OWNER",
+    ROLE_TRANSLATION_RESOURCE = "ROLE_TRANSLATION_RESOURCE",
+    ROLE_TRANSLATION_RESOURCE_MANAGER = "ROLE_TRANSLATION_RESOURCE_MANAGER",
+    ROLE_REQUESTER = "ROLE_REQUESTER",
+    ROLE_CONTENT_CREATOR = "ROLE_CONTENT_CREATOR",
+    ROLE_CONTENT_VIEWER = "ROLE_CONTENT_VIEWER"
+}

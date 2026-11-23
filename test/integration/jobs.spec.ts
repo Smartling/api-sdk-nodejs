@@ -152,6 +152,7 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         );
 
         logResponse("authorizeJob", authorized);
+        assert.ok(authorized);
     });
 
     it("gets a job", async () => {

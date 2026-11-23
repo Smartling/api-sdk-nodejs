@@ -8,9 +8,7 @@ interface TeamViewItemDto {
     firstName: string;
     lastName: string;
     email: string;
-    // Not converted to a Date: "lastLogin" isn't in the shared dateProperties list in
-    // api/base/base-api.ts. Also null for a user who has never logged in.
-    lastLogin: string | null;
+    lastLogin: Date | null;
     payable: boolean | null;
     pending: boolean | null;
     agency: AgencyDto | null;

@@ -1,3 +1,7 @@
-type PeopleSortProperty = "default" | "firstName" | "lastName" | "email" | "lastLogin";
-
-export { PeopleSortProperty };
+export enum PeopleSortProperty {
+    DEFAULT = "default",
+    FIRST_NAME = "firstName",
+    LAST_NAME = "lastName",
+    EMAIL = "email",
+    LAST_LOGIN = "lastLogin"
+}

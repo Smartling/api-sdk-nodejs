@@ -40,6 +40,10 @@ describe("SmartlingPeopleApi integration tests.", function integrationSuite() {
         );
         const [first] = all.items;
 
+        assert.ok(first, "Test account must have at least one user");
+        assert.strictEqual(typeof first.userUid, "string");
+        assert.ok("offsetToken" in all);
+
         const users = await peopleApi.searchAccountUsers(
             accountUid, new TeamViewFilterParameters().setKeyword(first.email)
         );

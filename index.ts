@@ -368,7 +368,7 @@ export * from "./api/people/dto/agency-dto";
 export * from "./api/people/dto/people-locale-pair-dto";
 export * from "./api/people/dto/action-state-dto";
 export * from "./api/people/dto/action-status";
-export * from "./api/people/dto/offset-page-response";
+export * from "./api/people/dto/people-offset-page-response";
 export * from "./api/people/params/team-view-filter-parameters";
 export * from "./api/people/params/people-role";
 export * from "./api/people/params/people-sort-property";

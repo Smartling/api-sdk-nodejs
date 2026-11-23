@@ -621,5 +621,15 @@ describe("SmartlingJobsAPI class tests.", () => {
                 }
             );
         });
+
+        it("omits locale ids when only hashcodes are set", async () => {
+            await jobApi.findJobsByStrings(projectId, new FindJobsByStringsParameters().setHashcodes(["hash1"]));
+
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/find-jobs-by-strings`,
+                sinon.match({ body: "{\"hashcodes\":[\"hash1\"]}" })
+            );
+        });
     });
 });
