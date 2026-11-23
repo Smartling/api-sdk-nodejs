@@ -147,7 +147,9 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
     });
 
     it("authorizes a job", async () => {
-        const authorized = await jobsApi.authorizeJob(projectId, jobUid, new AuthorizeJobParameters());
+        const authorized = await jobsApi.authorizeJob(
+            projectId, jobUid, new AuthorizeJobParameters()
+        );
 
         logResponse("authorizeJob", authorized);
     });
