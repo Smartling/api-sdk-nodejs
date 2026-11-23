@@ -32,10 +32,7 @@ const userId = process.env.SMARTLING_USER_ID as string;
 const userSecret = process.env.SMARTLING_USER_SECRET as string;
 const hasCredentials = Boolean(accountUid && userId && userSecret);
 
-/*
- * closeJob has no integration test: the service only closes a COMPLETED job, and a job can't be
- * driven to COMPLETED here without real translation work on the account.
- */
+// closeJob is not covered: the service only closes a COMPLETED job, which the suite can't produce.
 describe("SmartlingJobsApi integration tests.", function integrationSuite() {
     this.timeout(180000);
 
