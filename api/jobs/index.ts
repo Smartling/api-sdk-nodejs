@@ -26,6 +26,12 @@ import { AddStringsToJobParameters } from "./params/add-strings-to-job-parameter
 import { RemoveStringsFromJobParameters } from "./params/remove-strings-from-job-parameters";
 import { AddedStringsDto } from "./dto/added-strings-dto";
 import { RemovedStringsDto } from "./dto/removed-strings-dto";
+import { JobWithProcessDto } from "./dto/job-with-process-dto";
+import { JobLocaleCompletionDateDto } from "./dto/job-locale-completion-date-dto";
+import { JobScheduleDto } from "./dto/job-schedule-dto";
+import { JobByStringsDto } from "./dto/job-by-strings-dto";
+import { GetJobsWithProcessesParameters } from "./params/get-jobs-with-processes-parameters";
+import { FindJobsByStringsParameters } from "./params/find-jobs-by-strings-parameters";
 
 export class SmartlingJobsApi extends SmartlingBaseApi {
     constructor(smartlingApiBaseUrl: string, authApi: AccessTokenProvider, logger: Logger) {
@@ -186,6 +192,44 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/strings/remove`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async getJobsWithActiveProcess(
+        projectId: string, params: GetJobsWithProcessesParameters
+    ): Promise<SmartlingListResponse<JobWithProcessDto>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/processes`,
+            JSON.stringify(params.export())
+        );
+    }
+
+    async getJobLocalesCompletionDates(
+        projectId: string, translationJobUid: string
+    ): Promise<SmartlingListResponse<JobLocaleCompletionDateDto>> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/locales-completion-dates`
+        );
+    }
+
+    async getJobSchedule(
+        projectId: string, translationJobUid: string
+    ): Promise<SmartlingListResponse<JobScheduleDto>> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${projectId}/jobs/${translationJobUid}/schedule`
+        );
+    }
+
+    async findJobsByStrings(
+        projectId: string, params: FindJobsByStringsParameters
+    ): Promise<SmartlingListResponse<JobByStringsDto>> {
+        return await this.makeRequest(
+            "post",
+            `${this.entrypoint}/${projectId}/jobs/find-jobs-by-strings`,
             JSON.stringify(params.export())
         );
     }

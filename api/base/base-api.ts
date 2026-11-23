@@ -175,6 +175,7 @@ export class SmartlingBaseApi {
                     "lastModified",
                     "attemptDate",
                     "completedDate",
+                    "completionDate",
                     "authorizationDate",
                     "translationJobWorkflowStepDueDate",
                     "translationJobOverallDueDate",
