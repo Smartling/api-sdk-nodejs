@@ -6,13 +6,13 @@ import { CallbackMethod } from "../params/callback-method";
 interface JobDto extends BaseJobDto {
     callbackMethod: CallbackMethod | null;
     callbackUrl: string | null;
-    createdByUserUid: string;
+    createdByUserUid: string | null;
     firstAuthorizedDate: string | null;
     firstCompletedDate: string | null;
     issues: IssuesCountsDto | null;
     lastAuthorizedDate: string | null;
     lastCompletedDate: string | null;
-    modifiedByUserUid: string;
+    modifiedByUserUid: string | null;
     modifiedDate: Date;
     rushRequest: boolean;
     customFields: Array<CustomFieldDto>;

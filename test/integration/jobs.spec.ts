@@ -271,6 +271,7 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         assert.strictEqual(typeof found.rushRequest, "boolean");
         assert.ok(found.dueDate === null || found.dueDate instanceof Date);
         assert.ok(found.jobNumber === null || typeof found.jobNumber === "string");
+        assert.ok(!jobs.items.some((item) => item.translationJobUid === secondJobUid));
     });
 
     it("gets job certificates", async () => {

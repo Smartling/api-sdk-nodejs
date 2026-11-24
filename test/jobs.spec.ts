@@ -748,7 +748,7 @@ describe("SmartlingJobsAPI class tests.", () => {
             responseMockTextStub.returns(JSON.stringify({
                 response: {
                     data: {
-                        totalCount: 2,
+                        totalCount: 3,
                         items: [
                             {
                                 localeId: "de-DE",
@@ -769,6 +769,16 @@ describe("SmartlingJobsAPI class tests.", () => {
                                 bundle: { attachmentUid: null },
                                 createdDate: "2026-01-15T10:00:00Z",
                                 completedDate: null
+                            },
+                            {
+                                localeId: "es-ES",
+                                localeDescription: "Spanish (Spain)",
+                                status: "FAILED",
+                                error: "Certified download generation failed.",
+                                certificate: { attachmentUid: null },
+                                bundle: { attachmentUid: null },
+                                createdDate: "2026-01-15T10:00:00Z",
+                                completedDate: null
                             }
                         ]
                     }
@@ -782,6 +792,8 @@ describe("SmartlingJobsAPI class tests.", () => {
             assert.ok(result.items[0].completedDate instanceof Date);
             assert.strictEqual(result.items[1].completedDate, null);
             assert.strictEqual(result.items[1].certificate.attachmentUid, null);
+            assert.strictEqual(result.items[2].status, JobCertificateStatus.FAILED);
+            assert.strictEqual(result.items[2].error, "Certified download generation failed.");
         });
     });
 });
