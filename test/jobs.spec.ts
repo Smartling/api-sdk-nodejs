@@ -23,7 +23,7 @@ import { RemoveStringsFromJobParameters } from "../api/jobs/params/remove-string
 import { GetJobsWithProcessesParameters } from "../api/jobs/params/get-jobs-with-processes-parameters";
 import { FindJobsByStringsParameters } from "../api/jobs/params/find-jobs-by-strings-parameters";
 import { SearchJobsParameters } from "../api/jobs/params/search-jobs-parameters";
-import { JobCertificateStatus } from "../api/jobs/dto/job-certificate-status";
+import { JobCertificateStatus } from "../api/jobs/params/job-certificate-status";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";

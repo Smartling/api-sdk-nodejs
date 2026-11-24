@@ -1,5 +1,5 @@
 import { JobCertificateArtifactDto } from "./job-certificate-artifact-dto";
-import { JobCertificateStatus } from "./job-certificate-status";
+import { JobCertificateStatus } from "../params/job-certificate-status";
 
 interface JobCertificateLocaleDto {
     localeId: string;
