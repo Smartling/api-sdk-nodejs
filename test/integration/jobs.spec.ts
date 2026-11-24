@@ -174,7 +174,11 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         );
 
         logResponse("listJobs", jobs);
-        assert.ok(jobs.items.some((item) => item.translationJobUid === jobUid));
+
+        const found = jobs.items.find((item) => item.translationJobUid === jobUid);
+
+        assert.ok(found);
+        assert.strictEqual(typeof found.rushRequest, "boolean");
     });
 
     it("searches jobs by file uri", async () => {
@@ -253,7 +257,13 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         );
 
         logResponse("searchJobs by hashcodes", jobs);
-        assert.ok(jobs.items.some((item) => item.translationJobUid === jobUid));
+
+        const found = jobs.items.find((item) => item.translationJobUid === jobUid);
+
+        assert.ok(found);
+        assert.strictEqual(typeof found.rushRequest, "boolean");
+        assert.ok(found.dueDate === null || found.dueDate instanceof Date);
+        assert.ok(found.jobNumber === null || typeof found.jobNumber === "string");
     });
 
     it("gets job certificates", async () => {

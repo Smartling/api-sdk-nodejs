@@ -2,14 +2,14 @@ import { JobStatus } from "../params/job-status";
 
 interface BaseJobDto {
     createdDate: Date;
-    description: string;
-    dueDate: Date;
+    description: string | null;
+    dueDate: Date | null;
     jobName: string;
-    jobNumber: string;
+    jobNumber: string | null;
     jobStatus: JobStatus;
     targetLocaleIds: Array<string>;
     translationJobUid: string;
-    referenceNumber: string;
+    referenceNumber: string | null;
 }
 
 export { BaseJobDto };

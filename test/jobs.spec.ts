@@ -671,6 +671,46 @@ describe("SmartlingJobsAPI class tests.", () => {
         });
     });
 
+    describe("searchJobs response", () => {
+        let responseMockTextStub;
+
+        beforeEach(() => {
+            responseMockTextStub = sinon.stub(responseMock, "text");
+        });
+
+        afterEach(() => {
+            responseMockTextStub.restore();
+        });
+
+        it("keeps null fields and converts the dates", async () => {
+            responseMockTextStub.returns(JSON.stringify({
+                response: {
+                    data: {
+                        totalCount: 1,
+                        items: [{
+                            translationJobUid: jobUid,
+                            jobName: "name",
+                            jobNumber: null,
+                            dueDate: null,
+                            createdDate: "2026-01-15T10:00:00Z",
+                            referenceNumber: null,
+                            description: null,
+                            rushRequest: false
+                        }]
+                    }
+                }
+            }));
+
+            const result = await jobApi.searchJobs(projectId, new SearchJobsParameters().setHashcodes(["hash1"]));
+            const [item] = result.items;
+
+            assert.strictEqual(item.dueDate, null);
+            assert.strictEqual(item.jobNumber, null);
+            assert.ok(item.createdDate instanceof Date);
+            assert.strictEqual(item.rushRequest, false);
+        });
+    });
+
     describe("getJobCertificates", () => {
         let responseMockTextStub;
 

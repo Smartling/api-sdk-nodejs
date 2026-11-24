@@ -9,7 +9,7 @@ import { FileProgressParameters } from "./params/file-progress-parameters";
 import { JobDto } from "./dto/job-dto";
 import { JobDetailsDto } from "./dto/job-details-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
-import { BaseJobDto } from "./dto/base-job-dto";
+import { JobListItemDto } from "./dto/job-list-item-dto";
 import { FileProgressDto } from "./dto/file-progress-dto";
 import { AddFileParameters } from "./params/add-file-parameters";
 import { RemovedFileDto } from "./dto/removed-file-dto";
@@ -89,7 +89,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async listJobs(
         projectId: string, params: ListJobsParameters
-    ): Promise<SmartlingListResponse<BaseJobDto>> {
+    ): Promise<SmartlingListResponse<JobListItemDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs`,
@@ -100,7 +100,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async searchJobs(
         projectId: string, params: SearchJobsParameters
-    ): Promise<SmartlingListResponse<BaseJobDto>> {
+    ): Promise<SmartlingListResponse<JobListItemDto>> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/search`,
