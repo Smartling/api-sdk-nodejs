@@ -6,7 +6,6 @@ import { ListJobFilesParameters } from "./params/list-job-files-parameters";
 import { ListJobsParameters } from "./params/list-jobs-parameters";
 import { RemoveFileParameters } from "./params/remove-file-parameters";
 import { FileProgressParameters } from "./params/file-progress-parameters";
-import { JobDto } from "./dto/job-dto";
 import { JobDetailsDto } from "./dto/job-details-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
 import { JobListItemDto } from "./dto/job-list-item-dto";
@@ -41,7 +40,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/jobs-api/v3/projects`;
     }
 
-    async createJob(projectId: string, params: CreateJobParameters): Promise<JobDto> {
+    async createJob(projectId: string, params: CreateJobParameters): Promise<JobDetailsDto> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs`,
@@ -53,7 +52,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         projectId: string,
         translationJobUid: string,
         params: UpdateJobParameters
-    ): Promise<JobDto> {
+    ): Promise<JobDetailsDto> {
         return await this.makeRequest(
             "put",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}`,

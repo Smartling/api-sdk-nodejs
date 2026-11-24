@@ -151,6 +151,12 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
 
         logResponse("getJob", job);
         assert.strictEqual(job.translationJobUid, jobUid);
+        assert.strictEqual(typeof job.rushRequest, "boolean");
+        assert.ok(job.priority === null || typeof job.priority === "number");
+        assert.ok(job.issues === null || typeof job.issues.sourceIssuesCount === "number");
+        assert.ok(job.callbackUrl === null || typeof job.callbackUrl === "string");
+        assert.ok(job.firstAuthorizedDate === null || typeof job.firstAuthorizedDate === "string");
+        assert.ok(Array.isArray(job.customFields));
     });
 
     it("updates a job", async () => {
@@ -166,6 +172,7 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
 
         logResponse("updateJob", job);
         assert.strictEqual(job.description, description);
+        assert.ok(Array.isArray(job.sourceFiles));
     });
 
     it("lists jobs by name", async () => {

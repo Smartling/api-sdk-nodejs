@@ -153,6 +153,7 @@ export * from "./api/job-batches/params/batch-item-status";
 export * from "./api/jobs/index";
 export * from "./api/jobs/dto/base-job-dto";
 export * from "./api/jobs/dto/job-list-item-dto";
+export * from "./api/jobs/dto/issues-counts-dto";
 export * from "./api/jobs/dto/content-progress-report-item-dto";
 export * from "./api/jobs/dto/custom-field-dto";
 export * from "./api/jobs/dto/file-progress-dto";
