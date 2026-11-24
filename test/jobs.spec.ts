@@ -1,4 +1,6 @@
+import assert from "assert";
 import sinon from "sinon";
+import { SmartlingException } from "../api/exception/index";
 import { loggerMock, authMock, responseMock } from "./mock";
 import { Order } from "../api/parameters/order";
 import { ListJobsParameters } from "../api/jobs/params/list-jobs-parameters";
@@ -18,6 +20,8 @@ import { UpdateJobParameters } from "../api/jobs/params/update-job-parameters";
 import { CallbackMethod } from "../api/jobs/params/callback-method";
 import { AddStringsToJobParameters } from "../api/jobs/params/add-strings-to-job-parameters";
 import { RemoveStringsFromJobParameters } from "../api/jobs/params/remove-strings-from-job-parameters";
+import { GetJobsWithProcessesParameters } from "../api/jobs/params/get-jobs-with-processes-parameters";
+import { FindJobsByStringsParameters } from "../api/jobs/params/find-jobs-by-strings-parameters";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -511,6 +515,132 @@ describe("SmartlingJobsAPI class tests.", () => {
                     },
                     method: "post"
                 }
+            );
+        });
+    });
+
+    describe("getJobsWithActiveProcess", () => {
+        it("posts the job uids", async () => {
+            await jobApi.getJobsWithActiveProcess(
+                projectId,
+                new GetJobsWithProcessesParameters().setTranslationJobUids(["job1", "job2"])
+            );
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/processes`,
+                {
+                    body: "{\"translationJobUids\":[\"job1\",\"job2\"]}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("rejects an empty list of job uids", () => {
+            assert.throws(
+                () => new GetJobsWithProcessesParameters().setTranslationJobUids([]),
+                SmartlingException
+            );
+        });
+
+        it("rejects more than 500 job uids", () => {
+            const tooMany = Array.from({ length: 501 }, (_, index) => `job${index}`);
+
+            assert.throws(
+                () => new GetJobsWithProcessesParameters().setTranslationJobUids(tooMany),
+                SmartlingException
+            );
+        });
+    });
+
+    describe("getJobLocalesCompletionDates", () => {
+        it("gets completion dates per locale", async () => {
+            await jobApi.getJobLocalesCompletionDates(projectId, jobUid);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/locales-completion-dates`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+    });
+
+    describe("path encoding of the new methods", () => {
+        it("encodes the project and job uids", async () => {
+            await jobApi.getJobSchedule("project/id", "job uid");
+
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                "https://test.com/jobs-api/v3/projects/project%2Fid/jobs/job%20uid/schedule",
+                sinon.match.object
+            );
+        });
+    });
+
+    describe("getJobSchedule", () => {
+        it("gets the job schedule", async () => {
+            await jobApi.getJobSchedule(projectId, jobUid);
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/${jobUid}/schedule`,
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+    });
+
+    describe("findJobsByStrings", () => {
+        it("posts hashcodes and locale ids", async () => {
+            await jobApi.findJobsByStrings(
+                projectId,
+                new FindJobsByStringsParameters().setHashcodes(["hash1"]).setLocaleIds(["fr-FR", "de-DE"])
+            );
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/find-jobs-by-strings`,
+                {
+                    body: "{\"hashcodes\":[\"hash1\"],\"localeIds\":[\"fr-FR\",\"de-DE\"]}",
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+
+        it("omits locale ids when only hashcodes are set", async () => {
+            await jobApi.findJobsByStrings(projectId, new FindJobsByStringsParameters().setHashcodes(["hash1"]));
+
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/find-jobs-by-strings`,
+                sinon.match({ body: "{\"hashcodes\":[\"hash1\"]}" })
             );
         });
     });

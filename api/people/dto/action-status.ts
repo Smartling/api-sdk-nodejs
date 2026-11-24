@@ -1,0 +1,9 @@
+export enum ActionStatus {
+    RUNNING = "RUNNING",
+    ASYNC_WAIT = "ASYNC_WAIT",
+    PULL_WAIT = "PULL_WAIT",
+    COMPLETED = "COMPLETED",
+    FAILED = "FAILED",
+    CANCELED = "CANCELED",
+    EXPIRED = "EXPIRED"
+}
