@@ -6,10 +6,9 @@ import { ListJobFilesParameters } from "./params/list-job-files-parameters";
 import { ListJobsParameters } from "./params/list-jobs-parameters";
 import { RemoveFileParameters } from "./params/remove-file-parameters";
 import { FileProgressParameters } from "./params/file-progress-parameters";
-import { JobDto } from "./dto/job-dto";
 import { JobDetailsDto } from "./dto/job-details-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
-import { BaseJobDto } from "./dto/base-job-dto";
+import { JobListItemDto } from "./dto/job-list-item-dto";
 import { FileProgressDto } from "./dto/file-progress-dto";
 import { AddFileParameters } from "./params/add-file-parameters";
 import { RemovedFileDto } from "./dto/removed-file-dto";
@@ -30,6 +29,7 @@ import { JobWithProcessDto } from "./dto/job-with-process-dto";
 import { JobLocaleCompletionDateDto } from "./dto/job-locale-completion-date-dto";
 import { JobScheduleDto } from "./dto/job-schedule-dto";
 import { JobByStringsDto } from "./dto/job-by-strings-dto";
+import { JobCertificateLocaleDto } from "./dto/job-certificate-locale-dto";
 import { GetJobsWithProcessesParameters } from "./params/get-jobs-with-processes-parameters";
 import { FindJobsByStringsParameters } from "./params/find-jobs-by-strings-parameters";
 
@@ -40,7 +40,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         this.entrypoint = `${smartlingApiBaseUrl}/jobs-api/v3/projects`;
     }
 
-    async createJob(projectId: string, params: CreateJobParameters): Promise<JobDto> {
+    async createJob(projectId: string, params: CreateJobParameters): Promise<JobDetailsDto> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs`,
@@ -52,7 +52,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
         projectId: string,
         translationJobUid: string,
         params: UpdateJobParameters
-    ): Promise<JobDto> {
+    ): Promise<JobDetailsDto> {
         return await this.makeRequest(
             "put",
             `${this.entrypoint}/${projectId}/jobs/${translationJobUid}`,
@@ -88,7 +88,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
 
     async listJobs(
         projectId: string, params: ListJobsParameters
-    ): Promise<SmartlingListResponse<BaseJobDto>> {
+    ): Promise<SmartlingListResponse<JobListItemDto>> {
         return await this.makeRequest(
             "get",
             `${this.entrypoint}/${projectId}/jobs`,
@@ -99,7 +99,7 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async searchJobs(
         projectId: string, params: SearchJobsParameters
-    ): Promise<SmartlingListResponse<BaseJobDto>> {
+    ): Promise<SmartlingListResponse<JobListItemDto>> {
         return await this.makeRequest(
             "post",
             `${this.entrypoint}/${projectId}/jobs/search`,
@@ -233,6 +233,15 @@ export class SmartlingJobsApi extends SmartlingBaseApi {
             "post",
             `${this.entrypoint}/${encodeURIComponent(projectId)}/jobs/find-jobs-by-strings`,
             JSON.stringify(params.export())
+        );
+    }
+
+    async getJobCertificates(
+        projectId: string, translationJobUid: string
+    ): Promise<SmartlingListResponse<JobCertificateLocaleDto>> {
+        return await this.makeRequest(
+            "get",
+            `${this.entrypoint}/${encodeURIComponent(projectId)}/jobs/${encodeURIComponent(translationJobUid)}/certificates`
         );
     }
 }

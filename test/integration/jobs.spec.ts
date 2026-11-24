@@ -151,6 +151,12 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
 
         logResponse("getJob", job);
         assert.strictEqual(job.translationJobUid, jobUid);
+        assert.strictEqual(typeof job.rushRequest, "boolean");
+        assert.ok(job.priority === null || typeof job.priority === "number");
+        assert.ok(job.issues === null || typeof job.issues.sourceIssuesCount === "number");
+        assert.ok(job.callbackUrl === null || typeof job.callbackUrl === "string");
+        assert.ok(job.firstAuthorizedDate === null || typeof job.firstAuthorizedDate === "string");
+        assert.ok(Array.isArray(job.customFields));
     });
 
     it("updates a job", async () => {
@@ -166,6 +172,7 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
 
         logResponse("updateJob", job);
         assert.strictEqual(job.description, description);
+        assert.ok(Array.isArray(job.sourceFiles));
     });
 
     it("lists jobs by name", async () => {
@@ -174,7 +181,11 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         );
 
         logResponse("listJobs", jobs);
-        assert.ok(jobs.items.some((item) => item.translationJobUid === jobUid));
+
+        const found = jobs.items.find((item) => item.translationJobUid === jobUid);
+
+        assert.ok(found);
+        assert.strictEqual(typeof found.rushRequest, "boolean");
     });
 
     it("searches jobs by file uri", async () => {
@@ -236,7 +247,7 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         assert.ok(Array.isArray(jobs.items));
     });
 
-    it("finds jobs by strings", async () => {
+    async function getFileHashcodes(): Promise<Array<string>> {
         const sourceStrings = await stringsApi.getSourceStrings(
             projectId, new FetchSourceStringsParameters().setFileUri(fileUri)
         );
@@ -244,7 +255,40 @@ describe("SmartlingJobsApi integration tests.", function integrationSuite() {
         logResponse("getSourceStrings", sourceStrings);
         assert.ok(sourceStrings.items.length > 0);
 
-        const hashcodes = sourceStrings.items.map((item) => item.hashcode);
+        return sourceStrings.items.map((item) => item.hashcode);
+    }
+
+    it("searches jobs by hashcodes", async () => {
+        const jobs = await jobsApi.searchJobs(
+            projectId, new SearchJobsParameters().setHashcodes(await getFileHashcodes())
+        );
+
+        logResponse("searchJobs by hashcodes", jobs);
+
+        const found = jobs.items.find((item) => item.translationJobUid === jobUid);
+
+        assert.ok(found);
+        assert.strictEqual(typeof found.rushRequest, "boolean");
+        assert.ok(found.dueDate === null || found.dueDate instanceof Date);
+        assert.ok(found.jobNumber === null || typeof found.jobNumber === "string");
+        assert.ok(!jobs.items.some((item) => item.translationJobUid === secondJobUid));
+    });
+
+    it("gets job certificates", async () => {
+        const certificates = await jobsApi.getJobCertificates(projectId, jobUid);
+
+        logResponse("getJobCertificates", certificates);
+        assert.ok(Array.isArray(certificates.items));
+        assert.strictEqual(certificates.totalCount, certificates.items.length);
+        certificates.items.forEach((item) => {
+            assert.strictEqual(typeof item.localeId, "string");
+            assert.ok(item.createdDate instanceof Date);
+            assert.ok(item.completedDate === null || item.completedDate instanceof Date);
+        });
+    });
+
+    it("finds jobs by strings", async () => {
+        const hashcodes = await getFileHashcodes();
         const jobs = await jobsApi.findJobsByStrings(
             projectId,
             new FindJobsByStringsParameters().setHashcodes(hashcodes).setLocaleIds(targetLocaleIds)

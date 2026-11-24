@@ -22,6 +22,8 @@ import { AddStringsToJobParameters } from "../api/jobs/params/add-strings-to-job
 import { RemoveStringsFromJobParameters } from "../api/jobs/params/remove-strings-from-job-parameters";
 import { GetJobsWithProcessesParameters } from "../api/jobs/params/get-jobs-with-processes-parameters";
 import { FindJobsByStringsParameters } from "../api/jobs/params/find-jobs-by-strings-parameters";
+import { SearchJobsParameters } from "../api/jobs/params/search-jobs-parameters";
+import { JobCertificateStatus } from "../api/jobs/params/job-certificate-status";
 
 describe("SmartlingJobsAPI class tests.", () => {
     const projectId = "testProjectId";
@@ -642,6 +644,156 @@ describe("SmartlingJobsAPI class tests.", () => {
                 `https://test.com/jobs-api/v3/projects/${projectId}/jobs/find-jobs-by-strings`,
                 sinon.match({ body: "{\"hashcodes\":[\"hash1\"]}" })
             );
+        });
+    });
+
+    describe("searchJobs", () => {
+        it("posts hashcodes together with the other filters", async () => {
+            await jobApi.searchJobs(
+                projectId,
+                new SearchJobsParameters().setHashcodes(["hash1", "hash2"]).setTranslationJobUids([jobUid])
+            );
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                `https://test.com/jobs-api/v3/projects/${projectId}/jobs/search`,
+                {
+                    body: `{"hashcodes":["hash1","hash2"],"translationJobUids":["${jobUid}"]}`,
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "post"
+                }
+            );
+        });
+    });
+
+    describe("searchJobs response", () => {
+        let responseMockTextStub;
+
+        beforeEach(() => {
+            responseMockTextStub = sinon.stub(responseMock, "text");
+        });
+
+        afterEach(() => {
+            responseMockTextStub.restore();
+        });
+
+        it("keeps null fields and converts the dates", async () => {
+            responseMockTextStub.returns(JSON.stringify({
+                response: {
+                    data: {
+                        totalCount: 1,
+                        items: [{
+                            translationJobUid: jobUid,
+                            jobName: "name",
+                            jobNumber: null,
+                            dueDate: null,
+                            createdDate: "2026-01-15T10:00:00Z",
+                            referenceNumber: null,
+                            description: null,
+                            rushRequest: false
+                        }]
+                    }
+                }
+            }));
+
+            const result = await jobApi.searchJobs(projectId, new SearchJobsParameters().setHashcodes(["hash1"]));
+            const [item] = result.items;
+
+            assert.strictEqual(item.dueDate, null);
+            assert.strictEqual(item.jobNumber, null);
+            assert.ok(item.createdDate instanceof Date);
+            assert.strictEqual(item.rushRequest, false);
+        });
+    });
+
+    describe("getJobCertificates", () => {
+        let responseMockTextStub;
+
+        beforeEach(() => {
+            responseMockTextStub = sinon.stub(responseMock, "text");
+        });
+
+        afterEach(() => {
+            responseMockTextStub.restore();
+        });
+
+        it("gets the certificates of a job", async () => {
+            responseMockTextStub.returns(
+                JSON.stringify({ response: { data: { items: [], totalCount: 0 } } })
+            );
+
+            await jobApi.getJobCertificates("project/id", "job uid");
+
+            sinon.assert.calledOnce(jobServiceApiFetchStub);
+            sinon.assert.calledWithExactly(
+                jobServiceApiFetchStub,
+                "https://test.com/jobs-api/v3/projects/project%2Fid/jobs/job%20uid/certificates",
+                {
+                    headers: {
+                        Authorization: "test_token_type test_access_token",
+                        "Content-Type": "application/json",
+                        "User-Agent": "test_user_agent"
+                    },
+                    method: "get"
+                }
+            );
+        });
+
+        it("converts the dates and keeps nulls", async () => {
+            responseMockTextStub.returns(JSON.stringify({
+                response: {
+                    data: {
+                        totalCount: 3,
+                        items: [
+                            {
+                                localeId: "de-DE",
+                                localeDescription: "German (Germany)",
+                                status: "COMPLETED",
+                                error: null,
+                                certificate: { attachmentUid: "cert1" },
+                                bundle: { attachmentUid: "bundle1" },
+                                createdDate: "2026-01-15T10:00:00Z",
+                                completedDate: "2026-01-15T10:05:00Z"
+                            },
+                            {
+                                localeId: "fr-FR",
+                                localeDescription: null,
+                                status: "IN_PROGRESS",
+                                error: null,
+                                certificate: { attachmentUid: null },
+                                bundle: { attachmentUid: null },
+                                createdDate: "2026-01-15T10:00:00Z",
+                                completedDate: null
+                            },
+                            {
+                                localeId: "es-ES",
+                                localeDescription: "Spanish (Spain)",
+                                status: "FAILED",
+                                error: "Certified download generation failed.",
+                                certificate: { attachmentUid: null },
+                                bundle: { attachmentUid: null },
+                                createdDate: "2026-01-15T10:00:00Z",
+                                completedDate: null
+                            }
+                        ]
+                    }
+                }
+            }));
+
+            const result = await jobApi.getJobCertificates(projectId, jobUid);
+
+            assert.strictEqual(result.items[0].status, JobCertificateStatus.COMPLETED);
+            assert.ok(result.items[0].createdDate instanceof Date);
+            assert.ok(result.items[0].completedDate instanceof Date);
+            assert.strictEqual(result.items[1].completedDate, null);
+            assert.strictEqual(result.items[1].certificate.attachmentUid, null);
+            assert.strictEqual(result.items[2].status, JobCertificateStatus.FAILED);
+            assert.strictEqual(result.items[2].error, "Certified download generation failed.");
         });
     });
 });
