@@ -9,4 +9,15 @@ function fixContentTypeHeaderCase(form: FormData): Record<string, unknown> {
     return headers;
 }
 
-export { fixContentTypeHeaderCase };
+// form-data passes booleans through to the request stream as-is, which crashes asynchronously
+// with ERR_INVALID_ARG_TYPE that no caller can catch.
+function appendToFormData(
+    form: FormData,
+    key: string,
+    value: unknown,
+    options?: FormData.AppendOptions | string
+): void {
+    form.append(key, typeof value === "boolean" ? String(value) : value, options);
+}
+
+export { fixContentTypeHeaderCase, appendToFormData };

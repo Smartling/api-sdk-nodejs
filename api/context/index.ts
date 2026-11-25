@@ -1,5 +1,6 @@
 import string2fileStream from "string-to-file-stream";
 import FormData from "form-data";
+import { appendToFormData } from "../http/form-data-utils";
 import { SmartlingBaseApi } from "../base/index";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { ContextUploadParameters } from "./params/context-upload-parameters";
@@ -187,15 +188,15 @@ export class SmartlingContextApi extends SmartlingBaseApi {
 
         Object.keys(body).forEach((key) => {
             if (key === "content") {
-                formData.append(key, string2fileStream(body[key]));
+                appendToFormData(formData, key, string2fileStream(body[key]));
             } else if (key === "matchParams") {
-                formData.append(key, JSON.stringify(body[key]), { contentType: "application/json" });
+                appendToFormData(formData, key, JSON.stringify(body[key]), { contentType: "application/json" });
             } else if (Array.isArray(body[key])) {
                 (body[key] as Array<unknown>).forEach((value) => {
-                    formData.append(`${key}[]`, value);
+                    appendToFormData(formData, `${key}[]`, value);
                 });
             } else {
-                formData.append(key, body[key]);
+                appendToFormData(formData, key, body[key]);
             }
         });
 

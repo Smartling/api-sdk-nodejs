@@ -633,7 +633,7 @@ describe("SmartlingGlossariesApi class tests.", () => {
 
             assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"importFileName\\\"\\r\\n\\r\\n\",\"terms.csv\""));
             assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"importFileMediaType\\\"\\r\\n\\r\\n\",\"text/csv\""));
-            assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"archiveMode\\\"\\r\\n\\r\\n\",false"));
+            assert.ok(stringified.includes("Content-Disposition: form-data; name=\\\"archiveMode\\\"\\r\\n\\r\\n\",\"false\""));
         });
 
         it("Get glossary import status", async () => {
