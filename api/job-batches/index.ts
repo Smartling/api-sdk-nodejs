@@ -1,4 +1,5 @@
 import FormData from "form-data";
+import { appendToFormData } from "../http/form-data-utils";
 import { SmartlingBaseApi } from "../base";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
@@ -29,14 +30,14 @@ export class SmartlingJobBatchesApi extends SmartlingBaseApi {
             Object.keys(opts.body).forEach((key) => {
                 if (Array.isArray(opts.body[key])) {
                     opts.body[key].forEach((value) => {
-                        formData.append(`${key}[]`, value);
+                        appendToFormData(formData, `${key}[]`, value);
                     });
                 } else if (key === "file" && Buffer.isBuffer(opts.body[key])) {
-                    formData.append(key, opts.body[key], {
+                    appendToFormData(formData, key, opts.body[key], {
                         filename: (opts.body as Record<string, string>).fileUri
                     });
                 } else {
-                    formData.append(key, opts.body[key]);
+                    appendToFormData(formData, key, opts.body[key]);
                 }
             });
 

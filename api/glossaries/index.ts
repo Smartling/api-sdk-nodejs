@@ -1,5 +1,5 @@
 import FormData from "form-data";
-import { fixContentTypeHeaderCase } from "../http/form-data-utils";
+import { fixContentTypeHeaderCase, appendToFormData } from "../http/form-data-utils";
 import { SmartlingBaseApi } from "../base/index";
 import { AccessTokenProvider } from "../auth/access-token-provider";
 import { Logger } from "../logger";
@@ -238,10 +238,10 @@ export class SmartlingGlossariesApi extends SmartlingBaseApi {
         Object.keys(exported).forEach((key) => {
             if (Array.isArray(exported[key])) {
                 exported[key].forEach((value) => {
-                    formData.append(`${key}[]`, value);
+                    appendToFormData(formData, `${key}[]`, value);
                 });
             } else {
-                formData.append(key, exported[key]);
+                appendToFormData(formData, key, exported[key]);
             }
         });
 

@@ -7,7 +7,7 @@ import { DownloadFileWithMetadataParameters } from "./params/download-file-with-
 import { UploadFileParameters } from "./params/upload-file-parameters";
 import { FileStatusForAllLocalesDto } from "./dto/file-status-for-all-locales-dto";
 import { SmartlingListResponse } from "../http/smartling-list-response";
-import { fixContentTypeHeaderCase } from "../http/form-data-utils";
+import { fixContentTypeHeaderCase, appendToFormData } from "../http/form-data-utils";
 import { LastModifiedForLocale } from "./dto/last-modified-for-locale-dto";
 import { UploadedFileDto } from "./dto/uploaded-file-dto";
 import { ImportFileParameters } from "./params/import-file-parameters";
@@ -125,7 +125,7 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
         const formData = new FormData();
         const exported = parameters.export();
         Object.keys(exported).forEach((key) => {
-            formData.append(key, exported[key]);
+            appendToFormData(formData, key, exported[key]);
         });
 
         return await this.makeRequest(
@@ -145,7 +145,7 @@ export class SmartlingFilesApi extends SmartlingBaseFileApi {
         const formData = new FormData();
         const exported = parameters.export();
         Object.keys(exported).forEach((key) => {
-            formData.append(key, exported[key]);
+            appendToFormData(formData, key, exported[key]);
         });
 
         return await this.makeRequest(
