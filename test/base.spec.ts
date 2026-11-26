@@ -3,6 +3,8 @@ import sinon from "sinon";
 import { SmartlingBaseApi } from "../api/base/index";
 import { loggerMock, responseMock, authMock } from "./mock";
 import { StaticAccessTokenProvider } from "../api/auth/static-access-token-provider";
+import { ResponseBodyType } from "../api/base/enum/response-body-type";
+import { SmartlingException } from "../api/exception/index";
 // eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires
 const packageJson = require("../../package.json");
 
@@ -242,6 +244,82 @@ describe("Base class tests.", () => {
             assert.strictEqual(result.dueDate, 0);
             assert.deepEqual(result.updated, { totalCount: 0 });
             assert.deepEqual(result.createdDate, { nested: { deeper: 1 } });
+        });
+
+        it("Success (JSON without dates): date-key values stay as the server sent them.", async () => {
+            baseFetchStub.returns(responseMock);
+            responseMockTextStub.returns(JSON.stringify({
+                response: {
+                    data: {
+                        created: "2021-08-18T09:57:59.088Z",
+                        lastModified: "2021-08-18T09:57:59",
+                        dueDate: "not-a-date",
+                        nested: { updated: "2021-08-18T09:57:59.088Z", accessToken: "test_access_token" }
+                    }
+                }
+            }));
+
+            const result = await base.makeRequest(
+                "GET",
+                "https://test.com",
+                null,
+                ResponseBodyType.JSON_WITHOUT_DATES
+            );
+
+            assert.deepStrictEqual(result, {
+                created: "2021-08-18T09:57:59.088Z",
+                lastModified: "2021-08-18T09:57:59",
+                dueDate: "not-a-date",
+                nested: { updated: "2021-08-18T09:57:59.088Z", accessToken: "test_access_token" }
+            });
+            sinon.assert.calledOnce(loggerDebug);
+            assert.ok(String(loggerDebug.firstCall.args[0]).includes("test_accesxxxxx"));
+            assert.ok(!String(loggerDebug.firstCall.args[0]).includes("test_access_token"));
+        });
+
+        it("Success (JSON without dates): resolves to true for an empty body or a response without data.", async () => {
+            baseFetchStub.returns(responseMock);
+
+            responseMockTextStub.returns("");
+            const empty = await base.makeRequest("PUT", "https://test.com", "{}", ResponseBodyType.JSON_WITHOUT_DATES);
+
+            responseMockTextStub.returns("{\"response\": {\"data\": null}}");
+            const withoutData = await base.makeRequest("PUT", "https://test.com", "{}", ResponseBodyType.JSON_WITHOUT_DATES);
+
+            assert.strictEqual(empty, true);
+            assert.strictEqual(withoutData, true);
+        });
+
+        it("Fail (JSON without dates): an HTTP error still throws.", async () => {
+            baseFetchStub.returns({
+                ...responseMock,
+                status: 400,
+                headers: { get: (): string => "request-400" }
+            });
+            responseMockTextStub.returns("{\"response\":{\"code\":\"VALIDATION_ERROR\"}}");
+
+            await assert.rejects(
+                base.makeRequest("PUT", "https://test.com", "{}", ResponseBodyType.JSON_WITHOUT_DATES),
+                (e: SmartlingException) => e instanceof SmartlingException
+                    && e.getPayload().statusCode === 400
+                    && e.getPayload().requestId === "request-400"
+            );
+        });
+
+        it("Fail (JSON without dates): a body that is not JSON throws with the status and request id.", async () => {
+            baseFetchStub.returns({
+                ...responseMock,
+                headers: { get: (): string => "request-123" }
+            });
+            responseMockTextStub.returns("<html>proxy</html>");
+
+            await assert.rejects(
+                base.makeRequest("GET", "https://test.com", null, ResponseBodyType.JSON_WITHOUT_DATES),
+                (e: SmartlingException) => e instanceof SmartlingException
+                    && e.getPayload().statusCode === 200
+                    && e.getPayload().errorResponse === "<html>proxy</html>"
+                    && e.getPayload().requestId === "request-123"
+            );
         });
 
         it("Success: resolves to true on a real empty 204 body.", async () => {

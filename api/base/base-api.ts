@@ -159,43 +159,48 @@ export class SmartlingBaseApi {
 
         let jsonResponse;
 
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        const dateReviver = (key: string, value: any): any => {
+            const dateProperties = [
+                "created",
+                "modified",
+                "updated",
+                "createdDate",
+                "modifiedDate",
+                "updatedDate",
+                "updateDate",
+                "dueDate",
+                "actionTime",
+                "publishDate",
+                "lastModified",
+                "attemptDate",
+                "completedDate",
+                "completionDate",
+                "lastLogin",
+                "authorizationDate",
+                "translationJobWorkflowStepDueDate",
+                "translationJobOverallDueDate",
+                "requestDateTime",
+                "started",
+                "finished"
+            ];
+
+            // Only coerce non-empty string/number values: some response shapes (e.g.
+            // CreateBindingsResponseDto) have a "created" field that is a list wrapper
+            // object, not a date, and new Date(object) silently produces an Invalid Date.
+            const isDateLike = value && (typeof value === "string" || typeof value === "number");
+
+            if (dateProperties.includes(key) && isDateLike) {
+                return new Date(value);
+            }
+
+            return value;
+        };
+
         try {
-            jsonResponse = JSON.parse(textResponse, (key, value) => {
-                const dateProperties = [
-                    "created",
-                    "modified",
-                    "updated",
-                    "createdDate",
-                    "modifiedDate",
-                    "updatedDate",
-                    "updateDate",
-                    "dueDate",
-                    "actionTime",
-                    "publishDate",
-                    "lastModified",
-                    "attemptDate",
-                    "completedDate",
-                    "completionDate",
-                    "lastLogin",
-                    "authorizationDate",
-                    "translationJobWorkflowStepDueDate",
-                    "translationJobOverallDueDate",
-                    "requestDateTime",
-                    "started",
-                    "finished"
-                ];
-
-                // Only coerce non-empty string/number values: some response shapes (e.g.
-                // CreateBindingsResponseDto) have a "created" field that is a list wrapper
-                // object, not a date, and new Date(object) silently produces an Invalid Date.
-                const isDateLike = value && (typeof value === "string" || typeof value === "number");
-
-                if (dateProperties.includes(key) && isDateLike) {
-                    return new Date(value);
-                }
-
-                return value;
-            });
+            jsonResponse = returnRawResponseBody === ResponseBodyType.JSON_WITHOUT_DATES
+                ? JSON.parse(textResponse)
+                : JSON.parse(textResponse, dateReviver);
         } catch (e) {
             this.logger.error(`Couldn't parse response json: ${e.toString()}`);
 
